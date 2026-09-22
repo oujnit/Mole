@@ -54,10 +54,10 @@ _request_password() {
     trap '[[ -n "${stty_orig:-}" ]] && stty "${stty_orig:-}" < "$tty_path" 2> /dev/null || true' RETURN
 
     if check_touchid_support; then
-        echo -e "${GRAY}Note: Touch ID dialog may appear once more, just cancel it${NC}" > "$tty_path"
+        echo -e "${GRAY}提示：Touch ID 对话框可能再次弹出，直接取消即可${NC}" > "$tty_path"
     fi
 
-    echo -e "${PURPLE}${ICON_ARROW}${NC} Enter your credentials:" > "$tty_path"
+    echo -e "${PURPLE}${ICON_ARROW}${NC} 请输入你的凭据：" > "$tty_path"
 
     # shellcheck disable=SC2024,SC2094
     # Intentionally route sudo's native prompt to the same TTY device it reads from.
@@ -69,7 +69,7 @@ _request_password() {
 }
 
 request_sudo_access() {
-    local prompt_msg="${1:-Admin access required}"
+    local prompt_msg="${1:-需要管理员权限}"
 
     # Tests must never trigger real password or Touch ID prompts.
     if [[ "${MOLE_TEST_MODE:-0}" == "1" || "${MOLE_TEST_NO_AUTH:-0}" == "1" ]]; then
@@ -154,7 +154,7 @@ request_sudo_access() {
     fi
 
     # Touch ID is available and not in clamshell mode
-    echo -e "${PURPLE}${ICON_ARROW}${NC} ${prompt_msg} ${GRAY}, Touch ID or password${NC}"
+    echo -e "${PURPLE}${ICON_ARROW}${NC} ${prompt_msg} ${GRAY}，Touch ID 或密码${NC}"
 
     # Start sudo in background so we can monitor and control it
     sudo -v < /dev/null > /dev/null 2>&1 &
@@ -209,7 +209,7 @@ request_sudo_access() {
 
 request_sudo_access_with_password() {
     local password="$1"
-    local prompt_msg="${2:-Admin access required}"
+    local prompt_msg="${2:-需要管理员权限}"
 
     # Tests must never trigger real password or Touch ID prompts.
     if [[ "${MOLE_TEST_MODE:-0}" == "1" || "${MOLE_TEST_NO_AUTH:-0}" == "1" ]]; then
@@ -319,7 +319,7 @@ adopt_sudo_session() {
 
 # Request administrative access
 request_sudo() {
-    local prompt_msg="${1:-Admin access required}"
+    local prompt_msg="${1:-需要管理员权限}"
 
     if has_sudo_session; then
         return 0
@@ -335,7 +335,7 @@ request_sudo() {
 
 # Maintain active sudo session with keepalive
 ensure_sudo_session() {
-    local prompt="${1:-Admin access required}"
+    local prompt="${1:-需要管理员权限}"
 
     # Check if already established
     if has_sudo_session && [[ "$MOLE_SUDO_ESTABLISHED" == "true" ]]; then

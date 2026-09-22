@@ -31,7 +31,7 @@ execute_optimization cache_refresh
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to remove 1 Finder cache target(s)"* ]] || return 1
+	[[ "$output" == *"无法移除 1 个 Finder 缓存目标"* ]] || return 1
 }
 
 @test "cache refresh reports failed rebuild commands" {
@@ -48,7 +48,7 @@ execute_optimization cache_refresh
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to rebuild 2 Finder cache service(s)"* ]] || return 1
+	[[ "$output" == *"无法重建 2 个 Finder 缓存服务"* ]] || return 1
 	[[ "$output" != *"QuickLook thumbnails refreshed"* ]] || return 1
 }
 
@@ -69,7 +69,7 @@ execute_optimization saved_state_cleanup
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to remove 1 old saved state(s)"* ]] || return 1
+	[[ "$output" == *"无法移除 1 个旧的已保存状态"* ]] || return 1
 	[[ "$output" != *"App saved states optimized"* ]] || return 1
 }
 
@@ -90,7 +90,7 @@ execute_optimization launch_agents_cleanup
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to remove 1 broken Launch Agent(s)"* ]] || return 1
+	[[ "$output" == *"无法移除 1 个损坏的 LaunchAgent"* ]] || return 1
 }
 
 @test "shared file list repair reports a failed removal" {
@@ -110,7 +110,7 @@ execute_optimization shared_file_list_repair
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to repair 1 corrupted shared file list(s)"* ]] || return 1
+	[[ "$output" == *"无法修复 1 个损坏的共享文件列表"* ]] || return 1
 }
 
 @test "CoreDuet cleanup reports a failed sidecar removal" {
@@ -131,7 +131,7 @@ execute_optimization coreduet_cleanup
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Knowledge database cleanup incomplete"* ]] || return 1
+	[[ "$output" == *"Knowledge 数据库清理未完成"* ]] || return 1
 }
 
 @test "CoreDuet cleanup preserves sidecars when sqlite3 is unavailable" {
@@ -158,6 +158,6 @@ execute_optimization coreduet_cleanup
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"sqlite3 not available"* ]] || return 1
+	[[ "$output" == *"sqlite3 不可用"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_REMOVE"* ]] || return 1
 }

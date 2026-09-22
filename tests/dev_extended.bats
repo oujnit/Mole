@@ -33,7 +33,7 @@ clean_dev_elixir
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Hex cache"* ]]
+    [[ "$output" == *"Hex 缓存"* ]]
 }
 
 @test "clean_dev_elixir does not clean mix archives" {
@@ -103,14 +103,14 @@ clean_dev_ocaml
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Opam cache"* ]]
+    [[ "$output" == *"Opam 缓存"* ]]
 }
 
 @test "check_android_ndk reports multiple NDK versions" {
     run /bin/bash -c 'HOME=$(mktemp -d) && mkdir -p "$HOME/Library/Android/sdk/ndk"/{21.0.1,22.0.0,20.0.0} && source "$0" && note_activity() { :; } && NC="" && GREEN="" && GRAY="" && YELLOW="" && ICON_REVIEW="⊙" && check_android_ndk' "$PROJECT_ROOT/lib/clean/dev.sh"
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Android NDK versions · 3 found"* ]]
+    [[ "$output" == *"Android NDK 版本 · 发现 3 个"* ]]
 }
 
 @test "check_android_ndk silent when only one NDK" {
@@ -206,7 +206,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"iOS DeviceSupport · skipped (metadata unavailable)"* ]] || return 1
+    [[ "$output" == *"iOS DeviceSupport · 已跳过（元数据不可用）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_CLEAN"* ]] || return 1
 }
 
@@ -284,7 +284,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"iOS DeviceSupport · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"iOS DeviceSupport · 已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_"* ]] || return 1
     [[ -d "$ds_dir/17.0" && -d "$ds_dir/17.1" && -d "$ds_dir/17.2" ]]
 }
@@ -359,7 +359,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"iOS DeviceSupport · removed 1 old versions"* ]] || return 1
+    [[ "$output" == *"iOS DeviceSupport · 已移除 1 个旧版本"* ]] || return 1
     [[ "$output" != *"iOS DeviceSupport · stopped"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_CLEAN"* ]]
 }
@@ -399,7 +399,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"iOS DeviceSupport · removed 1 old versions"* ]] || return 1
+    [[ "$output" == *"iOS DeviceSupport · 已移除 1 个旧版本"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_DEFER"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_CLEAN"* ]] || return 1
     [[ ! -e "$ds_dir/17.0" && -d "$ds_dir/17.1" && -d "$ds_dir/17.2" ]]
@@ -443,7 +443,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"iOS DeviceSupport · removed 1 old versions"* ]] || return 1
+    [[ "$output" == *"iOS DeviceSupport · 已移除 1 个旧版本"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_DEFER"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_CLEAN"* ]] || return 1
     [[ ! -e "$ds_dir/17.0" && -f "$kept_cache" ]]
@@ -835,7 +835,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode documentation cache · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"Xcode 文档缓存 · 已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_SUDO_REMOVE"* ]]
 }
 
@@ -911,7 +911,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode documentation cache · removed 1 old indexes"* ]] || return 1
+    [[ "$output" == *"Xcode 文档缓存 · 已移除 1 个旧索引"* ]] || return 1
     [[ "$output" != *"Xcode documentation cache · stopped"* ]]
 }
 
@@ -954,7 +954,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode documentation cache · skipped 1 protected items"* ]] || return 1
+    [[ "$output" == *"Xcode 文档缓存 · 已跳过 1 个受保护项"* ]] || return 1
     [[ "$output" != *"Xcode documentation cache · stopped"* ]] || return 1
     [[ "$output" != *"already clean"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_REMOVE"* ]]
@@ -1102,7 +1102,7 @@ clean_xcode_system_coresimulator_caches
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Xcode Simulator system cache · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"Xcode 模拟器系统缓存 · 已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" == *"DEBUG:CoreSimulator process check failed: Xcode (exit=2)"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_SUDO_REMOVE"* ]] || return 1
 }
@@ -1214,7 +1214,7 @@ EOF
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" != *"skipped (CoreSimulator running)"* ]] || return 1
-    [[ "$output" == *"skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_SUDO_REMOVE"* ]] || return 1
 }
 
@@ -1312,7 +1312,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode Simulator system cache · removed 1"* ]] || return 1
+    [[ "$output" == *"Xcode 模拟器系统缓存 · 已移除 1 个"* ]] || return 1
     [[ "$output" != *"Xcode Simulator system cache · stopped"* ]]
 }
 
@@ -1373,7 +1373,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode Simulator system cache · could not remove 1 entries"* ]] || return 1
+    [[ "$output" == *"Xcode 模拟器系统缓存 · 无法移除 1 个条目"* ]] || return 1
     [[ "$output" != *"already clean"* ]]
 }
 
@@ -1452,7 +1452,7 @@ EOF
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" != *"Xcode XCTestDevices · skipped (Xcode or XCTest running)"* ]] || return 1
-    [[ "$output" == *"Xcode XCTestDevices · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"Xcode XCTestDevices · 已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SAFE_CLEAN"* ]] || return 1
 }
 
@@ -1534,8 +1534,8 @@ clean_xcode_xctest_devices
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Xcode XCTestDevices test data"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"Xcode XCTestDevices 测试数据"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"STILL_EXISTS"* ]]
 }
 
@@ -1589,7 +1589,7 @@ EOF
     run /bin/bash -c 'HOME=$(mktemp -d) && mkdir -p "$HOME/.rustup/toolchains"/{stable,nightly,1.75.0}-aarch64-apple-darwin && source "$0" && note_activity() { :; } && NC="" && GREEN="" && GRAY="" && YELLOW="" && ICON_REVIEW="⊙" && rustup() { :; } && export -f rustup && check_rust_toolchains' "$PROJECT_ROOT/lib/clean/dev.sh"
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Rust toolchains · 3 found"* ]]
+    [[ "$output" == *"Rust 工具链 · 发现 3 个"* ]]
 }
 
 @test "check_rust_toolchains silent when only one toolchain" {
@@ -1680,13 +1680,13 @@ clean_dev_ai_agents
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"/2.1.112|Claude Code old version"* ]] || return 1
-    [[ "$output" == *"/2.1.113|Claude Code old version"* ]] || return 1
+    [[ "$output" == *"/2.1.112|Claude Code 旧版本"* ]] || return 1
+    [[ "$output" == *"/2.1.113|Claude Code 旧版本"* ]] || return 1
     [[ "$output" != *"/2.1.114|"* ]] || return 1
-    [[ "$output" == *"/2026.04.08-old|Cursor Agent old version"* ]] || return 1
+    [[ "$output" == *"/2026.04.08-old|Cursor Agent 旧版本"* ]] || return 1
     [[ "$output" != *"/2026.04.15-new|"* ]] || return 1
-    [[ "$output" == *"/1.0.5|GitHub Copilot CLI old version"* ]] || return 1
-    [[ "$output" == *"/1.0.32|GitHub Copilot CLI old version"* ]] || return 1
+    [[ "$output" == *"/1.0.5|GitHub Copilot CLI 旧版本"* ]] || return 1
+    [[ "$output" == *"/1.0.32|GitHub Copilot CLI 旧版本"* ]] || return 1
     [[ "$output" != *"/1.0.34|"* ]]
 }
 
@@ -1720,10 +1720,10 @@ clean_dev_ai_agents
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"/2.1.112|Claude Code old version"* ]] || return 1
+    [[ "$output" == *"/2.1.112|Claude Code 旧版本"* ]] || return 1
     [[ "$output" != *"/2.1.113|"* ]] || return 1
     [[ "$output" != *"/2.1.114|"* ]] || return 1
-    [[ "$output" == *"/2026.04.01-old|Cursor Agent old version"* ]] || return 1
+    [[ "$output" == *"/2026.04.01-old|Cursor Agent 旧版本"* ]] || return 1
     [[ "$output" != *"/2026.04.10-active|"* ]] || return 1
     [[ "$output" != *"/2026.04.20-newest|"* ]]
 }
@@ -1751,7 +1751,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" != *"|Claude Code old version"* ]] || return 1
-    [[ "$output" == *"Claude Code old version · skipped (active symlink broken)"* ]] || return 1
+    [[ "$output" == *"Claude Code 旧版本 · 已跳过（active symlink broken）"* ]] || return 1
 
     rm -f "$bin_dir/claude"
 }
@@ -1791,7 +1791,7 @@ clean_dev_jetbrains_logs
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"$HOME/Library/Logs/JetBrains/*|JetBrains IDE logs"* ]] || return 1
+    [[ "$output" == *"$HOME/Library/Logs/JetBrains/*|JetBrains IDE 日志"* ]] || return 1
     [[ "$output" != *"Library/Caches/JetBrains"* ]]
 }
 
@@ -1836,9 +1836,9 @@ clean_developer_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"$HOME/Library/Logs/JetBrains/*|JetBrains IDE logs"* ]] || return 1
+    [[ "$output" == *"$HOME/Library/Logs/JetBrains/*|JetBrains IDE 日志"* ]] || return 1
     [[ "$output" != *"Library/Caches/JetBrains"* ]] || return 1
-    [[ "$output" == *"$HOME/Library/Caches/Homebrew/downloads/*|Homebrew cache"* ]] || return 1
+    [[ "$output" == *"$HOME/Library/Caches/Homebrew/downloads/*|Homebrew 缓存"* ]] || return 1
     [[ "$output" != *"$HOME/Library/Caches/Homebrew/*|Homebrew cache"* ]] || return 1
     [[ "$output" != *"Library/Caches/Homebrew/api"* ]] || return 1
     [[ "$output" != *"Library/Caches/Homebrew/bootsnap"* ]] || return 1
@@ -1903,7 +1903,7 @@ _resolve_simctl_developer_dir() {
 _run_simctl() { return 0; }
 debug_log() { :; }
 DRY_RUN=true
-start_section "Developer tools"
+start_section "开发者工具"
 clean_dev_mobile
 end_section
 EOF
@@ -1912,7 +1912,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Developer tools"*"Nothing to clean"* ]]
+    [[ "$output" == *"开发者工具"*"无需清理"* ]]
 }
 
 @test "clean_dev_mobile probes simctl once per question and never twice for one" {
@@ -2015,13 +2015,13 @@ EOF
     [ "$status" -eq 0 ] || return 1
     [[ "$output" == *"RESOLUTION_STATUS:clt-only"* ]] || return 1
     [[ "$output" != *"simctl could not be resolved"* ]] || return 1
-    [[ "$output" != *"Xcode unavailable simulators"* ]] || return 1
+    [[ "$output" != *"Xcode 不可用的模拟器"* ]] || return 1
     [[ "$output" != *"ACTIVITY"* ]] || return 1
     [[ ! -e "$HOME/simctl-unavailable.log" ]] || return 1
     [[ "$output" == *"DEVICE_SUPPORT:iOS DeviceSupport"* ]] || return 1
-    [[ "$output" == *"SAFE_CLEAN_GUARDED:_coresimulator_delete_guard_allows:Simulator runtime cache"* ]] || return 1
-    [[ "$output" == *"SAFE_CLEAN_GUARDED:_xcode_delete_guard_allows:Xcode Interface Builder cache"* ]] || return 1
-    [[ "$output" == *"SAFE_CLEAN:Android SDK cache"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN_GUARDED:_coresimulator_delete_guard_allows:模拟器运行时缓存"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN_GUARDED:_xcode_delete_guard_allows:Xcode Interface Builder 缓存"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN:Android SDK 缓存"* ]] || return 1
 }
 
 @test "clean_dev_mobile retries simctl probe on cold-boot timeout (#890)" {
@@ -2135,7 +2135,7 @@ echo "AFTER_MOBILE"
 EOF
 
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"Xcode unavailable simulators · simctl probe timed out"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"Xcode 不可用的模拟器 · simctl 探测超时"* ]] || { echo "$output"; return 1; }
     [[ "$output" == *"DEBUG:Orphaned runtime review skipped"* ]] || { echo "$output"; return 1; }
     [[ "$output" == *"AFTER_MOBILE"* ]] || { echo "$output"; return 1; }
     # Probe plus one warm-up retry, then neither review listing runs. Later
@@ -2215,8 +2215,8 @@ EOF
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" == *"DEBUG:simctl probe statuses: first=124 retry=0"* ]] || return 1
-    [[ "$output" == *"Xcode unavailable simulators · simctl probe timed out"* ]] || return 1
-    [[ "$output" == *"Xcode unavailable simulators · simctl probe failed (exit=7)"* ]] || return 1
+    [[ "$output" == *"Xcode 不可用的模拟器 · simctl 探测超时"* ]] || return 1
+    [[ "$output" == *"Xcode 不可用的模拟器 · simctl 探测失败（exit=7）"* ]] || return 1
     [[ "$output" == *"DEBUG:simctl probe statuses: first=7 retry=124"* ]] || return 1
     [[ "$output" == *"DEBUG:simctl probe first stderr: ~/Library/Developer/private [31mprobe failed[0m"* ]] || return 1
     [[ "$output" != *"$HOME/Library/Developer/private"* ]] || return 1
@@ -2272,7 +2272,7 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Xcode unavailable simulators · would clean 1"* ]] || return 1
+    [[ "$output" == *"Xcode 不可用的模拟器 · 将清理 1，"* ]] || return 1
     [[ -s "$HOME/simctl-single.log" ]] || return 1
     while IFS= read -r call; do
         [[ "$call" == "$developer_dir|"* ]] || return 1
@@ -2324,7 +2324,7 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"multiple Xcode apps found; set DEVELOPER_DIR"* ]] || return 1
+    [[ "$output" == *"发现多个 Xcode 应用；请设置 DEVELOPER_DIR"* ]] || return 1
     [[ "$output" == *"DEBUG:simctl Xcode candidate: $HOME/Applications/Xcode.app"* ]] || return 1
     [[ "$output" == *"DEBUG:simctl Xcode candidate: $HOME/Applications/Xcode-Beta.app"* ]] || return 1
     [[ ! -e "$HOME/simctl-ambiguous.log" ]] || return 1
@@ -2375,7 +2375,7 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"simctl could not be resolved"* ]] || return 1
+    [[ "$output" == *"无法解析 simctl"* ]] || return 1
     local actual_calls
     actual_calls=$(cat "$HOME/simctl-selected-invalid.log")
     [[ -n "$actual_calls" ]] || return 1
@@ -2430,7 +2430,7 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"DEVELOPER_DIR has no simctl"* ]] || return 1
+    [[ "$output" == *"DEVELOPER_DIR 没有 simctl"* ]] || return 1
     [[ ! -e "$HOME/simctl-explicit-invalid.log" ]] || return 1
     [[ ! -e "$HOME/xcode-select-explicit-invalid.log" ]] || return 1
 }
@@ -2486,9 +2486,9 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Xcode unavailable simulators · cleanup timed out"* ]] || return 1
+    [[ "$output" == *"清理超时"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_FALLBACK"* ]] || return 1
-    [[ "$output" != *"Xcode unavailable simulators · removed"* ]] || return 1
+    [[ "$output" != *"Xcode 不可用的模拟器 · 已移除"* ]] || return 1
 }
 
 @test "clean_dev_mobile does not bypass simctl when a device becomes busy" {
@@ -2543,9 +2543,9 @@ clean_dev_mobile
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"cleanup failed (device in use)"* ]] || return 1
+    [[ "$output" == *"清理失败 (device in use)"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_FALLBACK"* ]] || return 1
-    [[ "$output" != *"Xcode unavailable simulators · removed"* ]] || return 1
+    [[ "$output" != *"Xcode 不可用的模拟器 · 已移除"* ]] || return 1
 }
 
 @test "clean_dev_mobile never deletes from a timed-out list or reports a timed-out recount as success" {
@@ -2610,11 +2610,11 @@ printf 'DELETE_COUNT=%s\n' "$(wc -l < "$SIMCTL_SAFETY_LOG" | tr -d ' ')"
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"simctl probe timed out"* ]] || return 1
+    [[ "$output" == *"simctl 探测超时"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_DELETE_AFTER_LIST_TIMEOUT"* ]] || return 1
-    [[ "$output" == *"cleanup completed, unable to verify remaining devices"* ]] || return 1
+    [[ "$output" == *"清理已完成，无法验证剩余设备"* ]] || return 1
     [[ "$output" == *"DELETE_COUNT=1"* ]] || return 1
-    [[ "$output" != *"removed 1"* ]] || return 1
+    [[ "$output" != *"已移除 1 个"* ]] || return 1
 }
 
 @test "clean_dev_mobile stops before simctl delete when unavailable-device sizing times out" {
@@ -2698,7 +2698,7 @@ clean_dev_ai_agents
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"/1.0.5|GitHub Copilot CLI old version"* ]] || return 1
+    [[ "$output" == *"/1.0.5|GitHub Copilot CLI 旧版本"* ]] || return 1
     [[ "$output" != *"/1.0.32|"* ]] || return 1
     [[ "$output" != *"/1.0.34|"* ]]
 }

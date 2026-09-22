@@ -958,16 +958,16 @@ scanChildren:
 // When scanning Home, it excludes ~/Library to avoid duplicate counting.
 func measureOverviewSize(path string) (int64, error) {
 	if path == "" {
-		return 0, fmt.Errorf("empty path")
+		return 0, fmt.Errorf("路径为空")
 	}
 
 	path = filepath.Clean(path)
 	if !filepath.IsAbs(path) {
-		return 0, fmt.Errorf("path must be absolute: %s", path)
+		return 0, fmt.Errorf("路径必须是绝对路径：%s", path)
 	}
 
 	if _, err := os.Stat(path); err != nil {
-		return 0, fmt.Errorf("cannot access path: %v", err)
+		return 0, fmt.Errorf("无法访问路径：%v", err)
 	}
 
 	// Determine if we should exclude ~/Library (when scanning Home)
@@ -992,7 +992,7 @@ func measureOverviewSize(path string) (int64, error) {
 		return cached.TotalSize, nil
 	}
 
-	return 0, fmt.Errorf("unable to measure directory size with fast methods")
+	return 0, fmt.Errorf("无法使用快速方法计算目录大小")
 }
 
 func getDirectorySizeFromDu(ctx context.Context, path string) (int64, error) {

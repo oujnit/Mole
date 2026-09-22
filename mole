@@ -8,7 +8,7 @@ set -euo pipefail
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -34,7 +34,7 @@ else
     while [ -L "$SOURCE" ]; do
         _mole_link_hops=$((_mole_link_hops + 1))
         if [ "$_mole_link_hops" -gt 32 ]; then
-            printf '%s\n' 'mole: too many symlink hops resolving the entrypoint' >&2
+            printf '%s\n' 'mole：解析入口文件时遇到过多符号链接层级' >&2
             exit 1
         fi
         DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
@@ -95,7 +95,7 @@ trap cleanup_temp_files EXIT INT TERM
 
 # Version and update helpers
 VERSION="1.55.0"
-MOLE_TAGLINE="Deep clean and optimize your Mac."
+MOLE_TAGLINE="深度清理并优化你的 Mac。"
 
 is_touchid_configured() {
     grep -q "pam_tid.so" /etc/pam.d/sudo /etc/pam.d/sudo_local 2> /dev/null
@@ -113,13 +113,13 @@ source "$SCRIPT_DIR/lib/manage/remove.sh"
 _main_menu_controls_line() {
     local touchid_configured="$1"
     local show_update="$2"
-    local controls="${GRAY}↑↓  |  Enter  |  M More  |  V Version"
+    local controls="${GRAY}↑↓  |  回车  |  M 更多  |  V 版本"
     if [[ "$touchid_configured" != "true" ]]; then
         controls="${controls}  |  T TouchID"
     elif [[ "$show_update" == "true" ]]; then
-        controls="${controls}  |  U Update"
+        controls="${controls}  |  U 更新"
     fi
-    controls="${controls}  |  Q Quit${NC}"
+    controls="${controls}  |  Q 退出${NC}"
     printf '%s' "$controls"
 }
 
@@ -152,11 +152,11 @@ show_main_menu() {
 
     printf '\r\033[2K\n'
 
-    printf '\r\033[2K%s\n' "$(show_menu_option 1 "Clean        Free up disk space" "$([[ $selected -eq 1 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 2 "Uninstall    Remove apps completely" "$([[ $selected -eq 2 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 3 "Optimize     Refresh caches and services" "$([[ $selected -eq 3 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 4 "Analyze      Explore disk usage" "$([[ $selected -eq 4 ]] && echo true || echo false)")"
-    printf '\r\033[2K%s\n' "$(show_menu_option 5 "Status       Monitor system health" "$([[ $selected -eq 5 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 1 "Clean        清理磁盘空间" "$([[ $selected -eq 1 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 2 "Uninstall    完全卸载应用" "$([[ $selected -eq 2 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 3 "Optimize     刷新缓存与服务" "$([[ $selected -eq 3 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 4 "Analyze      分析磁盘占用" "$([[ $selected -eq 4 ]] && echo true || echo false)")"
+    printf '\r\033[2K%s\n' "$(show_menu_option 5 "Status       监控系统状态" "$([[ $selected -eq 5 ]] && echo true || echo false)")"
 
     if [[ -t 0 ]]; then
         printf '\r\033[2K\n'
@@ -312,8 +312,8 @@ main() {
                     --force | -f) force_update=true ;;
                     --nightly) nightly_update=true ;;
                     *)
-                        echo "Unknown update option: $arg" >&2
-                        echo "Use 'mole update [--force] [--nightly]' for supported options." >&2
+                        echo "未知的更新选项：$arg" >&2
+                        echo "使用 'mole update [--force] [--nightly]' 查看支持的选项。" >&2
                         exit 1
                         ;;
                 esac
@@ -327,8 +327,8 @@ main() {
                 case "$arg" in
                     "--dry-run" | "-n") dry_run_remove=true ;;
                     *)
-                        echo "Unknown remove option: $arg" >&2
-                        echo "Use 'mole remove [--dry-run]' for supported options." >&2
+                        echo "未知的移除选项：$arg" >&2
+                        echo "使用 'mole remove [--dry-run]' 查看支持的选项。" >&2
                         exit 1
                         ;;
                 esac
@@ -350,8 +350,8 @@ main() {
         *)
             # Errors belong on stderr so `mo $cmd > out` leaves the diagnostic
             # visible instead of burying it in the redirected file.
-            echo "Unknown command: ${args[0]}" >&2
-            echo "Use 'mole --help' for usage information." >&2
+            echo "未知命令：${args[0]}" >&2
+            echo "使用 'mole --help' 查看用法信息。" >&2
             exit 1
             ;;
     esac

@@ -220,20 +220,20 @@ echo sourced
 @test "mo history rejects unknown options" {
     run env HOME="$HOME" "$PROJECT_ROOT/mole" history --bad-option
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Unknown option for mo history"* ]]
+    [[ "$output" == *"mo history 的未知选项"* ]]
 }
 
 @test "mo history rejects invalid limit values" {
     run env HOME="$HOME" "$PROJECT_ROOT/mole" history --limit nope
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Invalid value for --limit"* ]] || return 1
+    [[ "$output" == *"--limit 的值无效"* ]] || return 1
 
     run env HOME="$HOME" "$PROJECT_ROOT/mole" history --limit 500
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Invalid value for --limit"* ]] || return 1
+    [[ "$output" == *"--limit 的值无效"* ]] || return 1
 
     run env HOME="$HOME" "$PROJECT_ROOT/mole" history --limit 999999999999999999999999
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Invalid value for --limit"* ]] || return 1
+    [[ "$output" == *"--limit 的值无效"* ]] || return 1
     [[ "$output" != *"value too great for base"* ]]
 }

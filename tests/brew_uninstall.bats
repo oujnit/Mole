@@ -261,7 +261,7 @@ total_size_cleaned=0
 # Simulate 'Enter' for confirmation
 printf '\n' | batch_uninstall_applications > /dev/null 2>&1
 
-grep -q "ENSURE_SUDO:Admin required for Homebrew casks: BrewApp" "$HOME/brew_calls.log"
+grep -q "ENSURE_SUDO:卸载 Homebrew cask 需要管理员权限：BrewApp" "$HOME/brew_calls.log"
 grep -q "uninstall --cask --zap brew-app-cask" "$HOME/brew_calls.log"
 EOF
 
@@ -384,9 +384,9 @@ total_size_cleaned=0
 
 printf '\n' | batch_uninstall_applications > /dev/null 2>&1
 
-grep -q "ENSURE_SUDO:Admin required for Homebrew casks: BrewPreAuth" "$HOME/order.log"
+grep -q "ENSURE_SUDO:卸载 Homebrew cask 需要管理员权限：BrewPreAuth" "$HOME/order.log"
 grep -q "BREW_CALL:uninstall --cask --zap brew-preauth-cask" "$HOME/order.log"
-[[ "$(sed -n '1p' "$HOME/order.log")" == "ENSURE_SUDO:Admin required for Homebrew casks: BrewPreAuth" ]]
+[[ "$(sed -n '1p' "$HOME/order.log")" == "ENSURE_SUDO:卸载 Homebrew cask 需要管理员权限：BrewPreAuth" ]]
 EOF
 
     [ "$status" -eq 0 ]
@@ -620,8 +620,8 @@ EOF
     [[ -d "$app_bundle" ]] || return 1
     [[ -d "$leftover" ]] || return 1
     [[ ! -e "$HOME/brew-manual-side-effects.log" ]] || return 1
-    [[ "$output" == *"Mole cannot safely use elevated deletion below a user-writable parent"* ]] || return 1
-    [[ "$output" == *"Move the app to Trash in Finder"* ]] || return 1
+    [[ "$output" == *"Mole 无法在用户可写父目录下安全使用提权删除"* ]] || return 1
+    [[ "$output" == *"请在 Finder 中将应用移到废纸篓"* ]] || return 1
 }
 
 @test "batch_uninstall_applications skips brew sudo pre-auth in dry-run mode" {

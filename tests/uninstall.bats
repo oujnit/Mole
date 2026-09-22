@@ -474,9 +474,9 @@ batch_uninstall_applications || rc=$?
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"cannot be removed safely by Mole from this location"* ]] || return 1
-    [[ "$output" == *"Move it to Trash in Finder"* ]] || return 1
-    [[ "$output" == *"protected containers and app data untouched"* ]] || return 1
+    [[ "$output" == *"无法从该位置安全移除"* ]] || return 1
+    [[ "$output" == *"请在 Finder 中将其移到废纸篓"* ]] || return 1
+    [[ "$output" == *"未改动受保护的容器与应用数据"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_"* ]]
 }
 
@@ -516,7 +516,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"cannot be removed safely by Mole from this location"* ]] || return 1
+    [[ "$output" == *"无法从该位置安全移除"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_"* ]]
 }
 
@@ -966,7 +966,7 @@ total_items=0
 
 _batch_execute_removals
 [[ $success_count -eq 0 && $failed_count -eq 1 ]]
-[[ "${failed_items[0]}" == *"app installation set changed after preview"* ]] || exit 1
+[[ "${failed_items[0]}" == *"应用安装集合在预览后发生了变化"* ]] || exit 1
 [[ ! -e "$HOME/teardown-ran" ]]
 EOF
 
@@ -1029,7 +1029,7 @@ total_items=0
 
 _batch_execute_removals
 [[ $success_count -eq 0 && $failed_count -eq 1 ]]
-[[ "${failed_items[0]}" == *"selected app changed after preview"* ]] || exit 1
+[[ "${failed_items[0]}" == *"所选应用在预览后发生了变化"* ]] || exit 1
 [[ ! -e "$HOME/teardown-ran" ]]
 EOF
 
@@ -1181,8 +1181,8 @@ total_items=0
 
 _batch_execute_removals
 [[ $success_count -eq 0 && $failed_count -eq 2 ]]
-[[ "${failed_items[0]}" == *"app installation set changed after preview"* ]] || exit 1
-[[ "${failed_items[1]}" == *"selected app changed after preview"* ]] || exit 1
+[[ "${failed_items[0]}" == *"应用安装集合在预览后发生了变化"* ]] || exit 1
+[[ "${failed_items[1]}" == *"所选应用在预览后发生了变化"* ]] || exit 1
 [[ ! -e "$HOME/teardown-ran" ]]
 EOF
 
@@ -1553,7 +1553,7 @@ fi
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"requires the official CrowdStrike uninstaller"* ]] || return 1
+    [[ "$output" == *"需要使用官方的 CrowdStrike 卸载程序"* ]] || return 1
     [[ "$output" != *"MOLE_DELETE"* ]]
 }
 
@@ -1599,14 +1599,14 @@ total_size_cleaned=0
 
 printf '\n' | batch_uninstall_applications > "$HOME/output.log" 2>&1
 
-grep -q "Review only: ~/system/com.example.review.helper" "$HOME/output.log"
+grep -q "仅供查看：~/system/com.example.review.helper" "$HOME/output.log"
 # The summary states the count, not the paths: they were already listed above
 # the confirmation prompt, so the path must appear exactly once in the run.
 [[ "$(grep -cF "~/system/com.example.review.helper" "$HOME/output.log")" -eq 1 ]] || exit 1
-grep -q "Kept 1 system-level path, which Mole never removes" "$HOME/output.log"
+grep -q "保留了 1 个系统级路径，Mole 从不移除这些路径" "$HOME/output.log"
 # Keeping system paths is the designed outcome, so the run is not "incomplete".
-! grep -q "Uninstall incomplete" "$HOME/output.log"
-grep -q "Uninstall complete" "$HOME/output.log"
+! grep -q "卸载未完成" "$HOME/output.log"
+grep -q "卸载完成" "$HOME/output.log"
 # The point of the whole case: the file is reported, never deleted.
 ! grep -q "$HOME/system/com.example.review.helper" "$HOME/remove.log"
 [[ -e "$HOME/system/com.example.review.helper" ]]
@@ -1661,8 +1661,8 @@ output=$(cat "$output_file")
 [[ -d "$HOME/Library/Caches/TestApp" ]] || { echo "WRONG: dry-run removed cache"; cat "$output_file"; exit 1; }
 [[ -f "$HOME/Library/Preferences/com.example.TestApp.plist" ]] || { echo "WRONG: dry-run removed prefs"; cat "$output_file"; exit 1; }
 
-[[ "$output" == *"Uninstall dry run complete"* ]] || { echo "WRONG: missing dry-run summary"; cat "$output_file"; exit 1; }
-[[ "$output" == *"Would remove 1 app"* ]] || { echo "WRONG: missing would-remove summary"; cat "$output_file"; exit 1; }
+[[ "$output" == *"卸载预览完成"* ]] || { echo "WRONG: missing dry-run summary"; cat "$output_file"; exit 1; }
+[[ "$output" == *"将移除 1 个应用"* ]] || { echo "WRONG: missing would-remove summary"; cat "$output_file"; exit 1; }
 [[ "$output" != *"Could not remove"* ]] || { echo "WRONG: dry-run reported expected leftovers"; cat "$output_file"; exit 1; }
 [[ "$output" != *"system-level path"* ]] || { echo "WRONG: dry-run reported post-removal system leftovers"; cat "$output_file"; exit 1; }
 [[ "$output" != *"Uninstall incomplete"* ]] || { echo "WRONG: dry-run marked incomplete"; cat "$output_file"; exit 1; }
@@ -2022,11 +2022,11 @@ output=$(cat "$output_file")
 [[ ! -f "$HOME/Library/Preferences/com.example.TestApp.plist" ]] || { echo "WRONG: prefs preserved"; exit 1; }
 
 # The legacy "still running" failure summary must NOT fire.
-[[ "$output" != *"is still running"* ]] || { echo "WRONG: legacy still-running failure surfaced"; exit 1; }
-[[ "$output" != *Failed:*TestApp* ]] || { echo "WRONG: app counted as failed"; exit 1; }
+[[ "$output" != *"失败：仍在运行"* ]] || { echo "WRONG: legacy still-running failure surfaced"; exit 1; }
+[[ "$output" != *"TestApp 失败"* ]] || { echo "WRONG: app counted as failed"; exit 1; }
 
 # A friendlier warning should appear so the user knows to quit the lingering process.
-[[ "$output" == *"Still running during uninstall"* ]] || { echo "WRONG: missing running-process warning"; cat "$output_file"; exit 1; }
+[[ "$output" == *"卸载期间仍在运行，文件已移除但进程仍存活"* ]] || { echo "WRONG: missing running-process warning"; cat "$output_file"; exit 1; }
 [[ "$output" == *TestApp* ]] || { echo "WRONG: warning omits app name"; exit 1; }
 EOF
 
@@ -2809,7 +2809,7 @@ EOF
     [ -f "$iso/.local/whitelist" ] || return 1
     [ -f "$iso/.config/mole/whitelist" ] || return 1
     [ ! -e "$iso/.local/bin/mole" ] || return 1
-    [[ "$output" == *"$iso/.local (kept for manual review)"* ]]
+    [[ "$output" == *"$iso/.local（保留供手动检查）"* ]]
 }
 
 @test "remove_mole custom config preview never promises a whole-directory move (#1589)" {
@@ -2824,7 +2824,7 @@ EOF
         MOLE_CONFIG_DIR="$custom" /bin/bash "$PROJECT_ROOT/mole" remove --dry-run
 
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"$custom (kept for manual review)"* ]] || return 1
+    [[ "$output" == *"$custom（保留供手动检查）"* ]] || return 1
     [[ "$output" != *"Would move to Trash:"* ]] || return 1
     [ -f "$iso/.local/bin/mole" ] || return 1
     [ -f "$custom/whitelist" ] || return 1
@@ -2870,7 +2870,7 @@ printf '\n' | "$PROJECT_ROOT/mole" remove --dry-run
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"DRY RUN MODE"* ]] || return 1
+    [[ "$output" == *"预览模式"* ]] || return 1
     [ -f "$HOME/.local/bin/mole" ]
     [ -f "$HOME/.local/bin/mo" ]
     [ -d "$HOME/.config/mole" ]
@@ -2980,7 +2980,7 @@ echo "count=${#selected_apps[@]}"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Warning: No application found matching 'nonexistent'"* ]] || return 1
+    [[ "$output" == *"未找到匹配 'nonexistent' 的应用"* ]] || return 1
     [[ "$output" == *"count=0"* ]]
 }
 
@@ -3604,7 +3604,7 @@ main > "$HOME/countdown.out" 2> "$HOME/countdown.err"
     cat "$HOME/countdown.err" >&2
     exit 1
 }
-[[ "$(grep -o 'Press Enter to return to the app list' "$HOME/countdown.out" | wc -l | tr -d ' ')" -eq 5 ]]
+[[ "$(grep -o '按回车返回应用列表' "$HOME/countdown.out" | wc -l | tr -d ' ')" -eq 5 ]]
 INNER
 
     rm -f "$apps_cache"
@@ -3925,7 +3925,7 @@ INNER
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" == *"RC=0 DETAILS=1"* ]] || return 1
-    [[ "$output" == *"leftover scan timed out; only the app bundle will be removed"* ]] || return 1
+    [[ "$output" == *"残留扫描超时；仅会移除应用包本身"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_DIAG"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_SYSTEM"* ]] || return 1
 }
@@ -4404,9 +4404,9 @@ INNER
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" == *"RC=1"* ]] || return 1
-    [[ "$output" == *"Homebrew ownership check"* ]] || return 1
-    [[ "$output" == *"nothing was removed"* ]] || return 1
-    [[ "$output" == *"'TimedOut' matches a Homebrew cask brew cannot read"* ]] || return 1
+    [[ "$output" == *"Homebrew 归属检查"* ]] || return 1
+    [[ "$output" == *"未移除任何内容"* ]] || return 1
+    [[ "$output" == *"'TimedOut' 匹配到 Homebrew 无法读取的 cask"* ]] || return 1
     [[ "$output" == *"brew info --cask"* ]] || return 1
     # A cask brew cannot parse still lists cleanly, so pointing the user at
     # `brew list --cask` diagnoses nothing.

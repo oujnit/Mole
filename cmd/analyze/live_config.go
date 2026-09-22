@@ -27,7 +27,7 @@ func nextLiveSortMode(mode liveSortMode) liveSortMode {
 
 func liveSortModeLabel(mode liveSortMode) string {
 	if mode == liveSortFreezeOnMove {
-		return "freeze-on-move"
+		return "移动时冻结"
 	}
-	return "continuous"
+	return "连续"
 }

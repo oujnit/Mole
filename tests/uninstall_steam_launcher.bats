@@ -296,6 +296,6 @@ printf '\n' | _batch_preview_and_confirm
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"N/A (Steam-managed)"* ]] || return 1
-    [[ "$output" == *"Steam launcher only; game files managed by Steam are not included"* ]]
+    [[ "$output" == *"N/A（由 Steam 管理）"* ]] || return 1
+    [[ "$output" == *"仅 Steam 启动器；由 Steam 管理的游戏文件不包含在内"* ]]
 }

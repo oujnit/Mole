@@ -80,7 +80,7 @@ _repair_preference_plists_in_dir() {
                 continue
             fi
             if safe_remove "$candidate" true > /dev/null 2>&1; then
-                debug_file_action "Removed corrupted preference" "$candidate"
+                debug_file_action "已移除损坏的偏好设置" "$candidate"
                 broken_count=$((broken_count + 1))
             fi
         done

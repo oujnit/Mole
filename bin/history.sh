@@ -12,14 +12,14 @@ HISTORY_JSON=false
 HISTORY_LIMIT="$MOLE_HISTORY_DEFAULT_LIMIT"
 
 show_history_help() {
-    echo "Usage: mo history [OPTIONS]"
+    echo "用法：mo history [选项]"
     echo ""
-    echo "Review recent Mole operation and deletion activity."
+    echo "查看 Mole 最近的操作与删除活动。"
     echo ""
-    echo "Options:"
-    echo "  --json           Output history as JSON"
-    echo "  --limit N        Show the most recent N entries, 1-200"
-    echo "  -h, --help       Show this help message"
+    echo "选项："
+    echo "  --json           以 JSON 输出历史记录"
+    echo "  --limit N        显示最近 N 条记录，范围 1-200"
+    echo "  -h, --help       显示此帮助信息"
 }
 
 main() {
@@ -31,11 +31,11 @@ main() {
             "--limit")
                 shift
                 if [[ $# -eq 0 ]]; then
-                    echo "Missing value for --limit" >&2
+                    echo "缺少 --limit 的值" >&2
                     exit 1
                 fi
                 if ! HISTORY_LIMIT=$(history_parse_limit "$1"); then
-                    echo "Invalid value for --limit: $1" >&2
+                    echo "--limit 的值无效：$1" >&2
                     exit 1
                 fi
                 ;;
@@ -44,13 +44,13 @@ main() {
                 exit 0
                 ;;
             -*)
-                echo "Unknown option for mo history: $1" >&2
-                echo "Run 'mo history --help' for usage." >&2
+                echo "mo history 的未知选项：$1" >&2
+                echo "请运行 'mo history --help' 查看用法。" >&2
                 exit 1
                 ;;
             *)
-                echo "Unexpected argument for mo history: $1" >&2
-                echo "Run 'mo history --help' for usage." >&2
+                echo "mo history 收到意外参数：$1" >&2
+                echo "请运行 'mo history --help' 查看用法。" >&2
                 exit 1
                 ;;
         esac

@@ -122,7 +122,7 @@ SCRIPT
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"CALLS=1"* ]] || return 1
-    [[ "$output" == *"time limit reached"* ]]
+    [[ "$output" == *"已达到时间限制"* ]]
 }
 
 @test "clean_deep_system propagates an interrupted privileged cleanup" {
@@ -386,7 +386,7 @@ EOF
     # Scoped to the idleassetsd temp dir and the aborted-download name only:
     # never a bare CFNetworkDownload_*.tmp sweep across all of /private/var/folders.
     [[ "$output" == *"safe_sudo_find_delete:/private/var/folders/zz/abcdef/T/com.apple.idleassetsd:CFNetworkDownload_*.tmp"* ]] || return 1
-    [[ "$output" == *"SUCCESS:Stale wallpaper downloads"* ]] || return 1
+    [[ "$output" == *"SUCCESS:过期的壁纸下载"* ]] || return 1
 }
 
 @test "clean_deep_system does not report idleassetsd success when no stale download exists (#1253)" {
@@ -436,7 +436,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"safe_sudo_find_delete:/private/var/folders/zz/abcdef/T/com.apple.idleassetsd:CFNetworkDownload_*.tmp"* ]] || return 1
-    [[ "$output" != *"SUCCESS:Stale wallpaper downloads"* ]] || return 1
+    [[ "$output" != *"SUCCESS:过期的壁纸下载"* ]] || return 1
 }
 
 @test "clean_deep_system does not report third-party adobe log success when no old files exist" {
@@ -605,7 +605,7 @@ clean_local_snapshots
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Time Machine local snapshots ·"* ]] || return 1
+    [[ "$output" == *"Time Machine 本地快照 ·"* ]] || return 1
     [[ "$output" == *"tmutil listlocalsnapshots /"* ]]
 }
 
@@ -691,7 +691,7 @@ rm -f "$HOME/.cache/mole/brew_last_cleanup"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Homebrew cleanup"* ]]
+    [[ "$output" == *"Homebrew 清理"* ]]
 }
 
 @test "clean_homebrew prevents cleanup from implicitly autoremoving formulae" {
@@ -746,9 +746,9 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"CALL:brew cleanup --prune=30 env_no_autoremove=1"* ]] || return 1
-    [[ "$output" == *"Homebrew autoremove would remove"* ]] || return 1
+    [[ "$output" == *"Homebrew autoremove 将移除"* ]] || return 1
     [[ "$output" == *"python@3.14"* ]] || return 1
-    [[ "$output" == *"Homebrew autoremove · skipped"* ]] || return 1
+    [[ "$output" == *"Homebrew 自动移除 · 已跳过"* ]] || return 1
     [[ "$output" == *"CALL:brew autoremove --dry-run"* ]] || return 1
     [[ "$output" != *"REAL_AUTOREMOVE"* ]]
 }
@@ -805,7 +805,7 @@ clean_homebrew
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Homebrew links · restored 1 active executable(s)"* ]] || {
+    [[ "$output" == *"Homebrew 链接 · 已恢复 1 个可执行文件"* ]] || {
         echo "$output"
         return 1
     }
@@ -989,7 +989,7 @@ grep -Fq "/bin/ln -s $target $link_path" "$calls"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Homebrew links · restored 1 active executable(s)"* ]]
+    [[ "$output" == *"Homebrew 链接 · 已恢复 1 个可执行文件"* ]]
 }
 
 @test "clean_homebrew dry-run shows brew autoremove preview without removing formulae" {
@@ -1030,8 +1030,8 @@ cat "$calls"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Homebrew · would cleanup"* ]] || return 1
-    [[ "$output" == *"Homebrew autoremove would remove"* ]] || return 1
+    [[ "$output" == *"Homebrew · 将清理"* ]] || return 1
+    [[ "$output" == *"Homebrew autoremove 将移除"* ]] || return 1
     [[ "$output" == *"python@3.14"* ]] || return 1
     [[ "$output" == *"CALL:brew autoremove --dry-run"* ]] || return 1
     [[ "$output" != *"CALL:brew cleanup --prune=30"* ]] || return 1
@@ -1088,7 +1088,7 @@ execute_optimization saved_state_cleanup
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"App saved states optimized"* ]]
+    [[ "$output" == *"应用已保存状态已优化"* ]]
 }
 
 @test "opt_saved_state_cleanup reports a removal failure" {
@@ -1105,7 +1105,7 @@ execute_optimization saved_state_cleanup
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Failed to remove 1 old saved state(s)"* ]]
+    [[ "$output" == *"无法移除 1 个旧的已保存状态"* ]]
 }
 
 @test "opt_cache_refresh reports a removal failure" {
@@ -1124,7 +1124,7 @@ execute_optimization cache_refresh
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Failed to remove 1 Finder cache target(s)"* ]]
+    [[ "$output" == *"无法移除 1 个 Finder 缓存目标"* ]]
 }
 
 @test "opt_cache_refresh cleans Quick Look cache" {
@@ -1146,7 +1146,7 @@ execute_optimization cache_refresh
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"QuickLook thumbnails refreshed"* ]]
+    [[ "$output" == *"QuickLook 缩略图已刷新"* ]]
 }
 
 @test "get_path_size_kb returns zero for missing directory" {
@@ -1191,7 +1191,7 @@ execute_optimization fix_broken_configs
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Repaired 2 corrupted preference files"* ]]
+    [[ "$output" == *"已修复 2 个损坏的偏好设置文件"* ]]
 }
 
 @test "clean_deep_system cleans memory exception reports" {
@@ -1293,8 +1293,8 @@ cat "$CALL_LOG"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"[DRY-RUN] Would remove"* ]] || return 1
-    [[ "$output" == *"1 old memory exception reports"* ]]
+    [[ "$output" == *"[预览] 将移除"* ]] || return 1
+    [[ "$output" == *"1 个旧内存异常报告"* ]]
 }
 
 @test "clean_deep_system does not log memory exception success when nothing cleaned" {
@@ -1413,10 +1413,10 @@ printf '%s\n' "$live_output"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Power telemetry database"* ]] || return 1
+    [[ "$output" == *"电源遥测数据库"* ]] || return 1
     [[ "$output" == *"10.00GB"* ]] || return 1
     [[ "$output" == *"CurrentBackgroundProcessingDB.BGSQL"* ]] || return 1
-    [[ "$output" == *"active, kept"* ]]
+    [[ "$output" == *"活动中，已保留"* ]]
 }
 
 @test "show_large_active_powerlog_notice fails closed on small or invalid size probes" {
@@ -1494,7 +1494,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"safe_sudo_remove:/private/var/folders/test/a/X/demo.code_sign_clone"* ]] || return 1
-    [[ "$output" == *"SUCCESS:Browser code signature caches"* ]]
+    [[ "$output" == *"SUCCESS:浏览器代码签名缓存，"* ]]
 }
 
 @test "clean_deep_system skips code_sign_clone success when removal fails" {
@@ -1539,7 +1539,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"safe_sudo_remove:/private/var/folders/test/a/X/demo.code_sign_clone"* ]] || return 1
-    [[ "$output" != *"SUCCESS:Browser code signature caches"* ]]
+    [[ "$output" != *"SUCCESS:浏览器代码签名缓存，"* ]]
 }
 
 @test "clean_deep_system skips EDR code_sign clones (CrowdStrike Falcon tamper)" {
@@ -1630,7 +1630,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"safe_sudo_remove:/Library/Caches/com.apple.iconservices.store"* ]] || return 1
-    [[ "$output" == *"SUCCESS:Rebuildable system caches, 1 item"* ]]
+    [[ "$output" == *"SUCCESS:可重建的系统缓存，1 项"* ]]
 }
 
 @test "clean_deep_system does not report an absent rebuildable system cache" {
@@ -1758,7 +1758,7 @@ EOF
     [[ "$output" != *"/private/var/folders/test/a/T/com.example.App/com.apple.metal"* ]] || return 1
     [[ "$output" != *"not-a-gpu-cache"* ]] || return 1
     [[ "$output" != *"-mtime +1"* ]] || return 1
-    [[ "$output" == *"SUCCESS:Accessible rebuildable GPU caches, 3 items"* ]]
+    [[ "$output" == *"SUCCESS:可访问的可重建 GPU 缓存，3 项"* ]]
 }
 
 @test "clean_deep_system skips EDR/security-agent GPU caches (CrowdStrike Falcon tamper)" {
@@ -1813,7 +1813,7 @@ EOF
     # EDR agent caches must never be touched (tamper alert -> corporate malware report).
     [[ "$output" != *"com.crowdstrike"* ]] || return 1
     [[ "$output" != *"com.sentinelone"* ]] || return 1
-    [[ "$output" == *"SUCCESS:Accessible rebuildable GPU caches, 1 item"* ]] || return 1
+    [[ "$output" == *"SUCCESS:可访问的可重建 GPU 缓存，1 项"* ]] || return 1
 }
 
 @test "opt_network_stack_optimize skips when network is healthy" {
@@ -1844,7 +1844,7 @@ execute_optimization network_stack_optimize
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Network stack already optimal"* ]]
+    [[ "$output" == *"网络栈已是最优"* ]]
 }
 
 @test "opt_network_stack_optimize skips when VPN is active" {
@@ -1869,7 +1869,7 @@ execute_optimization network_stack_optimize
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Network stack refresh skipped, active VPN detected"* ]] || return 1
+    [[ "$output" == *"网络栈刷新已跳过，检测到活动 VPN"* ]] || return 1
     [[ "$output" != *"unexpected-route"* ]] || return 1
     [[ "$output" != *"unexpected-sudo"* ]]
 }
@@ -1927,8 +1927,8 @@ execute_optimization network_stack_optimize
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Network routing table refreshed"* ]] || return 1
-    [[ "$output" == *"ARP cache cleared"* ]]
+    [[ "$output" == *"网络路由表已刷新"* ]] || return 1
+    [[ "$output" == *"ARP 缓存已清除"* ]]
 }
 
 @test "opt_disk_permissions_repair skips when permissions are fine" {
@@ -1949,7 +1949,7 @@ execute_optimization disk_permissions_repair
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"User directory permissions already optimal"* ]]
+    [[ "$output" == *"用户目录权限已是最优"* ]]
 }
 
 @test "opt_disk_permissions_repair calls diskutil when needed" {
@@ -1986,7 +1986,7 @@ execute_optimization disk_permissions_repair
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"User directory permissions repaired"* ]]
+    [[ "$output" == *"用户目录权限已修复"* ]]
 }
 
 @test "opt_spotlight_index_optimize skips when search is fast" {
@@ -2018,7 +2018,7 @@ execute_optimization spotlight_index_optimize
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Spotlight index already optimal"* ]]
+    [[ "$output" == *"Spotlight 索引已是最优"* ]]
 }
 
 @test "software_update_pending_or_unknown fails closed and trusts only an empty RecommendedUpdates array" {

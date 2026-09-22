@@ -484,7 +484,7 @@ func TestViewDeleteConfirmShowsUninstallHintForAppBundle(t *testing.T) {
 	if !strings.Contains(view, "mo uninstall Safari") {
 		t.Fatalf("expected app-specific uninstall command, got:\n%s", view)
 	}
-	if !strings.Contains(view, "bundle only") {
+	if !strings.Contains(view, "只删除应用本体") {
 		t.Fatalf("expected bundle-only warning, got:\n%s", view)
 	}
 }
@@ -516,7 +516,7 @@ func TestViewDeleteConfirmMultiSelectShowsGenericHint(t *testing.T) {
 	}
 
 	view := m.View()
-	if !strings.Contains(view, "mo uninstall <App>") {
+	if !strings.Contains(view, "mo uninstall <应用>") {
 		t.Fatalf("expected generic uninstall hint for multi-select containing an app bundle, got:\n%s", view)
 	}
 }
@@ -531,10 +531,10 @@ func TestViewShowsEscBackAndCtrlCQuitHints(t *testing.T) {
 	}
 
 	view := m.View()
-	if !strings.Contains(view, "Esc Back") {
+	if !strings.Contains(view, "Esc 返回") {
 		t.Fatalf("expected Esc Back hint in view, got:\n%s", view)
 	}
-	if !strings.Contains(view, "Ctrl+C Quit") {
+	if !strings.Contains(view, "Q/Ctrl+C 退出") {
 		t.Fatalf("expected Ctrl+C Quit hint in view, got:\n%s", view)
 	}
 }
@@ -558,7 +558,7 @@ func TestOverviewPendingSizeUsesScanningSpinner(t *testing.T) {
 	if strings.Contains(view, "pending") {
 		t.Fatalf("pending rows must not render a text placeholder, got:\n%s", view)
 	}
-	if !strings.Contains(view, fmt.Sprintf("%s scanning", spinnerFrames[0])) {
+	if !strings.Contains(view, fmt.Sprintf("%s 扫描中", spinnerFrames[0])) {
 		t.Fatalf("expected animated scanning placeholder for pending row, got:\n%s", view)
 	}
 }
@@ -577,7 +577,7 @@ func TestViewKeepsCachedEntriesWhileRefreshing(t *testing.T) {
 	if !strings.Contains(view, "warmed-child") {
 		t.Fatalf("expected cached entry to render during refresh, got:\n%s", view)
 	}
-	if !strings.Contains(view, "Showing cached results while refreshing") {
+	if !strings.Contains(view, "刷新时显示缓存结果") {
 		t.Fatalf("expected refreshing hint during cached refresh, got:\n%s", view)
 	}
 }
@@ -599,10 +599,10 @@ func TestViewBlanksToScanOnlyWithoutWarmCache(t *testing.T) {
 	if strings.Contains(view, "stale-parent-row") {
 		t.Fatalf("expected scan-only view to hide stale entries, got:\n%s", view)
 	}
-	if strings.Contains(view, "Showing cached results while refreshing") {
+	if strings.Contains(view, "刷新时显示缓存结果") {
 		t.Fatalf("did not expect cached-refresh hint without a warm cache, got:\n%s", view)
 	}
-	if !strings.Contains(view, "Scanning") {
+	if !strings.Contains(view, "正在扫描") {
 		t.Fatalf("expected scan-only view to show scanning progress, got:\n%s", view)
 	}
 }
@@ -616,7 +616,7 @@ func TestOverviewViewShowsFreeSpaceLabel(t *testing.T) {
 	}
 
 	view := m.View()
-	want := fmt.Sprintf("(%s free)", humanizeBytes(m.diskFree))
+	want := fmt.Sprintf("（%s 可用）", humanizeBytes(m.diskFree))
 	if !strings.Contains(view, want) {
 		t.Fatalf("expected free-space label %q in overview view, got:\n%s", want, view)
 	}
@@ -631,7 +631,7 @@ func TestOverviewViewOmitsFreeSpaceLabelWhenUnknown(t *testing.T) {
 	}
 
 	view := m.View()
-	if strings.Contains(view, "free)") {
+	if strings.Contains(view, "可用）") {
 		t.Fatalf("expected overview view to omit free-space label when unavailable, got:\n%s", view)
 	}
 }
@@ -2656,7 +2656,7 @@ func TestScanningViewRendersRowsWithSpinner(t *testing.T) {
 	if !strings.Contains(view, "child") || !strings.Contains(view, "file.txt") {
 		t.Fatalf("expected scanning view to render rows, got:\n%s", view)
 	}
-	if !strings.Contains(view, spinnerFrames[m.spinner]+" scanning") {
+	if !strings.Contains(view, spinnerFrames[m.spinner]+" 扫描中") {
 		t.Fatalf("expected pending directory spinner in row, got:\n%s", view)
 	}
 }
@@ -3427,16 +3427,16 @@ func TestDeleteViewHidesZeroTally(t *testing.T) {
 	m := model{deleting: true, deleteCount: &counter}
 
 	view := m.View()
-	if strings.Contains(view, "0 items") {
+	if strings.Contains(view, "0 项") {
 		t.Fatalf("expected no zero tally while nothing has completed, got:\n%s", view)
 	}
-	if !strings.Contains(view, "moving to Trash") {
+	if !strings.Contains(view, "移至废纸篓") {
 		t.Fatalf("expected a progress line while deleting, got:\n%s", view)
 	}
 
 	atomic.StoreInt64(&counter, 2)
 	view = m.View()
-	if !strings.Contains(view, "2") || !strings.Contains(view, "items") {
+	if !strings.Contains(view, "2") || !strings.Contains(view, "项") {
 		t.Fatalf("expected the tally once paths completed, got:\n%s", view)
 	}
 }
@@ -3481,7 +3481,7 @@ func TestDeleteProgressPartialFailureRemovesSucceededPathsAndRefreshes(t *testin
 	if got.totalSize != 20 {
 		t.Fatalf("expected successful removal to update total size, got %d", got.totalSize)
 	}
-	if !strings.Contains(got.status, "Deleted 1 items; some failed") {
+	if !strings.Contains(got.status, "已删除 1 项；部分失败") {
 		t.Fatalf("expected partial-failure status, got %q", got.status)
 	}
 	if entry := got.cache[parent]; !entry.NeedsRefresh {

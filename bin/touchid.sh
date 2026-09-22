@@ -8,7 +8,7 @@ set -euo pipefail
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -79,9 +79,9 @@ touchid_dry_run_enabled() {
 # Show current Touch ID status
 show_status() {
     if is_touchid_configured; then
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Touch ID is enabled for sudo"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} Touch ID 已为 sudo 启用"
     else
-        echo -e "${YELLOW}☻${NC} Touch ID is not configured for sudo"
+        echo -e "${YELLOW}☻${NC} Touch ID 尚未为 sudo 配置"
     fi
 }
 
@@ -92,20 +92,20 @@ enable_touchid() {
 
     if touchid_dry_run_enabled; then
         if is_touchid_configured; then
-            echo -e "${GREEN}${ICON_SUCCESS} Touch ID is already enabled, no changes needed${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} Touch ID 已启用，无需更改${NC}"
         else
-            echo -e "${GREEN}${ICON_SUCCESS} [DRY RUN] Would enable Touch ID for sudo${NC}"
-            echo -e "${GRAY}${ICON_REVIEW} Target files: ${PAM_SUDO_FILE} and/or ${PAM_SUDO_LOCAL_FILE}${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} [DRY RUN] 将启用 Touch ID 用于 sudo${NC}"
+            echo -e "${GRAY}${ICON_REVIEW} 目标文件：${PAM_SUDO_FILE} 和/或 ${PAM_SUDO_LOCAL_FILE}${NC}"
         fi
         return 0
     fi
 
     # First check if system supports Touch ID
     if ! supports_touchid; then
-        log_warning "This Mac may not support Touch ID"
-        read -rp "Continue anyway? [y/N] " confirm
+        log_warning "这台 Mac 可能不支持 Touch ID"
+        read -rp "仍要继续？[y/N] " confirm
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-            echo -e "${YELLOW}Cancelled${NC}"
+            echo -e "${YELLOW}已取消${NC}"
             return 1
         fi
         echo ""
@@ -121,10 +121,10 @@ enable_touchid() {
                 temp_file=$(create_temp_file)
                 grep -v "pam_tid.so" "$PAM_SUDO_FILE" > "$temp_file"
                 if secure_install_pam "$temp_file" "$PAM_SUDO_FILE" 2> /dev/null; then
-                    echo -e "${GREEN}${ICON_SUCCESS} Cleanup legacy configuration${NC}"
+                    echo -e "${GREEN}${ICON_SUCCESS} 已清理旧版配置${NC}"
                 fi
             fi
-            echo -e "${GREEN}${ICON_SUCCESS} Touch ID is already enabled${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} Touch ID 已启用${NC}"
             return 0
         fi
 
@@ -163,13 +163,13 @@ enable_touchid() {
                 temp_file=$(create_temp_file)
                 grep -v "pam_tid.so" "$PAM_SUDO_FILE" > "$temp_file"
                 secure_install_pam "$temp_file" "$PAM_SUDO_FILE"
-                log_success "Touch ID migrated to sudo_local"
+                log_success "Touch ID 已迁移到 sudo_local"
             else
-                log_success "Touch ID enabled, via sudo_local, try: sudo ls"
+                log_success "Touch ID 已启用（通过 sudo_local），可尝试：sudo ls"
             fi
             return 0
         else
-            log_error "Failed to write to sudo_local"
+            log_error "写入 sudo_local 失败"
             return 1
         fi
     fi
@@ -178,14 +178,14 @@ enable_touchid() {
 
     # Check if already configured (Legacy)
     if is_touchid_configured; then
-        echo -e "${GREEN}${ICON_SUCCESS} Touch ID is already enabled${NC}"
+        echo -e "${GREEN}${ICON_SUCCESS} Touch ID 已启用${NC}"
         return 0
     fi
 
     # Create backup only if it doesn't exist to preserve original state
     if [[ ! -f "${PAM_SUDO_FILE}.mole-backup" ]]; then
         if ! sudo cp "$PAM_SUDO_FILE" "${PAM_SUDO_FILE}.mole-backup" 2> /dev/null; then
-            log_error "Failed to create backup"
+            log_error "创建备份失败"
             return 1
         fi
     fi
@@ -206,16 +206,16 @@ enable_touchid() {
 
     # Verify content change
     if cmp -s "$PAM_SUDO_FILE" "$temp_file"; then
-        log_error "Failed to modify configuration"
+        log_error "修改配置失败"
         return 1
     fi
 
     # Apply the changes
     if secure_install_pam "$temp_file" "$PAM_SUDO_FILE" 2> /dev/null; then
-        log_success "Touch ID enabled, try: sudo ls"
+        log_success "Touch ID 已启用，可尝试：sudo ls"
         return 0
     else
-        log_error "Failed to enable Touch ID"
+        log_error "启用 Touch ID 失败"
         return 1
     fi
 }
@@ -227,16 +227,16 @@ disable_touchid() {
 
     if touchid_dry_run_enabled; then
         if ! is_touchid_configured; then
-            echo -e "${YELLOW}Touch ID is not currently enabled${NC}"
+            echo -e "${YELLOW}Touch ID 当前未启用${NC}"
         else
-            echo -e "${GREEN}${ICON_SUCCESS} [DRY RUN] Would disable Touch ID for sudo${NC}"
-            echo -e "${GRAY}${ICON_REVIEW} Target files: ${PAM_SUDO_FILE} and/or ${PAM_SUDO_LOCAL_FILE}${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} [DRY RUN] 将停用 Touch ID 用于 sudo${NC}"
+            echo -e "${GRAY}${ICON_REVIEW} 目标文件：${PAM_SUDO_FILE} 和/或 ${PAM_SUDO_LOCAL_FILE}${NC}"
         fi
         return 0
     fi
 
     if ! is_touchid_configured; then
-        echo -e "${YELLOW}Touch ID is not currently enabled${NC}"
+        echo -e "${YELLOW}Touch ID 当前未启用${NC}"
         return 0
     fi
 
@@ -253,11 +253,11 @@ disable_touchid() {
                 grep -v "pam_tid.so" "$PAM_SUDO_FILE" > "$temp_file"
                 secure_install_pam "$temp_file" "$PAM_SUDO_FILE"
             fi
-            echo -e "${GREEN}${ICON_SUCCESS} Touch ID disabled, removed from sudo_local${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} Touch ID 已停用，已从 sudo_local 移除${NC}"
             echo ""
             return 0
         else
-            log_error "Failed to disable Touch ID from sudo_local"
+            log_error "从 sudo_local 停用 Touch ID 失败"
             return 1
         fi
     fi
@@ -267,7 +267,7 @@ disable_touchid() {
         # Create backup only if it doesn't exist
         if [[ ! -f "${PAM_SUDO_FILE}.mole-backup" ]]; then
             if ! sudo cp "$PAM_SUDO_FILE" "${PAM_SUDO_FILE}.mole-backup" 2> /dev/null; then
-                log_error "Failed to create backup"
+                log_error "创建备份失败"
                 return 1
             fi
         fi
@@ -277,17 +277,17 @@ disable_touchid() {
         grep -v "pam_tid.so" "$PAM_SUDO_FILE" > "$temp_file"
 
         if secure_install_pam "$temp_file" "$PAM_SUDO_FILE" 2> /dev/null; then
-            echo -e "${GREEN}${ICON_SUCCESS} Touch ID disabled${NC}"
+            echo -e "${GREEN}${ICON_SUCCESS} Touch ID 已停用${NC}"
             echo ""
             return 0
         else
-            log_error "Failed to disable Touch ID"
+            log_error "停用 Touch ID 失败"
             return 1
         fi
     fi
 
     # Should not reach here if is_touchid_configured was true
-    log_error "Could not find Touch ID configuration to disable"
+    log_error "找不到要停用的 Touch ID 配置"
     return 1
 }
 
@@ -296,7 +296,7 @@ show_menu() {
     echo ""
     show_status
     if is_touchid_configured; then
-        echo -ne "${PURPLE}☛${NC} Press ${GREEN}Enter${NC} to disable, ${GRAY}Q${NC} to quit: "
+        echo -ne "${PURPLE}☛${NC} 按 ${GREEN}回车${NC} 停用，${GRAY}Q${NC} 退出： "
         IFS= read -r -s -n1 key || key=""
         drain_pending_input # Clean up any escape sequence remnants
         echo ""
@@ -311,11 +311,11 @@ show_menu() {
                 ;;
             *)
                 echo ""
-                log_error "Invalid key"
+                log_error "无效按键"
                 ;;
         esac
     else
-        echo -ne "${PURPLE}☛${NC} Press ${GREEN}Enter${NC} to enable, ${GRAY}Q${NC} to quit: "
+        echo -ne "${PURPLE}☛${NC} 按 ${GREEN}回车${NC} 启用，${GRAY}Q${NC} 退出： "
         IFS= read -r -s -n1 key || key=""
         drain_pending_input # Clean up any escape sequence remnants
 
@@ -329,7 +329,7 @@ show_menu() {
                 ;;
             *)
                 echo ""
-                log_error "Invalid key"
+                log_error "无效按键"
                 ;;
         esac
     fi
@@ -353,19 +353,19 @@ main() {
                 if [[ -z "$command" ]]; then
                     command="$arg"
                 else
-                    log_error "Only one touchid command is supported per run"
+                    log_error "每次运行仅支持一个 touchid 命令"
                     return 1
                 fi
                 ;;
             *)
-                log_error "Unknown command: $arg"
+                log_error "未知命令：$arg"
                 return 1
                 ;;
         esac
     done
 
     if touchid_dry_run_enabled; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, No sudo authentication files will be modified"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会修改任何 sudo 认证文件"
         echo ""
     fi
 
@@ -383,7 +383,7 @@ main() {
             show_menu
             ;;
         *)
-            log_error "Unknown command: $command"
+            log_error "未知命令：$command"
             exit 1
             ;;
     esac

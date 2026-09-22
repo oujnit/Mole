@@ -18,12 +18,12 @@ teardown_file() {
 	run env HOME="$TEST_HOME" MOLE_TEST_NO_AUTH=1 MOLE_ASSUME_VPN_ACTIVE=0 NO_COLOR=1 "$PROJECT_ROOT/mole" optimize --dry-run
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" =~ Would\ apply\ [0-9]+\ optimizations ]] || { echo "$output"; return 1; }
-	local applied_count="${BASH_REMATCH[0]#Would apply }"
-	applied_count="${applied_count% optimizations}"
-	[[ "$output" != *"Would apply 23 optimizations"* ]] || return 1
-	[[ "$output" =~ [0-9]+\ unchanged ]] || return 1
-	[[ "$output" =~ [0-9]+\ skipped ]] || return 1
+	[[ "$output" =~ 将应用\ [0-9]+\ 项优化 ]] || { echo "$output"; return 1; }
+	local applied_count="${BASH_REMATCH[0]#将应用 }"
+	applied_count="${applied_count% 项优化}"
+	[[ "$output" != *"将应用 23 项优化"* ]] || return 1
+	[[ "$output" =~ [0-9]+\ 项未更改 ]] || return 1
+	[[ "$output" =~ [0-9]+\ 项已跳过 ]] || return 1
 	[[ "$output" != *"System fully optimized"* ]] || return 1
 
 	run env HOME="$TEST_HOME" "$PROJECT_ROOT/mole" history --json
@@ -55,8 +55,8 @@ EOF
 	run env HOME="$TEST_HOME" MOLE_TEST_NO_AUTH=1 NO_COLOR=1 PATH="$stub_dir:$PATH" \
 		"$PROJECT_ROOT/mole" optimize
 	[[ "$status" -eq 1 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"1 failed"* ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to rebuild 2 Finder cache service(s)"* ]] || return 1
+	[[ "$output" == *"1 项失败"* ]] || { echo "$output"; return 1; }
+	[[ "$output" == *"无法重建 2 个 Finder 缓存服务"* ]] || return 1
 
 	run env HOME="$TEST_HOME" "$PROJECT_ROOT/mole" history --json
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }

@@ -102,11 +102,11 @@ try:
     fits(initial_frame, 40, 120)
     assert re.search(r'\[cloud\].*artifact-0', plain(initial_frame)), plain(initial_frame)
     os.write(master, b' ')
-    assert '79 selected' in plain(receive())
+    assert '已选择 79 项' in plain(receive())
     resize(10, 25)
     os.write(master, b'\n')
     resize_frame = receive()
-    assert b'Resize' in resize_frame  # Enter cannot confirm an unreadable menu.
+    assert '请将窗口调整'.encode() in resize_frame  # Enter cannot confirm an unreadable menu.
     fits(resize_frame, 10, 25)
     resize(40, 120)
     os.write(master, b'~')
@@ -133,11 +133,11 @@ try:
     os.write(master, '/项目-3错误'.encode() + b'\x7f\x7f\n')
     frame = receive()
     assert position(frame) == 61
-    assert '79 selected' in plain(frame)
+    assert '已选择 79 项' in plain(frame)
     os.write(master, b'n')
     frame = receive()
     assert position(frame) == 62
-    assert '79 selected' in plain(frame)
+    assert '已选择 79 项' in plain(frame)
     os.write(master, b'q')
     receive(b'TEST_CANCELLED')
     assert p.wait(timeout=2) == 0

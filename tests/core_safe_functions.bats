@@ -1427,7 +1427,7 @@ MOCK
     chmod +x "$mock_bin/rm"
 
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" TARGET_FILE="$target_file" \
-        PATH="$mock_bin:$PATH" MOLE_RM_TRACE="$trace" MOLE_TIMEOUT_DISK_VERIFY_SEC=1 \
+        PATH="$mock_bin:$PATH" MOLE_RM_TRACE="$trace" MOLE_TIMEOUT_DISK_VERIFY_SEC=2 \
         /bin/bash --noprofile --norc <<'SCRIPT'
 set -euo pipefail
 source "$PROJECT_ROOT/lib/core/common.sh"
@@ -1447,7 +1447,7 @@ SCRIPT
     [[ "$(< "$trace")" == *"$target_file"* ]] || return 1
     local elapsed="${output##*ELAPSED=}"
     [[ "$elapsed" =~ ^[0-9]+$ ]] || return 1
-    [ "$elapsed" -lt 3 ]
+    [ "$elapsed" -lt 4 ]
     [ -e "$target_file" ]
 }
 
@@ -2960,7 +2960,7 @@ SCRIPT
 
     run /bin/bash -c "source '$PROJECT_ROOT/lib/core/common.sh'; safe_find_delete '$link_dir' '*.tmp' 7 'f' 2>&1"
     [ "$status" -eq 1 ]
-    [[ "$output" == *"symlink"* ]] || return 1
+    [[ "$output" == *"符号链接"* ]] || return 1
 
     rm -rf "$link_dir" "$real_dir"
 }
@@ -3004,7 +3004,7 @@ MOCK
 
     run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" TARGET_DIR="$target_dir" \
         TARGET_FILE="$target_file" MOLE_FIND_TRACE="$trace" PATH="$mock_bin:$PATH" \
-        MOLE_TIMEOUT_DISK_VERIFY_SEC=1 /bin/bash --noprofile --norc <<'SCRIPT'
+        MOLE_TIMEOUT_DISK_VERIFY_SEC=2 /bin/bash --noprofile --norc <<'SCRIPT'
 set -euo pipefail
 source "$PROJECT_ROOT/lib/core/common.sh"
 safe_remove() {

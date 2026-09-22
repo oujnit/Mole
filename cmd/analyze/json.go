@@ -44,7 +44,7 @@ func runJSONMode(path string, isOverview bool) {
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(result); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to encode JSON: %v\n", err)
+		fmt.Fprintf(os.Stderr, "JSON 编码失败：%v\n", err)
 		os.Exit(1)
 	}
 }
@@ -63,7 +63,7 @@ func performDirectoryScanForJSON(path string) jsonOutput {
 
 	result, err := scanPathConcurrentAllEntries(context.Background(), path, &filesScanned, &dirsScanned, &bytesScanned, currentPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to scan directory: %v\n", err)
+		fmt.Fprintf(os.Stderr, "扫描目录失败：%v\n", err)
 		os.Exit(1)
 	}
 

@@ -1128,7 +1128,7 @@ mktemp_file() {
     local error_msg
     # Add .XXXXXX suffix to work with both BSD and GNU mktemp
     if ! error_msg=$(mktemp "$(mole_temp_path_template "$prefix")" 2>&1); then
-        echo "Error: Failed to create temporary file: $error_msg" >&2
+        echo "错误：无法创建临时文件：$error_msg" >&2
         return 1
     fi
     temp="$error_msg"
@@ -1218,7 +1218,7 @@ start_section() {
 # Shows "Nothing to tidy" if no activity was recorded
 end_section() {
     if [[ "${TRACK_SECTION:-0}" == "1" && "${SECTION_ACTIVITY:-0}" == "0" ]]; then
-        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Nothing to tidy"
+        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} 无需整理"
     fi
     TRACK_SECTION=0
 }
@@ -1235,7 +1235,7 @@ note_activity() {
 # stop/start cycle blanks the line for a frame and reads as flicker.
 # Usage: start_section_spinner "message"
 start_section_spinner() {
-    local message="${1:-Scanning...}"
+    local message="${1:-正在扫描…}"
     if [[ -t 1 ]]; then
         if declare -F update_inline_spinner_message > /dev/null 2>&1 &&
             update_inline_spinner_message "$message"; then
@@ -1440,6 +1440,47 @@ mole_clean_process_guard() {
     return 1
 }
 
+# Translate internal guard reasons only when they are shown to the user. The
+# stable English values remain unchanged so safety comparisons keep working.
+mole_localize_guard_reason() {
+    case "$1" in
+        "process state unknown") printf '%s\n' "进程状态未知" ;;
+        "process or cache path state unknown") printf '%s\n' "进程或缓存路径状态未知" ;;
+        "cache path unsafe") printf '%s\n' "缓存路径不安全" ;;
+        "symlinked module root") printf '%s\n' "模块根目录是符号链接" ;;
+        "updater state unknown") printf '%s\n' "更新程序状态未知" ;;
+        "open-file check unavailable") printf '%s\n' "无法检查打开的文件" ;;
+        "verification timed out") printf '%s\n' "验证超时" ;;
+        "size probe timed out") printf '%s\n' "大小检测超时" ;;
+        "removal timed out") printf '%s\n' "移除操作超时" ;;
+        "candidate replaced") printf '%s\n' "候选项已被替换" ;;
+        "candidate changed") printf '%s\n' "候选项已变化" ;;
+        "candidate identity changed") printf '%s\n' "候选项标识已变化" ;;
+        "current version changed") printf '%s\n' "当前版本已变化" ;;
+        "current version unknown") printf '%s\n' "当前版本未知" ;;
+        "production root changed") printf '%s\n' "产品根目录已变化" ;;
+        "policy changed") printf '%s\n' "保护策略已变化" ;;
+        "inventory interrupted") printf '%s\n' "清单扫描被中断" ;;
+        "inventory unknown") printf '%s\n' "清单状态未知" ;;
+        "active version changed") printf '%s\n' "当前版本已变化" ;;
+        "active version unknown") printf '%s\n' "当前版本未知" ;;
+        "retention changed") printf '%s\n' "保留策略已变化" ;;
+        "process state changed") printf '%s\n' "进程状态已变化" ;;
+        "staging entry changed") printf '%s\n' "暂存项已变化" ;;
+        "staging files opened") printf '%s\n' "暂存文件正被占用" ;;
+        "runtime state changed") printf '%s\n' "运行时状态已变化" ;;
+        "open files") printf '%s\n' "文件正被占用" ;;
+        "JianyingPro running") printf '%s\n' "剪映专业版正在运行" ;;
+        "Autodesk started") printf '%s\n' "Autodesk 已启动" ;;
+        "metadata unavailable") printf '%s\n' "元数据不可用" ;;
+        "owner cleanup failed") printf '%s\n' "工具自身清理失败" ;;
+        "cache path changed") printf '%s\n' "缓存路径已变化" ;;
+        "cache path state unknown") printf '%s\n' "缓存路径状态未知" ;;
+        "cache path leaves CARGO_HOME") printf '%s\n' "缓存路径超出 CARGO_HOME" ;;
+        *) printf '%s\n' "$1" ;;
+    esac
+}
+
 # Report a guard refusal. An unknown process state is the user's problem to see
 # now (it means Mole could not tell, not that it found something running), so it
 # prints against the item. A known-running app is ordinary and goes to the
@@ -1449,7 +1490,7 @@ mole_report_guard_stop() {
     local display_name="$1"
     shift
     if [[ "$_MOLE_CLEAN_GUARD_REASON" == "process state unknown" ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} ${display_name} · stopped (${_MOLE_CLEAN_GUARD_REASON})"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} ${display_name} · 已停止（$(mole_localize_guard_reason "$_MOLE_CLEAN_GUARD_REASON")）"
         note_activity
     else
         "$@"

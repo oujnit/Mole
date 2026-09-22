@@ -166,7 +166,7 @@ setup() {
     # Non-whitelisted dir must be removed
     [[ "$output" == *"REMOVE:$test_cache/def456hash_other"* ]] || return 1
     # UI reports the protection count
-    [[ "$output" == *"1 protected"* ]] || return 1
+    [[ "$output" == *"1 个受保护"* ]] || return 1
 
     rm -rf "$test_cache"
 }
@@ -415,9 +415,9 @@ DRY_RUN=true
 clean_project_caches
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Python bytecode cache"* ]] || return 1
-    [[ "$output" == *"Python bytecode cache · python-app"* ]] || return 1
-    [[ "$output" == *"2 dirs"* ]] || return 1
+    [[ "$output" == *"Python 字节码缓存"* ]] || return 1
+    [[ "$output" == *"Python 字节码缓存 · python-app"* ]] || return 1
+    [[ "$output" == *"2 个目录"* ]] || return 1
     [[ "$output" != *"module.pyc"* ]] || return 1
 
     rm -rf "$HOME/Projects"
@@ -438,8 +438,8 @@ DRY_RUN=true
 clean_project_caches
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Python bytecode cache"* ]] || return 1
-    [[ "$output" == *"1 dirs"* ]] || return 1
+    [[ "$output" == *"Python 字节码缓存"* ]] || return 1
+    [[ "$output" == *"1 个目录"* ]] || return 1
 
 	rm -rf "$HOME/Projects"
 }
@@ -534,8 +534,8 @@ cat "$EXPORT_LIST_FILE"
 printf '\nSKIPPED=%s\n' "$whitelist_skipped_count"
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1 dirs"* ]] || return 1
-    [[ "$output" == *"1 skipped"* ]] || return 1
+    [[ "$output" == *"1 个目录"* ]] || return 1
+    [[ "$output" == *"1 个已跳过"* ]] || return 1
     [[ "$output" == *"EXPORT"* ]] || return 1
     [[ "$output" == *"$HOME/Projects/python-app/pkg/__pycache__"* ]] || return 1
     [[ "$output" != *"$HOME/Projects/python-app/protected/__pycache__"* ]] || return 1
@@ -581,7 +581,7 @@ safe_clean() { echo "$2|$1"; }
 clean_project_caches
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Next.js build cache"* ]] || return 1
+    [[ "$output" == *"Next.js 构建缓存"* ]] || return 1
     grep -q -- "-P $HOME/CustomProjects " "$find_log"
     run grep -q -- "-P $HOME " "$find_log"
     [ "$status" -eq 1 ]
@@ -602,7 +602,7 @@ safe_clean() { echo "$2|$1"; }
 clean_project_caches
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Next.js build cache|$HOME/go/src/demo/.next/cache/test.cache"* ]] || return 1
+    [[ "$output" == *"Next.js 构建缓存|$HOME/go/src/demo/.next/cache/test.cache"* ]] || return 1
 
     rm -rf "$HOME/go"
 }
@@ -620,7 +620,7 @@ safe_clean() { echo "$2|$1"; }
 clean_project_caches
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Next.js build cache|$HOME/go/src/github.com/example/demo/.next/cache/test.cache"* ]] || return 1
+    [[ "$output" == *"Next.js 构建缓存|$HOME/go/src/github.com/example/demo/.next/cache/test.cache"* ]] || return 1
 
 	rm -rf "$HOME/go"
 }
@@ -735,7 +735,7 @@ EOF
     elapsed=$(printf '%s\n' "$output" | awk -F= '/ELAPSED=/{print $2}' | tail -1)
     [[ "$elapsed" =~ ^[0-9]+$ ]] || return 1
     (( elapsed < 5 ))
-    [[ "$output" == *"Project caches · skipped 1 slow/incomplete root scan"* ]] || return 1
+    [[ "$output" == *"项目缓存 · 已跳过 1 个缓慢/未完成的项根目录扫描"* ]] || return 1
 
 	rm -rf "$HOME/.config/mole" "$HOME/SlowProjects" "$fake_bin"
 }

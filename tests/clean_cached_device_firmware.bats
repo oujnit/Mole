@@ -50,7 +50,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"Items: 0"* ]] || return 1
-    [[ "$output" != *"Cached device firmware"* ]]
+    [[ "$output" != *"缓存的设备固件"* ]]
 }
 
 @test "clean_cached_device_firmware reports .ipsw files in dry-run from iTunes dirs" {
@@ -85,9 +85,9 @@ echo "Files: $files_cleaned Items: $total_items"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cached device firmware"* ]] || return 1
-    [[ "$output" == *"3 files"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"缓存的设备固件"* ]] || return 1
+    [[ "$output" == *"3 个文件"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"Files: 3 Items: 1"* ]]
 }
 
@@ -116,7 +116,7 @@ echo "Files: $files_cleaned"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cached device firmware"* ]] || return 1
+    [[ "$output" == *"缓存的设备固件"* ]] || return 1
     [[ "$output" == *"Files: 1"* ]]
 }
 
@@ -152,7 +152,7 @@ echo "DELETED"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cached device firmware"* ]] || return 1
+    [[ "$output" == *"缓存的设备固件"* ]] || return 1
     [[ "$output" == *"DELETED"* ]]
 }
 
@@ -188,8 +188,8 @@ echo "PRESERVED"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cached device firmware"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"缓存的设备固件"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"PRESERVED"* ]]
 }
 
@@ -219,7 +219,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"Files: 0"* ]] || return 1
-    [[ "$output" != *"Cached device firmware"* ]]
+    [[ "$output" != *"缓存的设备固件"* ]]
 }
 
 @test "clean_cached_device_firmware does not report success when deletion fails" {
@@ -257,5 +257,5 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"Files: 0 Items: 0 Size: 0"* ]] || return 1
     [[ "$output" == *"PRESENT"* ]] || return 1
-    [[ "$output" != *"Cached device firmware"* ]]
+    [[ "$output" != *"缓存的设备固件"* ]]
 }

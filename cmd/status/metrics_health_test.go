@@ -18,7 +18,7 @@ func TestCalculateHealthScorePerfect(t *testing.T) {
 	if score != 100 {
 		t.Fatalf("expected perfect score 100, got %d", score)
 	}
-	if msg != "Excellent" {
+	if msg != "优秀" {
 		t.Fatalf("unexpected message %q", msg)
 	}
 }
@@ -36,13 +36,13 @@ func TestCalculateHealthScoreDetectsIssues(t *testing.T) {
 	if score >= 60 {
 		t.Fatalf("expected heavy penalties bringing score down, got %d", score)
 	}
-	if msg == "Excellent" {
+	if msg == "优秀" {
 		t.Fatalf("expected message to include issues, got %q", msg)
 	}
-	if !strings.Contains(msg, "High CPU") {
+	if !strings.Contains(msg, "处理器占用过高") {
 		t.Fatalf("message should mention CPU issue: %q", msg)
 	}
-	if !strings.Contains(msg, "Disk Almost Full") {
+	if !strings.Contains(msg, "磁盘几乎已满") {
 		t.Fatalf("message should mention disk issue: %q", msg)
 	}
 }
@@ -63,7 +63,7 @@ func TestCalculateHealthScoreCapsFailingSMARTAt44(t *testing.T) {
 	if score != 44 {
 		t.Fatalf("failing SMART score = %d, want 44", score)
 	}
-	if !strings.Contains(msg, "Disk SMART Failing") {
+	if !strings.Contains(msg, "磁盘 SMART 故障") {
 		t.Fatalf("failing SMART message = %q", msg)
 	}
 }
@@ -78,7 +78,7 @@ func TestCalculateHealthScoreDoesNotPenalizeUnavailableSMART(t *testing.T) {
 			ThermalStatus{CPUTemp: 40},
 			nil, 0,
 		)
-		if score != 100 || msg != "Excellent" {
+		if score != 100 || msg != "优秀" {
 			t.Fatalf("SMART %q changed health to %d %q", status, score, msg)
 		}
 	}
@@ -255,12 +255,12 @@ func TestBatteryHealthLabel(t *testing.T) {
 		label    string
 		severity string
 	}{
-		{"new battery", 100, 98, "Healthy", "ok"},
-		{"moderate cycles", 600, 92, "Healthy", "ok"},
-		{"high cycles", 950, 85, "Service Soon", "danger"},
-		{"low capacity", 200, 55, "Service Soon", "danger"},
-		{"warn capacity", 200, 75, "Fair", "warn"},
-		{"zero values", 0, 0, "Healthy", "ok"},
+		{"new battery", 100, 98, "健康", "ok"},
+		{"moderate cycles", 600, 92, "健康", "ok"},
+		{"high cycles", 950, 85, "尽快检修", "danger"},
+		{"low capacity", 200, 55, "尽快检修", "danger"},
+		{"warn capacity", 200, 75, "一般", "warn"},
+		{"zero values", 0, 0, "健康", "ok"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

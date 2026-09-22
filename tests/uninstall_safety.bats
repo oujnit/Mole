@@ -600,7 +600,7 @@ main
 EOF
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Uninstall aborted: could not complete the application scan"* ]]
+	[[ "$output" == *"卸载已中止：could not complete the application scan"* ]]
 }
 
 @test "failed app selection aborts visibly instead of returning success (#1339)" {
@@ -630,7 +630,7 @@ main
 EOF
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Uninstall aborted: application selection did not complete"* ]]
+	[[ "$output" == *"卸载已中止：application selection did not complete"* ]]
 }
 
 @test "a deliberate quit in the selector stays a quiet cancel, not an abort" {
@@ -666,7 +666,7 @@ EOF
 		echo "$output"
 		return 1
 	}
-	[[ "$output" != *"Uninstall aborted"* ]] || return 1
+	[[ "$output" != *"卸载已中止"* ]] || return 1
 	[ "$status" -eq 0 ]
 }
 
@@ -681,7 +681,7 @@ uninstall_list_apps
 EOF
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Uninstall aborted: could not complete the application scan"* ]]
+	[[ "$output" == *"卸载已中止：could not complete the application scan"* ]]
 }
 
 @test "a receipt scan that outlives its budget degrades to indeterminate, not a dead run" {

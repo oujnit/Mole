@@ -81,6 +81,6 @@ clean_corepack_cache
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"safe_clean:Corepack cache"* ]] || return 1
-    [[ "$output" != *"clean_tool_cache:Corepack cache"* ]] || return 1
+    [[ "$output" == *"safe_clean:Corepack 缓存"* ]] || return 1
+    [[ "$output" != *"clean_tool_cache:Corepack 缓存"* ]] || return 1
 }

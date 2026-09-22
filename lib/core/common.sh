@@ -116,10 +116,10 @@ _mole_repair_stale_brew_entries() {
         run_with_timeout "${MOLE_HOMEBREW_UPDATE_TIMEOUT:-120}" \
         brew link --overwrite mole > /dev/null 2>&1 || relink_rc=$?
     if [[ $relink_rc -eq 0 ]]; then
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Repaired stale launcher, now pointing at the current Homebrew install"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} 已修复过期启动器，现已指向当前 Homebrew 安装"
     else
-        log_warning "Launcher still points at a removed Homebrew version"
-        printf 'Run: brew link --overwrite mole\n' >&2
+        log_warning "启动器仍指向已移除的 Homebrew 版本"
+        printf '请运行：brew link --overwrite mole\n' >&2
     fi
 }
 
@@ -135,9 +135,9 @@ update_via_homebrew() {
 
     # Update Homebrew
     if [[ -t 1 ]]; then
-        start_inline_spinner "Updating Homebrew..."
+        start_inline_spinner "正在更新 Homebrew..."
     else
-        echo "Updating Homebrew..."
+        echo "正在更新 Homebrew..."
     fi
 
     local brew_update_timeout="${MOLE_HOMEBREW_UPDATE_TIMEOUT:-120}"
@@ -150,9 +150,9 @@ update_via_homebrew() {
 
     # Upgrade Mole
     if [[ -t 1 ]]; then
-        start_inline_spinner "Upgrading Mole..."
+        start_inline_spinner "正在升级 Mole..."
     else
-        echo "Upgrading Mole..."
+        echo "正在升级 Mole..."
     fi
 
     local brew_upgrade_timeout="${MOLE_HOMEBREW_UPGRADE_TIMEOUT:-120}"
@@ -175,11 +175,11 @@ update_via_homebrew() {
     safe_remove "$temp_upgrade" true
 
     if [[ "$upgrade_status" -ne 0 ]]; then
-        log_error "Homebrew upgrade failed"
+        log_error "Homebrew 升级失败"
         if [[ -n "$upgrade_output" ]]; then
             printf '%s\n' "$upgrade_output" >&2
         else
-            printf 'brew upgrade mole exited with status %s\n' "$upgrade_status" >&2
+            printf 'brew upgrade mole 以状态 %s 退出\n' "$upgrade_status" >&2
         fi
         return 1
     elif echo "$upgrade_output" | grep -q "already installed"; then
@@ -189,7 +189,7 @@ update_via_homebrew() {
         [[ -z "$installed_version" ]] && installed_version=$(run_with_timeout "$MOLE_TIMEOUT_QUICK_DETECT_SEC" \
             mo --version 2> /dev/null | awk '/Mole version/ {print $3; exit}' || true)
         echo ""
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Already on latest version, ${installed_version:-$current_version}"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} 已是最新版本，${installed_version:-$current_version}"
         echo ""
     else
         echo "$upgrade_output" | grep -Ev "^(==>|Updating Homebrew|Warning:)" || true
@@ -199,7 +199,7 @@ update_via_homebrew() {
         [[ -z "$new_version" ]] && new_version=$(run_with_timeout "$MOLE_TIMEOUT_QUICK_DETECT_SEC" \
             mo --version 2> /dev/null | awk '/Mole version/ {print $3; exit}' || true)
         echo ""
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Updated to latest version, ${new_version:-$current_version}"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} 已更新到最新版本，${new_version:-$current_version}"
         echo ""
     fi
 
@@ -247,7 +247,7 @@ remove_apps_from_dock() {
         fi
 
         if [[ "$app_path" =~ [[:cntrl:]] ]]; then
-            debug_log "Skipping dock removal for path with control chars: $app_path"
+            debug_log "跳过对含控制字符路径的 Dock 移除：$app_path"
             continue
         fi
 

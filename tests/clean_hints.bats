@@ -78,8 +78,8 @@ show_project_artifact_hint_notice
 EOT2
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Build artifacts"* ]] || return 1
-    [[ "$output" == *"5+ dirs, 2.00MB+"* ]] || return 1
+    [[ "$output" == *"构建产物"* ]] || return 1
+    [[ "$output" == *"5+ 个目录, 2.00MB+"* ]] || return 1
     [[ "$output" == *"mo purge"* ]] || return 1
 }
 
@@ -153,7 +153,7 @@ show_project_artifact_hint_notice
 EOTABOVE
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Build artifacts"* ]] || return 1
+    [[ "$output" == *"构建产物"* ]] || return 1
     [[ "$output" == *"500MB"* ]] || return 1
 }
 
@@ -177,7 +177,7 @@ show_project_artifact_hint_notice
 EOTPARTIAL
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Build artifacts"* ]] || return 1
+    [[ "$output" == *"构建产物"* ]] || return 1
 }
 
 @test "show_project_artifact_hint_notice reports skipped slow project artifact scans (#1053)" {
@@ -198,7 +198,7 @@ show_project_artifact_hint_notice
 EOT2C
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Build artifacts · scan skipped"* ]] || return 1
+    [[ "$output" == *"构建产物 · 扫描已跳过"* ]] || return 1
     [[ "$output" == *"mo purge"* ]] || return 1
 }
 
@@ -297,9 +297,9 @@ show_user_launch_agent_hint_notice
 EOT4
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Stale login item · ~/Library/LaunchAgents/com.example.stale.plist"* ]] || return 1
-    [[ "$output" == *"Missing app/helper target"* ]] || return 1
-    [[ "$output" == *"review before removing"* ]] || return 1
+    [[ "$output" == *"过期的登录项 · ~/Library/LaunchAgents/com.example.stale.plist"* ]] || return 1
+    [[ "$output" == *"应用/助手目标缺失"* ]] || return 1
+    [[ "$output" == *"移除前请复核"* ]] || return 1
 }
 
 @test "show_user_launch_agent_hint_notice trusts an existing executable Program target (#1262)" {
@@ -335,7 +335,7 @@ bundle_has_installed_app() { return 0; }
 note_activity() { :; }
 
 live_output=$(show_user_launch_agent_hint_notice)
-[[ "$live_output" != *"Stale login item"* ]] || exit 1
+[[ "$live_output" != *"过期的登录项"* ]] || exit 1
 
 chmod -x "$UPDATER"
 show_user_launch_agent_hint_notice
@@ -346,9 +346,9 @@ show_user_launch_agent_hint_notice
 EOT4A
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Stale login item · ~/Library/LaunchAgents/com.google.GoogleUpdater.wake.plist"* ]] || return 1
-    [[ "$output" == *"Program target is not executable"* ]] || return 1
-    [[ "$output" == *"Missing app/helper target"* ]] || return 1
+    [[ "$output" == *"过期的登录项 · ~/Library/LaunchAgents/com.google.GoogleUpdater.wake.plist"* ]] || return 1
+    [[ "$output" == *"程序目标不可执行"* ]] || return 1
+    [[ "$output" == *"应用/助手目标缺失"* ]] || return 1
 }
 
 @test "show_user_launch_agent_hint_notice gives Program precedence over ProgramArguments.0" {
@@ -380,8 +380,8 @@ show_user_launch_agent_hint_notice
 EOT4B
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Stale login item · ~/Library/LaunchAgents/com.example.program-precedence.plist"* ]] || return 1
-    [[ "$output" == *"Missing app/helper target"* ]] || return 1
+    [[ "$output" == *"过期的登录项 · ~/Library/LaunchAgents/com.example.program-precedence.plist"* ]] || return 1
+    [[ "$output" == *"应用/助手目标缺失"* ]] || return 1
 }
 
 @test "show_user_launch_agent_hint_notice skips custom shell wrappers" {
@@ -413,7 +413,7 @@ show_user_launch_agent_hint_notice
 EOT5
 
     [ "$status" -eq 0 ]
-    [[ "$output" != *"Stale login item"* ]] || return 1
+    [[ "$output" != *"过期的登录项"* ]] || return 1
 }
 
 @test "show_user_launch_agent_hint_notice skips MachServices-only plists" {
@@ -443,8 +443,8 @@ show_user_launch_agent_hint_notice
 EOT6
 
     [ "$status" -eq 0 ]
-    [[ "$output" != *"Stale login item"* ]] || return 1
-    [[ "$output" != *"Associated app not found"* ]] || return 1
+    [[ "$output" != *"过期的登录项"* ]] || return 1
+    [[ "$output" != *"关联应用未找到"* ]] || return 1
 }
 
 @test "project artifact hint shows a loading state while probing" {
@@ -466,9 +466,9 @@ show_project_artifact_hint_notice
 EOT7
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"SPIN:Scanning project artifacts..."* ]] || return 1
+    [[ "$output" == *"SPIN:正在扫描项目构建产物…"* ]] || return 1
     # Spinner starts before the probe runs and stops after it.
-    [[ "$output" == *"SPIN:Scanning project artifacts...
+    [[ "$output" == *"SPIN:正在扫描项目构建产物…
 PROBE
 SPIN-STOP"* ]]
 }

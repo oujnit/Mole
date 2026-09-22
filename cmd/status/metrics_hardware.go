@@ -11,10 +11,10 @@ import (
 func collectHardware(totalRAM uint64, disks []DiskStatus) HardwareInfo {
 	if runtime.GOOS != "darwin" {
 		return HardwareInfo{
-			Model:       "Unknown",
+			Model:       "未知",
 			CPUModel:    runtime.GOARCH,
 			TotalRAM:    humanBytes(totalRAM),
-			DiskSize:    "Unknown",
+			DiskSize:    "未知",
 			OSVersion:   runtime.GOOS,
 			RefreshRate: "",
 		}
@@ -67,7 +67,7 @@ func collectHardware(totalRAM uint64, disks []DiskStatus) HardwareInfo {
 		refreshRate = parseRefreshRate(out3)
 	}
 
-	diskSize := "Unknown"
+	diskSize := "未知"
 	if len(disks) > 0 {
 		diskSize = humanBytes(disks[0].Total)
 	}

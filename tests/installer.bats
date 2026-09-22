@@ -50,14 +50,14 @@ setup() {
 	run "$PROJECT_ROOT/bin/installer.sh" --unknown-option
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Unknown option"* ]]
+	[[ "$output" == *"未知的选项"* ]]
 }
 
 @test "installer.sh accepts --dry-run option" {
 	run env HOME="$HOME" TERM="xterm-256color" "$PROJECT_ROOT/bin/installer.sh" --dry-run
 
 	[[ "$status" -eq 0 || "$status" -eq 2 ]]
-	[[ "$output" == *"DRY RUN MODE"* ]]
+	[[ "$output" == *"预览模式"* ]]
 }
 
 # Test scan_installers_in_path function directly
@@ -391,8 +391,8 @@ setup() {
     ' bash "$PROJECT_ROOT/bin/installer.sh"
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Installer cleanup incomplete"* ]] || return 1
-	[[ "$output" == *"Failed to remove"* ]] || return 1
+	[[ "$output" == *"安装包清理未完成"* ]] || return 1
+	[[ "$output" == *"无法移除"* ]] || return 1
 	[[ "$output" == *"Blocked.dmg"* ]] || return 1
 	[[ "$output" == *"protected path"* ]] || return 1
 	[[ "$output" == *"Stale.pkg"* ]] || return 1
@@ -434,7 +434,7 @@ setup() {
     ' bash "$PROJECT_ROOT/bin/installer.sh" "$removable"
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Installer cleanup incomplete"* ]] || return 1
+	[[ "$output" == *"安装包清理未完成"* ]] || return 1
 	[[ "$output" == *"rc=1"* ]] || return 1
 	[[ "$output" == *"removed=yes"* ]]
 }
@@ -472,7 +472,7 @@ setup() {
     ' bash "$PROJECT_ROOT/bin/installer.sh" "$removable"
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Installer cleanup incomplete"* ]] || return 1
-	[[ "$output" == *"Failed to remove"* ]] || return 1
+	[[ "$output" == *"安装包清理未完成"* ]] || return 1
+	[[ "$output" == *"无法移除"* ]] || return 1
 	[[ ! -e "$removable" ]]
 }

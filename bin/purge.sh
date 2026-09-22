@@ -8,7 +8,7 @@ set -euo pipefail
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -215,11 +215,11 @@ perform_purge() {
 
                 # Write directly to /dev/tty: \033[2K clears entire current line, \r goes to start
                 if [[ -n "$last_path" ]]; then
-                    printf '\r\033[2K%s %sScanning %s%s' \
+                    printf '\r\033[2K%s %s正在扫描 %s%s' \
                         "${BLUE}${spin_char}${NC}" \
                         "${GRAY}" "$last_path" "${NC}" > /dev/tty 2> /dev/null
                 else
-                    printf '\r\033[2K%s %sScanning...%s' \
+                    printf '\r\033[2K%s %s正在扫描…%s' \
                         "${BLUE}${spin_char}${NC}" \
                         "${GRAY}" "${NC}" > /dev/tty 2> /dev/null
                 fi
@@ -246,7 +246,7 @@ perform_purge() {
         scan_failed) return 1 ;;
         completed | incomplete) ;;
         *)
-            log_error "Unknown purge outcome: $purge_outcome"
+            log_error "未知的清理结果：$purge_outcome"
             return 1
             ;;
     esac
@@ -254,7 +254,7 @@ perform_purge() {
     # Final summary (matching clean.sh format)
     echo ""
 
-    local summary_heading="Purge complete"
+    local summary_heading="清理完成"
     local -a summary_details=()
     local total_size_cleaned=0
     local total_items_cleaned=0
@@ -270,33 +270,33 @@ perform_purge() {
     fi
 
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        summary_heading="Dry run complete - no changes made"
+        summary_heading="预览完成 - 未做任何更改"
     fi
     if [[ "$purge_outcome" == "incomplete" ]]; then
-        summary_heading="Purge incomplete"
-        [[ "${MOLE_DRY_RUN:-0}" == "1" ]] && summary_heading="Dry run incomplete - no changes made"
+        summary_heading="清理未完成"
+        [[ "${MOLE_DRY_RUN:-0}" == "1" ]] && summary_heading="预览未完成 - 未做任何更改"
     fi
 
     if [[ $total_items_cleaned -gt 0 ]]; then
         local freed_size_human
         freed_size_human=$(bytes_to_human_kb "$total_size_cleaned")
 
-        local summary_line="Estimated space freed: ${GREEN}${freed_size_human}${NC}"
+        local summary_line="预计释放空间：${GREEN}${freed_size_human}${NC}"
         if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-            summary_line="Would free approximately: ${GREEN}${freed_size_human}${NC}"
+            summary_line="预计可释放：${GREEN}${freed_size_human}${NC}"
         fi
         if [[ ${PURGE_UNKNOWN_SIZE_COUNT:-0} -gt 0 ]]; then
-            summary_line+=" + ${PURGE_UNKNOWN_SIZE_COUNT} unmeasured"
+            summary_line+=" + ${PURGE_UNKNOWN_SIZE_COUNT} 项未测量"
         fi
-        [[ $total_items_cleaned -gt 0 ]] && summary_line+=" | Items: $total_items_cleaned"
-        summary_line+=" | Free: $(get_free_space)"
+        [[ $total_items_cleaned -gt 0 ]] && summary_line+=" | 项目数：$total_items_cleaned"
+        summary_line+=" | 剩余空间：$(get_free_space)"
         summary_details+=("$summary_line")
     else
-        summary_details+=("No artifacts were removed.")
-        summary_details+=("Free space: $(get_free_space)")
+        summary_details+=("未移除任何构建产物。")
+        summary_details+=("剩余空间：$(get_free_space)")
     fi
     if [[ "$purge_outcome" == "incomplete" ]]; then
-        summary_details+=("Some artifacts were skipped or could not be processed.")
+        summary_details+=("部分构建产物已跳过或无法处理。")
     fi
 
     # Log session end
@@ -309,19 +309,19 @@ perform_purge() {
 
 # Show help message
 show_help() {
-    echo -e "${PURPLE_BOLD}Mole Purge${NC}, Clean old project build artifacts"
+    echo -e "${PURPLE_BOLD}Mole Purge${NC}，清理旧的项目构建产物"
     echo ""
-    echo -e "${YELLOW}Usage:${NC} mo purge [options]"
+    echo -e "${YELLOW}用法：${NC} mo purge [options]"
     echo ""
-    echo -e "${YELLOW}Options:${NC}"
-    echo "  --paths         Edit custom scan directories"
-    echo "  --dry-run       Preview purge actions without making changes"
-    echo "  --include-empty Show zero-size project artifact directories"
-    echo "  --yes           Confirm unattended cleanup of eligible artifacts"
-    echo "  --debug         Enable debug logging"
-    echo "  --help          Show this help message"
+    echo -e "${YELLOW}选项：${NC}"
+    echo "  --paths         编辑自定义扫描目录"
+    echo "  --dry-run       预览清理操作而不做更改"
+    echo "  --include-empty 显示空的项目构建产物目录"
+    echo "  --yes           确认无人值守清理符合条件的构建产物"
+    echo "  --debug         启用调试日志"
+    echo "  --help          显示此帮助信息"
     echo ""
-    echo -e "${YELLOW}Default Paths:${NC}"
+    echo -e "${YELLOW}默认路径：${NC}"
     for path in "${DEFAULT_PURGE_SEARCH_PATHS[@]}"; do
         echo "  * $path"
     done
@@ -354,8 +354,8 @@ main() {
                 export MOLE_PURGE_INCLUDE_EMPTY=1
                 ;;
             *)
-                echo "Unknown option: $arg" >&2
-                echo "Use 'mo purge --help' for usage information" >&2
+                echo "未知选项：$arg" >&2
+                echo "使用 'mo purge --help' 查看用法信息" >&2
                 exit 1
                 ;;
         esac
@@ -363,7 +363,7 @@ main() {
 
     start_purge
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, No project artifacts will be removed"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会删除任何项目构建产物"
         printf '\n'
     fi
     hide_cursor

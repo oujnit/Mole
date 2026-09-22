@@ -8,7 +8,7 @@ set -euo pipefail
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -868,7 +868,7 @@ _scan_resolve_uncached() {
         echo "${app_path}|${display_name}|${bundle_id}|${app_mtime}|${quick_size_kb}" >> "$output_file"
     }
 
-    update_scan_status "Scanning applications..." "0" "$total_apps"
+    update_scan_status "正在扫描应用..." "0" "$total_apps"
 
     # Skip Pass 2 when the warm cache already wrote every row to $scan_raw_file.
     # Also avoids expanding an empty array; macOS bash 3.2 (the /bin/bash that
@@ -881,7 +881,7 @@ _scan_resolve_uncached() {
             # timed mdls/du child from this background worker (issue #1222).
             process_app_metadata "$app_data_tuple" "$scan_raw_file" < /dev/null &
             pids+=($!)
-            update_scan_status "Scanning applications..." "$app_count" "$total_apps"
+            update_scan_status "正在扫描应用..." "$app_count" "$total_apps"
 
             if ((${#pids[@]} >= max_parallel)); then
                 wait "${pids[0]}" 2> /dev/null
@@ -982,7 +982,7 @@ _scan_dedupe_bundle_ids() {
 # Returns: 0 on success (sorted path is echoed on stdout), 1 if sort
 #          fails or the sorted file did not materialize.
 _scan_finalize_index() {
-    update_scan_status "Merging cache data..." "0" "0"
+    update_scan_status "正在合并缓存数据..." "0" "0"
     awk -F'|' '
         NR == FNR {
             cache_mtime[$1] = $2
@@ -1007,7 +1007,7 @@ _scan_finalize_index() {
     local metadata_total=0
     metadata_total=$(wc -l < "$merged_file" 2> /dev/null || echo "0")
     [[ "$metadata_total" =~ ^[0-9]+$ ]] || metadata_total=0
-    update_scan_status "Collecting metadata..." "0" "$metadata_total"
+    update_scan_status "正在收集元数据..." "0" "$metadata_total"
 
     awk -F'|' \
         -v now="$current_epoch" \
@@ -1143,7 +1143,7 @@ _scan_finalize_index() {
             }
         ' "$merged_file"
 
-    update_scan_status "Updating cache..." "0" "0"
+    update_scan_status "正在更新缓存..." "0" "0"
     if [[ -s "$cache_snapshot_file" ]]; then
         if uninstall_acquire_metadata_lock "$MOLE_UNINSTALL_META_CACHE_LOCK"; then
             uninstall_persist_cache_file "$cache_snapshot_file" "$MOLE_UNINSTALL_META_CACHE_FILE"
@@ -1151,7 +1151,7 @@ _scan_finalize_index() {
         fi
     fi
 
-    update_scan_status "Sorting application list..." "0" "0"
+    update_scan_status "正在排序应用列表..." "0" "0"
     sort -t'|' -k1,1n "$temp_file" > "${temp_file}.sorted" || {
         stop_scan_spinner
         rm -f "$temp_file" "$scan_raw_file" "$merged_file" "$refresh_file" "$cache_snapshot_file" "$discovered_file" "$cached_rows_file" "$uncached_rows_file"
@@ -1162,7 +1162,7 @@ _scan_finalize_index() {
     rm -f "$temp_file" "$scan_raw_file" "$merged_file" "$cache_snapshot_file" "$discovered_file" "$cached_rows_file" "$uncached_rows_file"
     [[ $cache_source_is_temp == true ]] && rm -f "$cache_source" 2> /dev/null || true
 
-    update_scan_status "Finalizing list..." "0" "0"
+    update_scan_status "正在完成列表..." "0" "0"
     start_uninstall_metadata_refresh "$refresh_file"
     stop_scan_spinner
 
@@ -1261,7 +1261,7 @@ scan_applications() {
                 local status_line status_message status_completed status_total
                 status_line=$(cat "$scan_status_file" 2> /dev/null || echo "")
                 IFS='|' read -r status_message status_completed status_total <<< "$status_line"
-                [[ -z "$status_message" ]] && status_message="Scanning applications..."
+                [[ -z "$status_message" ]] && status_message="正在扫描应用..."
                 local c="${MO_SPINNER_FRAMES[$((i % ${#MO_SPINNER_FRAMES[@]}))]}"
                 if [[ "$status_completed" =~ ^[0-9]+$ && "$status_total" =~ ^[0-9]+$ && $status_total -gt 0 ]]; then
                     printf "\r\033[K%s %s %d/%d" "$c" "$status_message" "$status_completed" "$status_total" >&2
@@ -1287,7 +1287,7 @@ scan_applications() {
         rm -f "$spinner_shown_file" "$scan_status_file" 2> /dev/null || true
     }
 
-    update_scan_status "Scanning applications..." "0" "0"
+    update_scan_status "正在扫描应用..." "0" "0"
     start_scan_spinner
 
     # Phase 2: discover candidate apps.
@@ -1304,18 +1304,18 @@ scan_applications() {
         [[ $cache_source_is_temp == true ]] && rm -f "$cache_source" 2> /dev/null || true
         restore_scan_int_trap
         printf "\r\033[K" >&2
-        echo "No applications found to uninstall." >&2
+        echo "未找到可卸载的应用。" >&2
         return 1
     fi
     # Phase 5: parallel metadata resolution for cold rows.
     _scan_resolve_uncached
 
     # Phase 6: bail out if Pass 2 produced nothing.
-    update_scan_status "Building uninstall index..." "0" "0"
+    update_scan_status "正在构建卸载索引..." "0" "0"
 
     if [[ ! -s "$scan_raw_file" ]]; then
         stop_scan_spinner
-        echo "No applications found to uninstall" >&2
+        echo "未找到可卸载的应用" >&2
         rm -f "$temp_file" "$scan_raw_file" "$merged_file" "$refresh_file" "$cache_snapshot_file" "$discovered_file" "$cached_rows_file" "$uncached_rows_file" "${temp_file}.sorted" "$spinner_shown_file" 2> /dev/null || true
         [[ $cache_source_is_temp == true ]] && rm -f "$cache_source" 2> /dev/null || true
         restore_scan_int_trap
@@ -1332,7 +1332,7 @@ load_applications() {
     local apps_file="$1"
 
     if [[ ! -f "$apps_file" || ! -s "$apps_file" ]]; then
-        log_warning "No applications found for uninstallation"
+        log_warning "未找到可卸载的应用"
         return 1
     fi
 
@@ -1347,7 +1347,7 @@ load_applications() {
     done < "$apps_file"
 
     if [[ ${#apps_data[@]} -eq 0 ]]; then
-        log_warning "No applications available for uninstallation"
+        log_warning "没有可卸载的应用"
         return 1
     fi
 
@@ -1379,7 +1379,7 @@ uninstall_abort() {
     local reason="$1"
     stop_uninstall_interactive_screen
     show_cursor
-    log_error "Uninstall aborted: $reason"
+    log_error "卸载已中止：$reason"
 }
 
 # Cleanup: restore cursor and kill keepalive.
@@ -1527,7 +1527,7 @@ match_apps_by_name() {
         fi
 
         if [[ "$found" == "false" ]]; then
-            echo -e "${YELLOW}Warning:${NC} No application found matching '$search_term'"
+            echo -e "${YELLOW}警告：${NC} 未找到匹配 '$search_term' 的应用"
         fi
     done
 }
@@ -1611,12 +1611,12 @@ uninstall_list_apps() {
 
     local total=${#apps_data[@]}
     if [[ $total -eq 0 ]]; then
-        echo "No applications found."
+        echo "未找到应用。"
         return 0
     fi
 
     printf '\n'
-    printf '%-36s %-30s %-30s %8s\n' 'NAME' 'BUNDLE ID' 'UNINSTALL NAME' 'SIZE'
+    printf '%-36s %-30s %-30s %8s\n' '名称' 'BUNDLE ID' '卸载名称' '大小'
     printf -- '-%.0s' $(seq 1 108)
     printf '\n'
 
@@ -1658,7 +1658,7 @@ uninstall_list_apps() {
             "$size_display"
     done
 
-    printf '\n%d application(s)  |  Remove with: mo uninstall <UNINSTALL NAME>\n\n' "$total"
+    printf '\n共 %d 个应用  |  卸载命令：mo uninstall <卸载名称>\n\n' "$total"
     return 0
 }
 
@@ -1693,14 +1693,14 @@ main() {
                 list_mode=1
                 ;;
             "--whitelist")
-                echo "Unknown uninstall option: $arg" >&2
-                echo "Whitelist management is currently supported by: mo clean --whitelist / mo optimize --whitelist" >&2
-                echo "Use 'mo uninstall --help' for supported options." >&2
+                echo "未知的卸载选项：$arg" >&2
+                echo "白名单管理目前由以下命令支持：mo clean --whitelist / mo optimize --whitelist" >&2
+                echo "使用 'mo uninstall --help' 查看支持的选项。" >&2
                 exit 1
                 ;;
             -*)
-                echo "Unknown uninstall option: $arg" >&2
-                echo "Use 'mo uninstall --help' for supported options." >&2
+                echo "未知的卸载选项：$arg" >&2
+                echo "使用 'mo uninstall --help' 查看支持的选项。" >&2
                 exit 1
                 ;;
             *)
@@ -1718,7 +1718,7 @@ main() {
 
     hide_cursor
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, No app files or settings will be modified"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会修改任何应用文件或设置"
         printf '\n'
     fi
 
@@ -1744,14 +1744,14 @@ main() {
 
         if [[ ${#selected_apps[@]} -eq 0 ]]; then
             show_cursor
-            echo "No matching applications found."
+            echo "未找到匹配的应用。"
             return 1
         fi
 
         show_cursor
         clear_screen
         local selection_count=${#selected_apps[@]}
-        echo -e "${BLUE}${ICON_CONFIRM}${NC} Matched ${selection_count} app(s):"
+        echo -e "${BLUE}${ICON_CONFIRM}${NC} 匹配到 ${selection_count} 个应用："
         local index=1
         for selected_app in "${selected_apps[@]}"; do
             IFS='|' read -r _ app_path app_name _ size last_used _ <<< "$selected_app"
@@ -1759,16 +1759,16 @@ main() {
             size_display=$(uninstall_normalize_size_display "$size" "$app_path")
             local last_display
             last_display=$(uninstall_normalize_last_used_display "$last_used")
-            printf "%d. %s  %s  |  Last: %s\n" "$index" "$app_name" "$size_display" "$last_display"
+            printf "%d. %s  %s  |  最近使用: %s\n" "$index" "$app_name" "$size_display" "$last_display"
             ((index++))
         done
 
         printf '\n'
-        printf "Proceed with uninstallation? [y/N] "
+        printf "是否继续卸载？[y/N] "
         local confirm
         read -r confirm
         if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-            echo "Aborted."
+            echo "已取消。"
             return 0
         fi
 
@@ -1790,7 +1790,7 @@ main() {
         start_uninstall_interactive_screen
 
         if [[ $first_scan == false ]]; then
-            echo -e "${GRAY}Checking application list...${NC}" >&2
+            echo -e "${GRAY}正在检查应用列表...${NC}" >&2
         fi
         first_scan=false
 
@@ -1866,10 +1866,10 @@ main() {
         printf '\033[2J\033[H' >&2
         local selection_count=${#selected_apps[@]}
         if [[ $selection_count -eq 0 ]]; then
-            echo "No apps selected"
+            echo "未选择任何应用"
             continue
         fi
-        echo -e "${BLUE}${ICON_CONFIRM}${NC} Selected ${selection_count} apps:"
+        echo -e "${BLUE}${ICON_CONFIRM}${NC} 已选择 ${selection_count} 个应用："
         local -a summary_rows=()
         local max_name_display_width=0
         local max_size_width=0
@@ -1948,7 +1948,7 @@ main() {
             local padding_needed=$((max_name_display_width - name_display_width))
             local printf_name_width=$((name_byte_count + padding_needed))
 
-            printf "%d. %-*s  %*s  |  Last: %s\n" "$index" "$printf_name_width" "$name_cell" "$max_size_width" "$size_cell" "$last_cell"
+            printf "%d. %-*s  %*s  |  最近使用: %s\n" "$index" "$printf_name_width" "$name_cell" "$max_size_width" "$size_cell" "$last_cell"
             ((index++))
         done
 
@@ -1967,7 +1967,7 @@ main() {
         local _key=""
         local _pressed=false
         while [[ $_countdown -gt 0 ]]; do
-            printf "\r${GRAY}Press Enter to return to the app list, press q to exit (%d)${NC} " "$_countdown"
+            printf "\r${GRAY}按回车返回应用列表，按 q 退出 (%d)${NC} " "$_countdown"
             if IFS= read -r -s -n1 -t 1 _key 2> /dev/null; then
                 _pressed=true
                 break

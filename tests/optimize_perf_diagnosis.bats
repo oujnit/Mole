@@ -32,7 +32,7 @@ setup_file() {
         opt_diag_memory_pressure
     "
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Memory pressure"* ]] || return 1
+    [[ "$output" == *"内存压力"* ]] || return 1
     [[ "$output" == *"94%"* ]] || { echo "$output"; return 1; }
     # The largest process must appear — a header-vs-sort bug once dropped it.
     [[ "$output" == *"VirtualMachine"* ]] || { echo "$output"; return 1; }
@@ -58,8 +58,8 @@ setup_file() {
     "
     [ "$status" -eq 0 ]
     [[ "$output" == *"8.81GB"* ]] || { echo "$output"; return 1; }
-    [[ "$output" == *"no running containers"* ]] || { echo "$output"; return 1; }
-    [[ "$output" == *"likely Docker Desktop"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"没有运行中的容器"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"可能是 Docker Desktop"* ]] || { echo "$output"; return 1; }
 }
 
 @test "idle VM does NOT claim reclaimable when containers are running" {
@@ -72,8 +72,8 @@ setup_file() {
         opt_diag_idle_vm
     "
     [ "$status" -eq 0 ]
-    [[ "$output" != *"no running containers"* ]] || { echo "$output"; return 1; }
-    [[ "$output" == *"2 containers running"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"没有运行中的容器"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"2 个容器运行中"* ]] || { echo "$output"; return 1; }
 }
 
 @test "idle VM keeps Docker timeout neutral" {
@@ -86,10 +86,10 @@ setup_file() {
         opt_diag_idle_vm
     "
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Virtual machine using 8.81GB"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"no running containers"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"likely Docker Desktop"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"quitting it reclaims"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"虚拟机使用 8.81GB"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"没有运行中的容器"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"可能是 Docker Desktop"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"退出它即可释放"* ]] || { echo "$output"; return 1; }
 }
 
 @test "idle VM ignores partial output from a failed Docker probe" {
@@ -102,10 +102,10 @@ setup_file() {
         opt_diag_idle_vm
     "
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Virtual machine using 8.81GB"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"containers running"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"no running containers"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"quitting it reclaims"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"虚拟机使用 8.81GB"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"个容器运行中"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"没有运行中的容器"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"退出它即可释放"* ]] || { echo "$output"; return 1; }
 }
 
 @test "idle VM silent when no VM is present" {
@@ -132,7 +132,7 @@ setup_file() {
     "
     [ "$status" -eq 0 ]
     [[ "$output" == *"ControlCenter"* ]] || { echo "$output"; return 1; }
-    [[ "$output" == *"138h"* ]] || return 1
+    [[ "$output" == *"138 小时处理器时间"* ]] || return 1
     [[ "$output" == *"kill -TERM 785"* ]] || return 1
 }
 
@@ -223,7 +223,7 @@ setup_file() {
     "
     [ "$status" -eq 0 ]
     [[ "$output" != *"0GB of"* ]] || { echo "$output"; return 1; }
-    [[ "$output" == *"943.7MB of 1.07GB"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"943.7MB / 1.07GB"* ]] || { echo "$output"; return 1; }
 }
 
 @test "the runaway scan does not fork per process row" {

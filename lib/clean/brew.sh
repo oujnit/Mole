@@ -16,7 +16,7 @@ brew_autoremove_preview_has_items() {
 
 show_brew_autoremove_preview() {
     local preview_file="$1"
-    echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew autoremove would remove:"
+    echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew autoremove 将移除："
     sed 's/^/    /' "$preview_file"
 }
 
@@ -189,11 +189,11 @@ restore_homebrew_active_links() {
     done
 
     if [[ $restored -gt 0 ]]; then
-        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew links · restored ${restored} active executable(s)"
+        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew 链接 · 已恢复 ${restored} 个可执行文件"
         note_activity
     fi
     if [[ $failed -gt 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew links · ${failed} could not be restored, run ${GRAY}brew link <formula>${NC}"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew 链接 · ${failed} 个无法恢复，请运行 ${GRAY}brew link <formula>${NC}"
         note_activity
     fi
 }
@@ -205,10 +205,10 @@ clean_homebrew() {
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
         # Check if Homebrew cache is whitelisted
         if is_path_whitelisted "$HOME/Library/Caches/Homebrew"; then
-            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew · skipped (whitelist)"
+            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew · 已跳过（白名单）"
             note_activity
         else
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Homebrew · would cleanup"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Homebrew · 将清理"
             note_activity
             local dry_run_autoremove_file
             dry_run_autoremove_file=$(create_temp_file)
@@ -217,14 +217,14 @@ clean_homebrew() {
             if [[ $dry_run_autoremove_exit -eq 0 ]] && brew_autoremove_preview_has_items "$dry_run_autoremove_file"; then
                 show_brew_autoremove_preview "$dry_run_autoremove_file"
             elif [[ $dry_run_autoremove_exit -eq 124 ]]; then
-                echo -e "  ${GRAY}${ICON_WARNING}${NC} Autoremove preview timed out · run ${GRAY}brew autoremove --dry-run${NC} manually"
+                echo -e "  ${GRAY}${ICON_WARNING}${NC} 自动移除预览超时 · 请手动运行 ${GRAY}brew autoremove --dry-run${NC}"
             fi
         fi
         return 0
     fi
     # Keep behavior consistent with dry-run preview.
     if is_path_whitelisted "$HOME/Library/Caches/Homebrew"; then
-        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew · skipped (whitelist)"
+        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew · 已跳过（白名单）"
         note_activity
         return 0
     fi
@@ -262,7 +262,7 @@ clean_homebrew() {
     if [[ "$skip_cleanup" == "false" ]]; then
         brew_tmp_file=$(create_temp_file)
         snapshot_homebrew_active_links || true
-        if [[ -t 1 ]]; then MOLE_SPINNER_PREFIX="  " start_inline_spinner "Homebrew cleanup..."; fi
+        if [[ -t 1 ]]; then MOLE_SPINNER_PREFIX="  " start_inline_spinner "Homebrew 清理中..."; fi
         HOMEBREW_NO_ENV_HINTS=1 HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_AUTOREMOVE=1 NONINTERACTIVE=1 \
             run_with_timeout "$cleanup_timeout" brew cleanup --prune=30 > "$brew_tmp_file" 2>&1 || brew_exit=$?
         if [[ -t 1 ]]; then stop_inline_spinner; fi
@@ -286,15 +286,15 @@ clean_homebrew() {
         freed_space=$(printf '%s\n' "$brew_output" | grep -o "[0-9.]*[KMGT]B freed" 2> /dev/null | tail -1 || true)
         if [[ $removed_count -gt 0 ]] || [[ -n "$freed_space" ]]; then
             if [[ -n "$freed_space" ]]; then
-                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew cleanup${NC} · ${GREEN}$freed_space${NC}"
+                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew 清理${NC} · ${GREEN}$freed_space${NC}"
                 note_activity
             else
-                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew cleanup · ${removed_count} items"
+                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Homebrew 清理 · ${removed_count} 个项目"
                 note_activity
             fi
         fi
     elif [[ $brew_exit -eq 124 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew cleanup timed out · run ${GRAY}brew cleanup${NC} manually"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew 清理超时 · 请手动运行 ${GRAY}brew cleanup${NC}"
         note_activity
     fi
     local autoremove_preview_file
@@ -302,15 +302,15 @@ clean_homebrew() {
     local autoremove_preview_exit=0
     run_brew_autoremove_preview "$autoremove_preview_timeout" "$autoremove_preview_file" || autoremove_preview_exit=$?
     if [[ $autoremove_preview_exit -eq 124 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autoremove preview timed out · run ${GRAY}brew autoremove --dry-run${NC} manually"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 自动移除预览超时 · 请手动运行 ${GRAY}brew autoremove --dry-run${NC}"
         # Keep the manual-action guidance visible past the idle-section erase.
         note_activity
     elif [[ $autoremove_preview_exit -ne 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autoremove preview failed · run ${GRAY}brew autoremove --dry-run${NC} manually"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 自动移除预览失败 · 请手动运行 ${GRAY}brew autoremove --dry-run${NC}"
         note_activity
     elif brew_autoremove_preview_has_items "$autoremove_preview_file"; then
         show_brew_autoremove_preview "$autoremove_preview_file"
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew autoremove · skipped (run ${GRAY}brew autoremove${NC} manually)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Homebrew 自动移除 · 已跳过（请手动运行 ${GRAY}brew autoremove${NC}）"
         note_activity
     fi
     # Update cache timestamp on successful completion or when cleanup was intelligently skipped

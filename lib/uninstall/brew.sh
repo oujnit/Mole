@@ -323,14 +323,14 @@ brew_uninstall_cask() {
     fi
 
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        debug_log "[DRY RUN] Would brew ${uninstall_args[*]} $cask_name"
+        debug_log "[DRY RUN] 将执行 brew ${uninstall_args[*]} $cask_name"
         return 0
     fi
 
     is_homebrew_available || return 1
     [[ -z "$cask_name" ]] && return 1
 
-    debug_log "Attempting brew ${uninstall_args[*]} $cask_name"
+    debug_log "正在执行 brew ${uninstall_args[*]} $cask_name"
 
     local uninstall_ok=false
     local brew_exit=0
@@ -349,7 +349,7 @@ brew_uninstall_cask() {
         elif [[ $size_gb -gt 5 ]]; then
             timeout=600 # 10 minutes for large apps
         fi
-        debug_log "App size: ${size_gb}GB, timeout: ${timeout}s"
+        debug_log "应用大小：${size_gb}GB，超时：${timeout}s"
     fi
 
     # Run with timeout to prevent hangs from problematic cask scripts.
@@ -369,12 +369,12 @@ brew_uninstall_cask() {
     fi
 
     if [[ "$uninstall_ok" != "true" ]]; then
-        debug_log "brew uninstall timeout or failed with exit code: $brew_exit"
+        debug_log "brew uninstall 超时或失败，退出码：$brew_exit"
         # Timeout and signal statuses are cancellation, not evidence that a
         # partially completed cask action can safely fall back to direct app
         # deletion. Preserve them before any verification.
         if [[ $brew_exit -eq 124 ]]; then
-            debug_log "brew uninstall timed out after ${timeout}s, returning failure"
+            debug_log "brew uninstall 在 ${timeout}s 后超时，返回失败"
             return 124
         elif [[ $brew_exit -ge 128 ]]; then
             return "$brew_exit"
@@ -395,10 +395,10 @@ brew_uninstall_cask() {
 
     # Success: uninstall worked and both are gone, or already uninstalled
     if $cask_gone && $app_gone; then
-        debug_log "Successfully uninstalled cask '$cask_name'"
+        debug_log "已成功卸载 cask '$cask_name'"
         return 0
     fi
 
-    debug_log "brew uninstall failed: cask_gone=$cask_gone app_gone=$app_gone"
+    debug_log "brew uninstall 失败：cask_gone=$cask_gone app_gone=$app_gone"
     return 1
 }

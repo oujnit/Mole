@@ -65,7 +65,7 @@ func runWatchStdout(interval time.Duration) {
 		wasReady := st.ready
 		snap, err := st.collect(collector)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "status: collect failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "状态：采集失败：%v\n", err)
 			if snap.CollectedAt.IsZero() {
 				time.Sleep(interval)
 				continue

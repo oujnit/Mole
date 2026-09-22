@@ -49,14 +49,14 @@ func collectProcesses() (processSample, error) {
 func parseProcessOutputStrict(raw string) ([]ProcessInfo, error) {
 	rows := strings.Split(strings.TrimSpace(raw), "\n")
 	if len(rows) == 0 || (len(rows) == 1 && rows[0] == "") {
-		return nil, fmt.Errorf("empty ps process table")
+		return nil, fmt.Errorf("ps 进程表为空")
 	}
 
 	procs := make([]ProcessInfo, 0, len(rows))
 	for _, row := range rows {
 		fields := strings.Fields(row)
 		if len(fields) < 7 || !isProcessStateToken(fields[2]) {
-			return nil, fmt.Errorf("unexpected ps process row")
+			return nil, fmt.Errorf("ps 进程行格式异常")
 		}
 		pid, pidErr := strconv.Atoi(fields[0])
 		ppid, ppidErr := strconv.Atoi(fields[1])
@@ -66,7 +66,7 @@ func parseProcessOutputStrict(raw string) ([]ProcessInfo, error) {
 		command := strings.Join(fields[6:], " ")
 		if pidErr != nil || ppidErr != nil || cpuErr != nil || memErr != nil || rssErr != nil ||
 			pid <= 0 || ppid < 0 || command == "" {
-			return nil, fmt.Errorf("unexpected ps process row")
+			return nil, fmt.Errorf("ps 进程行格式异常")
 		}
 		procs = append(procs, ProcessInfo{
 			PID:         pid,
@@ -86,14 +86,14 @@ func parsePsAuxOutputStrict(raw string) ([]ProcessInfo, error) {
 	rows := strings.Split(strings.TrimSpace(raw), "\n")
 	expectedHeader := []string{"USER", "PID", "%CPU", "%MEM", "VSZ", "RSS", "TT", "STAT", "STARTED", "TIME", "COMMAND"}
 	if len(rows) < 2 || !slices.Equal(strings.Fields(rows[0]), expectedHeader) {
-		return nil, fmt.Errorf("unexpected ps aux header")
+		return nil, fmt.Errorf("ps aux 表头格式异常")
 	}
 
 	procs := make([]ProcessInfo, 0, len(rows)-1)
 	for _, row := range rows[1:] {
 		fields := strings.Fields(row)
 		if len(fields) < 11 || !isProcessStateToken(fields[7]) {
-			return nil, fmt.Errorf("unexpected ps aux process row")
+			return nil, fmt.Errorf("ps aux 进程行格式异常")
 		}
 		pid, pidErr := strconv.Atoi(fields[1])
 		cpuVal, cpuErr := strconv.ParseFloat(fields[2], 64)
@@ -102,7 +102,7 @@ func parsePsAuxOutputStrict(raw string) ([]ProcessInfo, error) {
 		rssKB, rssErr := strconv.ParseUint(fields[5], 10, 64)
 		command := strings.Join(fields[10:], " ")
 		if pidErr != nil || cpuErr != nil || memErr != nil || vszErr != nil || rssErr != nil || pid <= 0 || command == "" {
-			return nil, fmt.Errorf("unexpected ps aux process row")
+			return nil, fmt.Errorf("ps aux 进程行格式异常")
 		}
 		procs = append(procs, ProcessInfo{
 			PID:         pid,

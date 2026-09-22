@@ -29,7 +29,7 @@ func collectBatteries() (batts []BatteryStatus, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			// Swallow panics to keep UI alive.
-			err = fmt.Errorf("battery collection failed: %v", r)
+			err = fmt.Errorf("电池数据采集失败：%v", r)
 		}
 	}()
 

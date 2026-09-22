@@ -122,7 +122,7 @@ clean_xcode_derived_data() {
     _xcode_cleanup_process_state || xcode_state=$?
     if [[ $xcode_state -ne 1 ]]; then
         if [[ $xcode_state -eq 2 ]]; then
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · skipped (process state unknown)"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · 已跳过（进程状态未知）"
             note_activity
         else
             mole_defer_cleanup_family "Xcode"
@@ -130,8 +130,8 @@ clean_xcode_derived_data() {
         return 0
     fi
 
-    local project_label="projects"
-    [[ $project_count -eq 1 ]] && project_label="project"
+    local project_label="个项目"
+    [[ $project_count -eq 1 ]] && project_label="个项目"
 
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
         # Measure and register only the filtered project set. Sizing the parent
@@ -145,10 +145,10 @@ clean_xcode_derived_data() {
         # Sizing every project means one du per entry plus a process probe on
         # each side of it. On a real DerivedData that is tens of seconds with
         # nothing on screen, which reads as a freeze.
-        start_section_spinner "Measuring Xcode DerivedData, 0/${project_count}..."
+        start_section_spinner "正在测量 Xcode DerivedData，0/${project_count}..."
         for dir in "${projects[@]}"; do
             dry_run_seen=$((dry_run_seen + 1))
-            start_section_spinner "Measuring Xcode DerivedData, ${dry_run_seen}/${project_count}..."
+            start_section_spinner "正在测量 Xcode DerivedData，${dry_run_seen}/${project_count}..."
             xcode_state=0
             _xcode_cleanup_process_state || xcode_state=$?
             if [[ $xcode_state -ne 1 ]]; then
@@ -177,16 +177,16 @@ clean_xcode_derived_data() {
         done
         stop_section_spinner
         if [[ $dry_run_count -gt 0 ]]; then
-            project_label="projects"
-            [[ $dry_run_count -eq 1 ]] && project_label="project"
+            project_label="个项目"
+            [[ $dry_run_count -eq 1 ]] && project_label="个项目"
             local size_human
             size_human=$(bytes_to_human "$((size_kb * 1024))")
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Xcode DerivedData · ${dry_run_count} ${project_label}, ${size_human}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Xcode DerivedData · ${dry_run_count} ${project_label}，${size_human}"
             note_activity
         fi
         if [[ -n "$dry_run_stopped_reason" ]]; then
             if [[ "$dry_run_stopped_reason" == "process state unknown" ]]; then
-                echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · stopped (${dry_run_stopped_reason})"
+                echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · 已停止（进程状态未知）"
                 note_activity
             else
                 mole_defer_cleanup_family "Xcode"
@@ -203,10 +203,10 @@ clean_xcode_derived_data() {
     # Each project costs a du, two process probes, and the removal itself, so a
     # large DerivedData runs for tens of seconds. Without this the section
     # prints nothing until every project is gone.
-    start_section_spinner "Removing Xcode DerivedData, 0/${project_count}..."
+    start_section_spinner "正在移除 Xcode DerivedData，0/${project_count}..."
     for dir in "${projects[@]}"; do
         seen=$((seen + 1))
-        start_section_spinner "Removing Xcode DerivedData, ${seen}/${project_count}..."
+        start_section_spinner "正在移除 Xcode DerivedData，${seen}/${project_count}..."
         xcode_state=0
         _xcode_cleanup_process_state || xcode_state=$?
         if [[ $xcode_state -ne 1 ]]; then
@@ -240,13 +240,13 @@ clean_xcode_derived_data() {
     stop_section_spinner
 
     if [[ $removed -gt 0 ]]; then
-        project_label="projects"
-        [[ $removed -eq 1 ]] && project_label="project"
+        project_label="个项目"
+        [[ $removed -eq 1 ]] && project_label="个项目"
         local size_human
         size_human=$(bytes_to_human "$((removed_size_kb * 1024))")
         local line_color
         line_color=$(cleanup_result_color_kb "$removed_size_kb" 2> /dev/null || echo "$GREEN")
-        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode DerivedData · ${removed} ${project_label}, ${line_color}${size_human}${NC}"
+        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode DerivedData · ${removed} ${project_label}，${line_color}${size_human}${NC}"
         files_cleaned=$((${files_cleaned:-0} + removed))
         total_size_cleaned=$((${total_size_cleaned:-0} + removed_size_kb))
         total_items=$((${total_items:-0} + 1))
@@ -254,7 +254,7 @@ clean_xcode_derived_data() {
     fi
     if [[ -n "$stopped_reason" ]]; then
         if [[ "$stopped_reason" == "process state unknown" ]]; then
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · stopped (${stopped_reason})"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode DerivedData · 已停止（进程状态未知）"
             note_activity
         else
             mole_defer_cleanup_family "Xcode"
@@ -278,22 +278,22 @@ clean_xcode_tools() {
         if [[ $simulator_state -eq 1 ]]; then
             _app_cache_safe_clean_guarded \
                 _simulator_app_cache_delete_guard_allows \
-                "Simulator caches" \
+                "模拟器缓存" \
                 ~/Library/Developer/CoreSimulator/Caches/* \
-                "Simulator cache" || return 0
+                "模拟器缓存" || return 0
             _app_cache_safe_clean_guarded \
                 _simulator_app_cache_delete_guard_allows \
-                "Simulator temp files" \
+                "模拟器临时文件" \
                 ~/Library/Developer/CoreSimulator/Devices/*/data/tmp/* \
-                "Simulator temp files" || return 0
+                "模拟器临时文件" || return 0
             _app_cache_safe_clean_guarded \
                 _simulator_app_cache_delete_guard_allows \
-                "CoreSimulator logs" \
+                "CoreSimulator 日志" \
                 ~/Library/Logs/CoreSimulator/* \
-                "CoreSimulator logs" || return 0
+                "CoreSimulator 日志" || return 0
         else
             if [[ $simulator_state -eq 2 ]]; then
-                echo -e "  ${GRAY}${ICON_WARNING}${NC} Simulator caches · skipped (process state unknown)"
+                echo -e "  ${GRAY}${ICON_WARNING}${NC} 模拟器缓存 · 已跳过（进程状态未知）"
                 note_activity
             else
                 mole_defer_cleanup_family "Simulator"
@@ -317,9 +317,9 @@ clean_xcode_tools() {
             if [[ "$xcode_cache_has_targets" == "true" ]]; then
                 _app_cache_safe_clean_guarded \
                     _xcode_app_cache_delete_guard_allows \
-                    "Xcode cache" \
+                    "Xcode 缓存" \
                     ~/Library/Caches/com.apple.dt.Xcode/* \
-                    "Xcode cache" || return 0
+                    "Xcode 缓存" || return 0
             fi
 
             # The cache pass may take long enough for the separate build
@@ -336,7 +336,7 @@ clean_xcode_tools() {
             _xcode_cleanup_process_state || xcode_state=$?
             if [[ $xcode_state -ne 1 ]]; then
                 if [[ $xcode_state -eq 2 ]]; then
-                    echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode build products/DerivedData · stopped (process state unknown)"
+                    echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode 构建产物/DerivedData · 已停止（进程状态未知）"
                     note_activity
                 else
                     mole_defer_cleanup_family "Xcode"
@@ -345,13 +345,13 @@ clean_xcode_tools() {
             fi
             _app_cache_safe_clean_guarded \
                 _xcode_app_cache_delete_guard_allows \
-                "Xcode build products" \
+                "Xcode 构建产物" \
                 ~/Library/Developer/Xcode/Products/* \
-                "Xcode build products" || return 0
+                "Xcode 构建产物" || return 0
             clean_xcode_derived_data || return $?
         else
             if [[ $xcode_state -eq 2 ]]; then
-                echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode cache/build products · skipped (process state unknown)"
+                echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode 缓存/构建产物 · 已跳过（进程状态未知）"
                 note_activity
             else
                 mole_defer_cleanup_family "Xcode"
@@ -431,40 +431,40 @@ clean_editor_obsolete_extensions() {
             esac
             target="$ext_root/$key"
             [[ -d "$target" ]] || continue
-            safe_clean "$target" "Obsolete $editor_label extension"
+            safe_clean "$target" "过期的 $editor_label 扩展"
         done < <(_mole_obsolete_extension_keys "$obsolete_file")
     done
 }
 # Code editors.
 clean_code_editors() {
-    safe_clean ~/Library/Application\ Support/Code/logs/* "VS Code logs"
-    safe_clean ~/Library/Application\ Support/Code/Cache/* "VS Code cache"
-    safe_clean ~/Library/Application\ Support/Code/CachedExtensions/* "VS Code extension cache"
-    safe_clean ~/Library/Application\ Support/Code/CachedData/* "VS Code data cache"
-    safe_clean ~/Library/Application\ Support/Code/WebStorage/*/CacheStorage/* "VS Code webview cache"
-    safe_clean ~/Library/Caches/com.sublimetext.*/* "Sublime Text cache"
-    safe_clean ~/Library/Caches/Zed/* "Zed cache"
+    safe_clean ~/Library/Application\ Support/Code/logs/* "VS Code 日志"
+    safe_clean ~/Library/Application\ Support/Code/Cache/* "VS Code 缓存"
+    safe_clean ~/Library/Application\ Support/Code/CachedExtensions/* "VS Code 扩展缓存"
+    safe_clean ~/Library/Application\ Support/Code/CachedData/* "VS Code 数据缓存"
+    safe_clean ~/Library/Application\ Support/Code/WebStorage/*/CacheStorage/* "VS Code WebView 缓存"
+    safe_clean ~/Library/Caches/com.sublimetext.*/* "Sublime Text 缓存"
+    safe_clean ~/Library/Caches/Zed/* "Zed 缓存"
     # Zed npm caches: node/cache (system-node scratch) and node/node-v*/cache
     # (per-version managed runtime, see #88); keep editor state under db/ untouched.
-    safe_clean ~/Library/Application\ Support/Zed/node/cache/* "Zed npm cache"
-    safe_clean ~/Library/Application\ Support/Zed/node/node-v*/cache/* "Zed npm cache"
-    safe_clean ~/Library/Logs/Zed/* "Zed logs"
+    safe_clean ~/Library/Application\ Support/Zed/node/cache/* "Zed npm 缓存"
+    safe_clean ~/Library/Application\ Support/Zed/node/node-v*/cache/* "Zed npm 缓存"
+    safe_clean ~/Library/Logs/Zed/* "Zed 日志"
     clean_editor_obsolete_extensions
     # CodeBuddy Extension (VS Code fork, Electron)
     if [[ -d ~/Library/Application\ Support/CodeBuddyExtension ]]; then
-        safe_clean ~/Library/Application\ Support/CodeBuddyExtension/Cache/* "CodeBuddy Extension cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddyExtension/logs/* "CodeBuddy Extension logs"
+        safe_clean ~/Library/Application\ Support/CodeBuddyExtension/Cache/* "CodeBuddy Extension 缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddyExtension/logs/* "CodeBuddy Extension 日志"
     fi
     # CodeBuddy CN (VS Code fork, Electron)
     if [[ -d ~/Library/Application\ Support/CodeBuddy\ CN ]]; then
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/Cache/* "CodeBuddy CN cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/CachedData/* "CodeBuddy CN cached data"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/CachedExtensionVSIXs/* "CodeBuddy CN extension cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/Code\ Cache/* "CodeBuddy CN code cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/GPUCache/* "CodeBuddy CN GPU cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/DawnGraphiteCache/* "CodeBuddy CN Dawn cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/DawnWebGPUCache/* "CodeBuddy CN WebGPU cache"
-        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/logs/* "CodeBuddy CN logs"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/Cache/* "CodeBuddy CN 缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/CachedData/* "CodeBuddy CN 缓存数据"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/CachedExtensionVSIXs/* "CodeBuddy CN 扩展缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/Code\ Cache/* "CodeBuddy CN 代码缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/GPUCache/* "CodeBuddy CN GPU 缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/DawnGraphiteCache/* "CodeBuddy CN Dawn 缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/DawnWebGPUCache/* "CodeBuddy CN WebGPU 缓存"
+        safe_clean ~/Library/Application\ Support/CodeBuddy\ CN/logs/* "CodeBuddy CN 日志"
     fi
 }
 # Lark / Feishu desktop embeds a Chromium webview (the "aha" explorer profile)
@@ -844,65 +844,65 @@ clean_wechat_container_caches() {
 
 # Communication apps.
 clean_communication_apps() {
-    safe_clean ~/Library/Application\ Support/discord/Cache/* "Discord cache"
-    safe_clean ~/Library/Application\ Support/legcord/Cache/* "Legcord cache"
-    safe_clean ~/Library/Application\ Support/Slack/Cache/* "Slack cache"
-    safe_clean ~/Library/Caches/us.zoom.xos/* "Zoom cache"
-    safe_clean ~/Library/Caches/com.tencent.xinWeChat/* "WeChat cache"
-    safe_clean ~/Library/Caches/ru.keepcoder.Telegram/* "Telegram cache"
+    safe_clean ~/Library/Application\ Support/discord/Cache/* "Discord 缓存"
+    safe_clean ~/Library/Application\ Support/legcord/Cache/* "Legcord 缓存"
+    safe_clean ~/Library/Application\ Support/Slack/Cache/* "Slack 缓存"
+    safe_clean ~/Library/Caches/us.zoom.xos/* "Zoom 缓存"
+    safe_clean ~/Library/Caches/com.tencent.xinWeChat/* "微信缓存"
+    safe_clean ~/Library/Caches/ru.keepcoder.Telegram/* "Telegram 缓存"
 
-    safe_clean ~/Library/Caches/com.microsoft.teams2/* "Microsoft Teams cache"
-    safe_clean ~/Library/Caches/net.whatsapp.WhatsApp/* "WhatsApp cache"
-    safe_clean ~/Library/Caches/com.skype.skype/* "Skype cache"
-    safe_clean ~/Library/Caches/com.tencent.meeting/* "Tencent Meeting cache"
-    safe_clean ~/Library/Caches/com.tencent.WeWorkMac/* "WeCom cache"
-    safe_clean ~/Library/Caches/com.tencent.qq/* "QQ cache"
-    safe_clean ~/Library/Caches/com.feishu.*/* "Feishu cache"
+    safe_clean ~/Library/Caches/com.microsoft.teams2/* "Microsoft Teams 缓存"
+    safe_clean ~/Library/Caches/net.whatsapp.WhatsApp/* "WhatsApp 缓存"
+    safe_clean ~/Library/Caches/com.skype.skype/* "Skype 缓存"
+    safe_clean ~/Library/Caches/com.tencent.meeting/* "腾讯会议缓存"
+    safe_clean ~/Library/Caches/com.tencent.WeWorkMac/* "企业微信缓存"
+    safe_clean ~/Library/Caches/com.tencent.qq/* "QQ 缓存"
+    safe_clean ~/Library/Caches/com.feishu.*/* "飞书缓存"
     clean_feishu_service_worker_caches
     clean_notion_service_worker_caches
     if [[ -d ~/Library/Application\ Support/Microsoft/Teams ]]; then
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Cache/* "Microsoft Teams legacy cache"
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Application\ Cache/* "Microsoft Teams legacy application cache"
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Code\ Cache/* "Microsoft Teams legacy code cache"
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/GPUCache/* "Microsoft Teams legacy GPU cache"
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/logs/* "Microsoft Teams legacy logs"
-        safe_clean ~/Library/Application\ Support/Microsoft/Teams/tmp/* "Microsoft Teams legacy temp files"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Cache/* "Microsoft Teams 旧版缓存"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Application\ Cache/* "Microsoft Teams 旧版应用缓存"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/Code\ Cache/* "Microsoft Teams 旧版代码缓存"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/GPUCache/* "Microsoft Teams 旧版 GPU 缓存"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/logs/* "Microsoft Teams 旧版日志"
+        safe_clean ~/Library/Application\ Support/Microsoft/Teams/tmp/* "Microsoft Teams 旧版临时文件"
     fi
     clean_wechat_container_caches
 }
 # DingTalk.
 clean_dingtalk() {
-    safe_clean ~/Library/Caches/dd.work.exclusive4aliding/* "DingTalk iDingTalk cache"
-    safe_clean ~/Library/Caches/com.alibaba.AliLang.osx/* "AliLang security component"
+    safe_clean ~/Library/Caches/dd.work.exclusive4aliding/* "钉钉 iDingTalk 缓存"
+    safe_clean ~/Library/Caches/com.alibaba.AliLang.osx/* "AliLang 安全组件"
     if [[ -d ~/Library/Application\ Support/iDingTalk ]]; then
-        safe_clean ~/Library/Application\ Support/iDingTalk/log/* "DingTalk logs"
-        safe_clean ~/Library/Application\ Support/iDingTalk/holmeslogs/* "DingTalk holmes logs"
+        safe_clean ~/Library/Application\ Support/iDingTalk/log/* "钉钉日志"
+        safe_clean ~/Library/Application\ Support/iDingTalk/holmeslogs/* "钉钉 holmes 日志"
     fi
 }
 # AI assistants.
 clean_ai_apps() {
-    safe_clean ~/Library/Caches/com.openai.chat/* "ChatGPT cache"
-    safe_clean ~/Library/Caches/com.anthropic.claudefordesktop/* "Claude desktop cache"
-    safe_clean ~/Library/Logs/Claude/* "Claude logs"
-    safe_clean ~/Library/Caches/com.lmstudio.lmstudio/* "LM Studio cache"
+    safe_clean ~/Library/Caches/com.openai.chat/* "ChatGPT 缓存"
+    safe_clean ~/Library/Caches/com.anthropic.claudefordesktop/* "Claude 桌面版缓存"
+    safe_clean ~/Library/Logs/Claude/* "Claude 日志"
+    safe_clean ~/Library/Caches/com.lmstudio.lmstudio/* "LM Studio 缓存"
     # LM Studio <=0.3.5 used ~/.cache/lm-studio as its complete home directory,
     # including models, presets, chats, and runtime state. LM Studio moved new
     # installs to ~/.lmstudio in 0.3.6, but existing data is not migrated, so
     # never recursively clean the legacy root. The Library/Caches target above
     # is the only path treated as an auto-rebuildable cache here.
-    safe_clean ~/Library/Caches/CCTClearcutLogger "Google Clearcut logs"
+    safe_clean ~/Library/Caches/CCTClearcutLogger "Google Clearcut 日志"
     if [[ -d "$HOME/Library/Application Support/Codex" || -d "$HOME/Library/Logs/com.openai.codex" ]]; then
         debug_log "Codex Desktop state left intact by default"
     fi
 }
 # Design and creative tools.
 clean_design_tools() {
-    safe_clean ~/Library/Caches/com.bohemiancoding.sketch3/* "Sketch cache"
-    safe_clean ~/Library/Application\ Support/com.bohemiancoding.sketch3/cache/* "Sketch app cache"
-    safe_clean ~/Library/Caches/Adobe/* "Adobe cache"
-    safe_clean ~/Library/Caches/com.adobe.*/* "Adobe app caches"
-    safe_clean ~/Library/Caches/com.figma.Desktop/* "Figma cache"
-    safe_clean ~/Library/Application\ Support/Adobe/Common/Media\ Cache\ Files/* "Adobe media cache files"
+    safe_clean ~/Library/Caches/com.bohemiancoding.sketch3/* "Sketch 缓存"
+    safe_clean ~/Library/Application\ Support/com.bohemiancoding.sketch3/cache/* "Sketch 应用缓存"
+    safe_clean ~/Library/Caches/Adobe/* "Adobe 缓存"
+    safe_clean ~/Library/Caches/com.adobe.*/* "Adobe 应用缓存"
+    safe_clean ~/Library/Caches/com.figma.Desktop/* "Figma 缓存"
+    safe_clean ~/Library/Application\ Support/Adobe/Common/Media\ Cache\ Files/* "Adobe 媒体缓存文件"
 }
 # Video editing tools.
 final_cut_pro_is_running() {
@@ -994,7 +994,7 @@ clean_final_cut_pro_generated_caches() {
     final_cut_pro_is_running || process_state=$?
     if [[ $process_state -ne 1 ]]; then
         if [[ $process_state -eq 2 ]]; then
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Final Cut Pro generated caches · skipped (process state unknown)"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} Final Cut Pro 生成缓存 · 已跳过（进程状态未知）"
             note_activity
         else
             mole_defer_cleanup_family "Final Cut Pro"
@@ -1014,9 +1014,9 @@ clean_final_cut_pro_generated_caches() {
     # field feedback.
     _app_cache_safe_clean_guarded \
         _final_cut_pro_delete_guard_allows \
-        "Final Cut Pro generated caches" \
+        "Final Cut Pro 生成缓存" \
         "${fcp_cache_targets[@]}" \
-        "Final Cut Pro generated cache" || true
+        "Final Cut Pro 生成缓存" || true
 }
 
 jianying_pro_is_running() {
@@ -1051,7 +1051,7 @@ clean_jianying_pro_generated_caches() {
     if [[ $process_state -ne 1 ]]; then
         local skip_reason="JianyingPro running"
         [[ $process_state -eq 2 ]] && skip_reason="process state unknown"
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} JianyingPro generated caches · skipped ($skip_reason)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 剪映专业版生成缓存 · 已跳过（$(mole_localize_guard_reason "$skip_reason")）"
         note_activity
         return 0
     fi
@@ -1107,16 +1107,16 @@ clean_jianying_pro_generated_caches() {
 
     [[ ${#targets[@]} -gt 0 ]] || return 0
 
-    safe_clean "${targets[@]}" "JianyingPro generated cache"
+    safe_clean "${targets[@]}" "JianyingPro 生成缓存"
 }
 
 clean_video_tools() {
-    safe_clean ~/Library/Caches/net.telestream.screenflow10/* "ScreenFlow cache"
-    safe_clean ~/Library/Caches/com.apple.FinalCut/* "Final Cut Pro cache"
+    safe_clean ~/Library/Caches/net.telestream.screenflow10/* "ScreenFlow 缓存"
+    safe_clean ~/Library/Caches/com.apple.FinalCut/* "Final Cut Pro 缓存"
     clean_final_cut_pro_generated_caches
-    safe_clean ~/Library/Caches/com.blackmagic-design.DaVinciResolve/* "DaVinci Resolve cache"
+    safe_clean ~/Library/Caches/com.blackmagic-design.DaVinciResolve/* "DaVinci Resolve 缓存"
     safe_clean ~/Movies/CacheClip/* "DaVinci Resolve CacheClip"
-    safe_clean ~/Library/Caches/com.adobe.PremierePro.*/* "Premiere Pro cache"
+    safe_clean ~/Library/Caches/com.adobe.PremierePro.*/* "Premiere Pro 缓存"
     clean_jianying_pro_generated_caches
 }
 # Autodesk Fusion helpers (AcCoreConsole, ADPClientService) outlive the main
@@ -1549,7 +1549,7 @@ clean_autodesk_fusion_old_bundles() {
 
     local _MOLE_AUTODESK_FUSION_PRODUCTION_ROOT=""
     if ! _autodesk_fusion_trusted_production_root "$production_dir"; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (production root not trusted)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（production root not trusted）"
         note_activity
         return 0
     fi
@@ -1561,13 +1561,13 @@ clean_autodesk_fusion_old_bundles() {
     _autodesk_fusion_resolve_current_version \
         "$production_root" "$cleanup_deadline" || current_rc=$?
     if [[ $current_rc -eq 124 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (current version probe timed out)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（current version probe timed out）"
         note_activity
         return 0
     elif [[ $current_rc -ge 128 ]]; then
         return "$current_rc"
     elif [[ $current_rc -ne 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (current version unknown)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（current version unknown）"
         note_activity
         return 0
     fi
@@ -1579,13 +1579,13 @@ clean_autodesk_fusion_old_bundles() {
         "$production_root" "$current_dir" "$current_version" \
         "$cleanup_deadline" || plan_rc=$?
     if [[ $plan_rc -eq 124 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (inventory timed out)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（inventory timed out）"
         note_activity
         return 0
     elif [[ $plan_rc -ge 128 ]]; then
         return "$plan_rc"
     elif [[ $plan_rc -ne 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (inventory incomplete)"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（inventory incomplete）"
         note_activity
         return 0
     fi
@@ -1595,7 +1595,7 @@ clean_autodesk_fusion_old_bundles() {
     autodesk_cache_process_state || process_state=$?
     if [[ $process_state -ne 1 ]]; then
         if [[ $process_state -eq 2 ]]; then
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · skipped (process state unknown)"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已跳过（进程状态未知）"
             note_activity
         else
             mole_defer_cleanup_family "Autodesk Fusion"
@@ -1709,11 +1709,11 @@ clean_autodesk_fusion_old_bundles() {
         local size_human
         size_human=$(bytes_to_human "$((total_size * 1024))")
         if [[ "${DRY_RUN:-false}" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Autodesk Fusion old versions${NC} · ${YELLOW}${cleaned_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Autodesk Fusion 旧版本${NC} · ${YELLOW}${cleaned_count} 个目录，$(colorize_human_size "$size_human") ${YELLOW}预览${NC}"
         else
             local line_color
             line_color=$(cleanup_result_color_kb "$total_size")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Autodesk Fusion old versions${NC} · ${line_color}${cleaned_count} dirs, $size_human${NC}"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Autodesk Fusion 旧版本${NC} · ${line_color}${cleaned_count} 个目录，${size_human}${NC}"
         fi
         files_cleaned=$((${files_cleaned:-0} + cleaned_count))
         total_size_cleaned=$((${total_size_cleaned:-0} + total_size))
@@ -1721,19 +1721,19 @@ clean_autodesk_fusion_old_bundles() {
         note_activity
     fi
     if [[ $failed_count -gt 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · ${failed_count} failed"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · ${failed_count} 项失败"
         note_activity
     fi
     if [[ -n "$stopped_reason" ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion old versions · stopped (${stopped_reason})"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk Fusion 旧版本 · 已停止（$(mole_localize_guard_reason "$stopped_reason")）"
         note_activity
     fi
 }
 
 # 3D and CAD tools.
 clean_3d_tools() {
-    safe_clean ~/Library/Caches/org.blenderfoundation.blender/* "Blender cache"
-    safe_clean ~/Library/Caches/com.maxon.cinema4d/* "Cinema 4D cache"
+    safe_clean ~/Library/Caches/org.blenderfoundation.blender/* "Blender 缓存"
+    safe_clean ~/Library/Caches/com.maxon.cinema4d/* "Cinema 4D 缓存"
 
     local -a autodesk_targets=()
     local autodesk_entry
@@ -1750,7 +1750,7 @@ clean_3d_tools() {
         autodesk_cache_process_state || process_state=$?
         if [[ $process_state -ne 1 ]]; then
             if [[ $process_state -eq 2 ]]; then
-                echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk cache · skipped (process state unknown)"
+                echo -e "  ${GRAY}${ICON_WARNING}${NC} Autodesk 缓存 · 已跳过（进程状态未知）"
                 note_activity
             else
                 mole_defer_cleanup_family "Autodesk"
@@ -1758,13 +1758,13 @@ clean_3d_tools() {
         else
             _app_cache_safe_clean_guarded \
                 _autodesk_cache_delete_guard_allows \
-                "Autodesk cache" \
+                "Autodesk 缓存" \
                 "${autodesk_targets[@]}" \
-                "Autodesk cache" || true
+                "Autodesk 缓存" || true
         fi
     fi
 
-    safe_clean ~/Library/Caches/com.sketchup.*/* "SketchUp cache"
+    safe_clean ~/Library/Caches/com.sketchup.*/* "SketchUp 缓存"
 
     # Remove old Autodesk Fusion app bundles left by the in-app updater.
     # The updater keeps every version under webdeploy/production and leaves an
@@ -1774,18 +1774,18 @@ clean_3d_tools() {
 }
 # Productivity apps.
 clean_productivity_apps() {
-    safe_clean ~/Library/Caches/com.tw93.MiaoYan/* "MiaoYan cache"
-    safe_clean ~/Library/Caches/com.klee.desktop/* "Klee cache"
-    safe_clean ~/Library/Caches/klee_desktop/* "Klee desktop cache"
-    safe_clean ~/Library/Caches/com.orabrowser.app/* "Ora browser cache"
-    safe_clean ~/Library/Caches/com.filo.client/* "Filo cache"
-    safe_clean ~/Library/Caches/com.flomoapp.mac/* "Flomo cache"
-    safe_clean ~/Library/Application\ Support/Quark/Cache/videoCache/* "Quark video cache"
-    safe_clean ~/Library/Containers/com.ranchero.NetNewsWire-Evergreen/Data/Library/Caches/* "NetNewsWire cache"
-    safe_clean ~/Library/Containers/com.ideasoncanvas.mindnode/Data/Library/Caches/* "MindNode cache"
-    safe_clean ~/.cache/kaku/* "Kaku cache"
-    safe_clean ~/Library/Application\ Support/spacedrive/thumbnails/* "Spacedrive thumbnail cache"
-    safe_clean ~/Library/Containers/is.follow/Data/Library/Application\ Support/Folo/Cache/Cache_Data/* "Folo cache"
+    safe_clean ~/Library/Caches/com.tw93.MiaoYan/* "妙言缓存"
+    safe_clean ~/Library/Caches/com.klee.desktop/* "Klee 缓存"
+    safe_clean ~/Library/Caches/klee_desktop/* "Klee 桌面缓存"
+    safe_clean ~/Library/Caches/com.orabrowser.app/* "Ora 浏览器缓存"
+    safe_clean ~/Library/Caches/com.filo.client/* "Filo 缓存"
+    safe_clean ~/Library/Caches/com.flomoapp.mac/* "flomo 缓存"
+    safe_clean ~/Library/Application\ Support/Quark/Cache/videoCache/* "夸克视频缓存"
+    safe_clean ~/Library/Containers/com.ranchero.NetNewsWire-Evergreen/Data/Library/Caches/* "NetNewsWire 缓存"
+    safe_clean ~/Library/Containers/com.ideasoncanvas.mindnode/Data/Library/Caches/* "MindNode 缓存"
+    safe_clean ~/.cache/kaku/* "Kaku 缓存"
+    safe_clean ~/Library/Application\ Support/spacedrive/thumbnails/* "Spacedrive 缩略图缓存"
+    safe_clean ~/Library/Containers/is.follow/Data/Library/Application\ Support/Folo/Cache/Cache_Data/* "Folo 缓存"
 }
 # Music/media players (protect Spotify offline music).
 clean_media_players() {
@@ -1802,66 +1802,66 @@ clean_media_players() {
         has_offline_music=true
     fi
     if [[ "$has_offline_music" == "true" ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Spotify cache protected · offline music detected"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} Spotify 缓存受保护 · 检测到离线音乐"
         note_activity
     else
-        safe_clean ~/Library/Caches/com.spotify.client/* "Spotify cache"
+        safe_clean ~/Library/Caches/com.spotify.client/* "Spotify 缓存"
     fi
-    safe_clean ~/Library/Caches/com.apple.Music "Apple Music cache"
-    safe_clean ~/Library/Caches/com.apple.podcasts "Apple Podcasts cache"
+    safe_clean ~/Library/Caches/com.apple.Music "Apple Music 缓存"
+    safe_clean ~/Library/Caches/com.apple.podcasts "Apple Podcasts 缓存"
     # Apple Podcasts sandbox container: zombie sparse files and stale artwork cache (#387)
-    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/StreamedMedia "Podcasts streamed media"
-    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*.heic "Podcasts artwork cache"
-    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*.img "Podcasts image cache"
-    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*CFNetworkDownload*.tmp "Podcasts download temp"
-    safe_clean ~/Library/Caches/com.apple.TV/* "Apple TV cache"
-    safe_clean ~/Library/Caches/tv.plex.player.desktop "Plex cache"
-    safe_clean ~/Library/Caches/com.netease.163music "NetEase Music cache"
-    safe_clean ~/Library/Caches/com.tencent.QQMusic/* "QQ Music cache"
-    safe_clean ~/Library/Caches/com.tencent.QQMusicMac/* "QQ Music Mac cache"
+    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/StreamedMedia "播客流媒体"
+    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*.heic "播客封面缓存"
+    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*.img "播客图片缓存"
+    safe_clean ~/Library/Containers/com.apple.podcasts/Data/tmp/*CFNetworkDownload*.tmp "播客下载临时文件"
+    safe_clean ~/Library/Caches/com.apple.TV/* "Apple TV 缓存"
+    safe_clean ~/Library/Caches/tv.plex.player.desktop "Plex 缓存"
+    safe_clean ~/Library/Caches/com.netease.163music "网易云音乐缓存"
+    safe_clean ~/Library/Caches/com.tencent.QQMusic/* "QQ 音乐缓存"
+    safe_clean ~/Library/Caches/com.tencent.QQMusicMac/* "QQ 音乐 Mac 缓存"
     # QQ Music Mac sandboxed container caches (protect offline downloads in iDownloadProxy).
     local _qqmusic_container="$HOME/Library/Containers/com.tencent.QQMusicMac/Data/Library/Application Support/QQMusicMac"
     if [[ -d "$_qqmusic_container" ]]; then
-        safe_clean "$_qqmusic_container/iRRCache"/* "QQ Music streaming cache"
-        safe_clean "$_qqmusic_container/iLog"/* "QQ Music logs"
-        safe_clean "$_qqmusic_container/iCache"/* "QQ Music cache"
-        safe_clean "$_qqmusic_container/iTemp"/* "QQ Music temp files"
+        safe_clean "$_qqmusic_container/iRRCache"/* "QQ 音乐流媒体缓存"
+        safe_clean "$_qqmusic_container/iLog"/* "QQ 音乐日志"
+        safe_clean "$_qqmusic_container/iCache"/* "QQ 音乐缓存"
+        safe_clean "$_qqmusic_container/iTemp"/* "QQ 音乐临时文件"
     fi
-    safe_clean ~/Library/Containers/com.tencent.QQMusicMac/Data/Library/Caches/* "QQ Music container cache"
-    safe_clean ~/Library/Caches/com.kugou.mac/* "Kugou Music cache"
-    safe_clean ~/Library/Caches/com.kuwo.mac/* "Kuwo Music cache"
+    safe_clean ~/Library/Containers/com.tencent.QQMusicMac/Data/Library/Caches/* "QQ 音乐容器缓存"
+    safe_clean ~/Library/Caches/com.kugou.mac/* "酷狗音乐缓存"
+    safe_clean ~/Library/Caches/com.kuwo.mac/* "酷我音乐缓存"
 }
 # Video players.
 clean_video_players() {
-    safe_clean ~/Library/Caches/com.colliderli.iina "IINA cache"
-    safe_clean ~/Library/Caches/org.videolan.vlc "VLC cache"
-    safe_clean ~/Library/Caches/io.mpv "MPV cache"
-    safe_clean ~/Library/Caches/com.iqiyi.player "iQIYI cache"
-    safe_clean ~/Library/Caches/com.tencent.tenvideo "Tencent Video cache"
+    safe_clean ~/Library/Caches/com.colliderli.iina "IINA 缓存"
+    safe_clean ~/Library/Caches/org.videolan.vlc "VLC 缓存"
+    safe_clean ~/Library/Caches/io.mpv "MPV 缓存"
+    safe_clean ~/Library/Caches/com.iqiyi.player "爱奇艺缓存"
+    safe_clean ~/Library/Caches/com.tencent.tenvideo "腾讯视频缓存"
     # Tencent Video sandboxed container caches.
     local _tenvideo_as="$HOME/Library/Containers/com.tencent.tenvideo/Data/Library/Application Support"
     if [[ -d "$_tenvideo_as" ]]; then
-        safe_clean "$_tenvideo_as/Upgrade"/* "Tencent Video old installer"
-        safe_clean "$_tenvideo_as/VideoNative"/* "Tencent Video native cache"
-        safe_clean "$_tenvideo_as/documentCache"/* "Tencent Video document cache"
+        safe_clean "$_tenvideo_as/Upgrade"/* "腾讯视频旧安装包"
+        safe_clean "$_tenvideo_as/VideoNative"/* "腾讯视频原生缓存"
+        safe_clean "$_tenvideo_as/documentCache"/* "腾讯视频文档缓存"
     fi
-    safe_clean ~/Library/Caches/tv.danmaku.bili/* "Bilibili cache"
-    safe_clean ~/Library/Caches/com.douyu.*/* "Douyu cache"
-    safe_clean ~/Library/Caches/com.huya.*/* "Huya cache"
-    safe_clean ~/Library/Containers/com.wuziqi.SenPlayer/Data/tmp/videoCache/* "SenPlayer video cache"
-    safe_clean ~/Library/Caches/smart.stremio*/* "Stremio cache"
+    safe_clean ~/Library/Caches/tv.danmaku.bili/* "哔哩哔哩缓存"
+    safe_clean ~/Library/Caches/com.douyu.*/* "斗鱼缓存"
+    safe_clean ~/Library/Caches/com.huya.*/* "虎牙缓存"
+    safe_clean ~/Library/Containers/com.wuziqi.SenPlayer/Data/tmp/videoCache/* "SenPlayer 视频缓存"
+    safe_clean ~/Library/Caches/smart.stremio*/* "Stremio 缓存"
     if [[ -d ~/Library/Application\ Support/stremio ]]; then
-        safe_clean ~/Library/Application\ Support/stremio/stremio-server/stremio-cache/* "Stremio server cache"
+        safe_clean ~/Library/Application\ Support/stremio/stremio-server/stremio-cache/* "Stremio 服务器缓存"
     fi
 }
 # Download managers.
 clean_download_managers() {
-    safe_clean ~/Library/Caches/net.xmac.aria2gui "Aria2 cache"
-    safe_clean ~/Library/Caches/org.m0k.transmission "Transmission cache"
-    safe_clean ~/Library/Caches/com.qbittorrent.qBittorrent "qBittorrent cache"
-    safe_clean ~/Library/Caches/com.downie.Downie-* "Downie cache"
-    safe_clean ~/Library/Caches/com.folx.*/* "Folx cache"
-    safe_clean ~/Library/Caches/com.charlessoft.pacifist/* "Pacifist cache"
+    safe_clean ~/Library/Caches/net.xmac.aria2gui "Aria2 缓存"
+    safe_clean ~/Library/Caches/org.m0k.transmission "Transmission 缓存"
+    safe_clean ~/Library/Caches/com.qbittorrent.qBittorrent "qBittorrent 缓存"
+    safe_clean ~/Library/Caches/com.downie.Downie-* "Downie 缓存"
+    safe_clean ~/Library/Caches/com.folx.*/* "Folx 缓存"
+    safe_clean ~/Library/Caches/com.charlessoft.pacifist/* "Pacifist 缓存"
     clean_neatdm_stale_segments || return $?
 }
 # Neat Download Manager: clean stale incomplete download segments.
@@ -1920,11 +1920,11 @@ clean_neatdm_stale_segments() {
         local size_human
         size_human=$(bytes_to_human "$((stale_kb * 1024))")
         if [[ "$DRY_RUN" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} NeatDM stale downloads · ${stale_count} items, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} NeatDM 过期下载 · ${stale_count} 个项目，$(colorize_human_size "$size_human") ${YELLOW}预览${NC}"
         else
             local line_color
             line_color=$(cleanup_result_color_kb "$stale_kb")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} NeatDM stale downloads · ${stale_count} items, ${line_color}${size_human}${NC}"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} NeatDM 过期下载 · ${stale_count} 个项目，${line_color}${size_human}${NC}"
         fi
         files_cleaned=$((files_cleaned + stale_count))
         total_size_cleaned=$((total_size_cleaned + stale_kb))
@@ -1934,119 +1934,119 @@ clean_neatdm_stale_segments() {
 }
 # Gaming platforms.
 clean_gaming_platforms() {
-    safe_clean ~/Library/Caches/com.valvesoftware.steam/* "Steam cache"
+    safe_clean ~/Library/Caches/com.valvesoftware.steam/* "Steam 缓存"
     if [[ -d ~/Library/Application\ Support/Steam ]]; then
-        safe_clean ~/Library/Application\ Support/Steam/htmlcache/* "Steam web cache"
-        safe_clean ~/Library/Application\ Support/Steam/appcache/* "Steam app cache"
-        safe_clean ~/Library/Application\ Support/Steam/depotcache/* "Steam depot cache"
-        safe_clean ~/Library/Application\ Support/Steam/steamapps/shadercache/* "Steam shader cache"
-        safe_clean ~/Library/Application\ Support/Steam/logs/* "Steam logs"
+        safe_clean ~/Library/Application\ Support/Steam/htmlcache/* "Steam Web 缓存"
+        safe_clean ~/Library/Application\ Support/Steam/appcache/* "Steam 应用缓存"
+        safe_clean ~/Library/Application\ Support/Steam/depotcache/* "Steam depot 缓存"
+        safe_clean ~/Library/Application\ Support/Steam/steamapps/shadercache/* "Steam 着色器缓存"
+        safe_clean ~/Library/Application\ Support/Steam/logs/* "Steam 日志"
     fi
-    safe_clean ~/Library/Caches/com.epicgames.EpicGamesLauncher/* "Epic Games cache"
-    safe_clean ~/Library/Caches/com.blizzard.Battle.net/* "Battle.net cache"
+    safe_clean ~/Library/Caches/com.epicgames.EpicGamesLauncher/* "Epic Games 缓存"
+    safe_clean ~/Library/Caches/com.blizzard.Battle.net/* "Battle.net 缓存"
     if [[ -d ~/Library/Application\ Support/Battle.net ]]; then
-        safe_clean ~/Library/Application\ Support/Battle.net/Cache/* "Battle.net app cache"
+        safe_clean ~/Library/Application\ Support/Battle.net/Cache/* "Battle.net 应用缓存"
     fi
-    safe_clean ~/Library/Caches/com.ea.*/* "EA Origin cache"
-    safe_clean ~/Library/Caches/com.gog.galaxy/* "GOG Galaxy cache"
-    safe_clean ~/Library/Caches/com.riotgames.*/* "Riot Games cache"
+    safe_clean ~/Library/Caches/com.ea.*/* "EA Origin 缓存"
+    safe_clean ~/Library/Caches/com.gog.galaxy/* "GOG Galaxy 缓存"
+    safe_clean ~/Library/Caches/com.riotgames.*/* "Riot Games 缓存"
     if [[ -d ~/Library/Application\ Support/minecraft ]]; then
-        safe_clean ~/Library/Application\ Support/minecraft/logs/* "Minecraft logs"
-        safe_clean ~/Library/Application\ Support/minecraft/crash-reports/* "Minecraft crash reports"
-        safe_clean ~/Library/Application\ Support/minecraft/webcache/* "Minecraft web cache"
-        safe_clean ~/Library/Application\ Support/minecraft/webcache2/* "Minecraft web cache 2"
+        safe_clean ~/Library/Application\ Support/minecraft/logs/* "Minecraft 日志"
+        safe_clean ~/Library/Application\ Support/minecraft/crash-reports/* "Minecraft 崩溃报告"
+        safe_clean ~/Library/Application\ Support/minecraft/webcache/* "Minecraft Web 缓存"
+        safe_clean ~/Library/Application\ Support/minecraft/webcache2/* "Minecraft Web 缓存 2"
     fi
     if [[ -d ~/.lunarclient ]]; then
-        safe_clean ~/.lunarclient/game-cache/* "Lunar Client game cache"
-        safe_clean ~/.lunarclient/launcher-cache/* "Lunar Client launcher cache"
-        safe_clean ~/.lunarclient/logs/* "Lunar Client logs"
-        safe_clean ~/.lunarclient/offline/*/logs/* "Lunar Client offline logs"
-        safe_clean ~/.lunarclient/offline/files/*/logs/* "Lunar Client offline file logs"
+        safe_clean ~/.lunarclient/game-cache/* "Lunar Client 游戏缓存"
+        safe_clean ~/.lunarclient/launcher-cache/* "Lunar Client 启动器缓存"
+        safe_clean ~/.lunarclient/logs/* "Lunar Client 日志"
+        safe_clean ~/.lunarclient/offline/*/logs/* "Lunar Client 离线日志"
+        safe_clean ~/.lunarclient/offline/files/*/logs/* "Lunar Client 离线文件日志"
     fi
-    safe_clean ~/Library/Caches/net.pcsx2.PCSX2/* "PCSX2 cache"
+    safe_clean ~/Library/Caches/net.pcsx2.PCSX2/* "PCSX2 缓存"
     if [[ -d ~/Library/Application\ Support/PCSX2 ]]; then
-        safe_clean ~/Library/Application\ Support/PCSX2/cache/* "PCSX2 shader cache"
-        safe_clean ~/Library/Logs/PCSX2/* "PCSX2 logs"
+        safe_clean ~/Library/Application\ Support/PCSX2/cache/* "PCSX2 着色器缓存"
+        safe_clean ~/Library/Logs/PCSX2/* "PCSX2 日志"
     fi
     if [[ -d ~/Library/Application\ Support/rpcs3 ]]; then
-        safe_clean ~/Library/Caches/net.rpcs3.rpcs3/* "RPCS3 cache"
-        safe_clean ~/Library/Application\ Support/rpcs3/logs/* "RPCS3 logs"
+        safe_clean ~/Library/Caches/net.rpcs3.rpcs3/* "RPCS3 缓存"
+        safe_clean ~/Library/Application\ Support/rpcs3/logs/* "RPCS3 日志"
     fi
 }
 # Translation/dictionary apps.
 clean_translation_apps() {
-    safe_clean ~/Library/Caches/com.youdao.YoudaoDict "Youdao Dictionary cache"
-    safe_clean ~/Library/Caches/com.eudic.* "Eudict cache"
-    safe_clean ~/Library/Caches/com.bob-build.Bob "Bob Translation cache"
+    safe_clean ~/Library/Caches/com.youdao.YoudaoDict "有道词典缓存"
+    safe_clean ~/Library/Caches/com.eudic.* "欧路词典缓存"
+    safe_clean ~/Library/Caches/com.bob-build.Bob "Bob 翻译缓存"
 }
 # Screenshot/recording tools.
 clean_screenshot_tools() {
-    safe_clean ~/Library/Caches/com.cleanshot.* "CleanShot cache"
-    safe_clean ~/Library/Caches/com.reincubate.camo "Camo cache"
-    safe_clean ~/Library/Caches/com.xnipapp.xnip "Xnip cache"
+    safe_clean ~/Library/Caches/com.cleanshot.* "CleanShot 缓存"
+    safe_clean ~/Library/Caches/com.reincubate.camo "Camo 缓存"
+    safe_clean ~/Library/Caches/com.xnipapp.xnip "Xnip 缓存"
 }
 # Email clients.
 clean_email_clients() {
-    safe_clean ~/Library/Caches/com.readdle.smartemail-Mac "Spark cache"
-    safe_clean ~/Library/Caches/com.airmail.* "Airmail cache"
+    safe_clean ~/Library/Caches/com.readdle.smartemail-Mac "Spark 缓存"
+    safe_clean ~/Library/Caches/com.airmail.* "Airmail 缓存"
 }
 # Task management apps.
 clean_task_apps() {
-    safe_clean ~/Library/Caches/com.todoist.mac.Todoist "Todoist cache"
-    safe_clean ~/Library/Caches/com.any.do.* "Any.do cache"
+    safe_clean ~/Library/Caches/com.todoist.mac.Todoist "Todoist 缓存"
+    safe_clean ~/Library/Caches/com.any.do.* "Any.do 缓存"
 }
 # Shell/terminal utilities.
 clean_shell_utils() {
-    safe_clean ~/.zcompdump* "Zsh completion cache"
-    safe_clean ~/.lesshst "less history"
-    safe_clean ~/.viminfo.tmp "Vim temporary files"
-    safe_clean ~/.wget-hsts "wget HSTS cache"
-    safe_clean ~/.cacher/logs/* "Cacher logs"
-    safe_clean ~/.kite/logs/* "Kite logs"
-    safe_clean ~/Library/Caches/dev.warp.Warp-Stable/* "Warp cache"
-    safe_clean ~/Library/Logs/warp.log "Warp log"
-    safe_clean ~/Library/Caches/SentryCrash/Warp/* "Warp Sentry crash reports"
-    safe_clean ~/Library/Caches/com.mitchellh.ghostty/* "Ghostty cache"
+    safe_clean ~/.zcompdump* "Zsh 补全缓存"
+    safe_clean ~/.lesshst "less 历史"
+    safe_clean ~/.viminfo.tmp "Vim 临时文件"
+    safe_clean ~/.wget-hsts "wget HSTS 缓存"
+    safe_clean ~/.cacher/logs/* "Cacher 日志"
+    safe_clean ~/.kite/logs/* "Kite 日志"
+    safe_clean ~/Library/Caches/dev.warp.Warp-Stable/* "Warp 缓存"
+    safe_clean ~/Library/Logs/warp.log "Warp 日志"
+    safe_clean ~/Library/Caches/SentryCrash/Warp/* "Warp Sentry 崩溃报告"
+    safe_clean ~/Library/Caches/com.mitchellh.ghostty/* "Ghostty 缓存"
 }
 # Input methods and system utilities.
 clean_system_utils() {
-    safe_clean ~/Library/Caches/com.runjuu.Input-Source-Pro/* "Input Source Pro cache"
-    safe_clean ~/Library/Caches/macos-wakatime.WakaTime/* "WakaTime cache"
+    safe_clean ~/Library/Caches/com.runjuu.Input-Source-Pro/* "Input Source Pro 缓存"
+    safe_clean ~/Library/Caches/macos-wakatime.WakaTime/* "WakaTime 缓存"
     # WeType input method (image and dict update cache, not engine or user dict)
-    safe_clean ~/Library/Application\ Support/WeType/com.onevcat.Kingfisher.ImageCache.WeType/* "WeType image cache"
-    safe_clean ~/Library/Application\ Support/WeType/DictUpdate/* "WeType dict update cache"
+    safe_clean ~/Library/Application\ Support/WeType/com.onevcat.Kingfisher.ImageCache.WeType/* "WeType 图片缓存"
+    safe_clean ~/Library/Application\ Support/WeType/DictUpdate/* "WeType 词库更新缓存"
     # mihomo-party proxy tool (Electron)
     if [[ -d ~/Library/Application\ Support/mihomo-party ]]; then
-        safe_clean ~/Library/Application\ Support/mihomo-party/Cache/* "mihomo-party cache"
-        safe_clean ~/Library/Application\ Support/mihomo-party/Code\ Cache/* "mihomo-party code cache"
-        safe_clean ~/Library/Application\ Support/mihomo-party/GPUCache/* "mihomo-party GPU cache"
-        safe_clean ~/Library/Application\ Support/mihomo-party/DawnGraphiteCache/* "mihomo-party Dawn cache"
-        safe_clean ~/Library/Application\ Support/mihomo-party/DawnWebGPUCache/* "mihomo-party WebGPU cache"
-        safe_clean ~/Library/Application\ Support/mihomo-party/logs/* "mihomo-party logs"
+        safe_clean ~/Library/Application\ Support/mihomo-party/Cache/* "mihomo-party 缓存"
+        safe_clean ~/Library/Application\ Support/mihomo-party/Code\ Cache/* "mihomo-party 代码缓存"
+        safe_clean ~/Library/Application\ Support/mihomo-party/GPUCache/* "mihomo-party GPU 缓存"
+        safe_clean ~/Library/Application\ Support/mihomo-party/DawnGraphiteCache/* "mihomo-party Dawn 缓存"
+        safe_clean ~/Library/Application\ Support/mihomo-party/DawnWebGPUCache/* "mihomo-party WebGPU 缓存"
+        safe_clean ~/Library/Application\ Support/mihomo-party/logs/* "mihomo-party 日志"
     fi
     # Stash proxy tool
-    safe_clean ~/Library/Caches/ws.stash.app.mac/* "Stash cache"
+    safe_clean ~/Library/Caches/ws.stash.app.mac/* "Stash 缓存"
 }
 # Note-taking apps.
 clean_note_apps() {
-    safe_clean ~/Library/Caches/notion.id/* "Notion cache"
-    safe_clean ~/Library/Caches/md.obsidian/* "Obsidian cache"
-    safe_clean ~/Library/Caches/com.logseq.*/* "Logseq cache"
-    safe_clean ~/Library/Caches/com.bear-writer.*/* "Bear cache"
-    safe_clean ~/Library/Caches/com.evernote.*/* "Evernote cache"
-    safe_clean ~/Library/Caches/com.yinxiang.*/* "Yinxiang Note cache"
+    safe_clean ~/Library/Caches/notion.id/* "Notion 缓存"
+    safe_clean ~/Library/Caches/md.obsidian/* "Obsidian 缓存"
+    safe_clean ~/Library/Caches/com.logseq.*/* "Logseq 缓存"
+    safe_clean ~/Library/Caches/com.bear-writer.*/* "Bear 缓存"
+    safe_clean ~/Library/Caches/com.evernote.*/* "Evernote 缓存"
+    safe_clean ~/Library/Caches/com.yinxiang.*/* "印象笔记缓存"
 }
 # Launchers and automation tools.
 clean_launcher_apps() {
-    safe_clean ~/Library/Caches/com.runningwithcrayons.Alfred/* "Alfred cache"
-    safe_clean ~/Library/Caches/cx.c3.theunarchiver/* "The Unarchiver cache"
+    safe_clean ~/Library/Caches/com.runningwithcrayons.Alfred/* "Alfred 缓存"
+    safe_clean ~/Library/Caches/cx.c3.theunarchiver/* "The Unarchiver 缓存"
 }
 # Remote desktop tools.
 clean_remote_desktop() {
-    safe_clean ~/Library/Caches/com.teamviewer.*/* "TeamViewer cache"
-    safe_clean ~/Library/Caches/com.anydesk.*/* "AnyDesk cache"
-    safe_clean ~/Library/Caches/com.todesk.*/* "ToDesk cache"
-    safe_clean ~/Library/Caches/com.sunlogin.*/* "Sunlogin cache"
+    safe_clean ~/Library/Caches/com.teamviewer.*/* "TeamViewer 缓存"
+    safe_clean ~/Library/Caches/com.anydesk.*/* "AnyDesk 缓存"
+    safe_clean ~/Library/Caches/com.todesk.*/* "ToDesk 缓存"
+    safe_clean ~/Library/Caches/com.sunlogin.*/* "向日葵缓存"
 }
 # Main entry for GUI app cleanup.
 clean_user_gui_applications() {

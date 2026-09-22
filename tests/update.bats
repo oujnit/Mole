@@ -325,7 +325,7 @@ SCRIPT
 		"$manual_bin/mo" update
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Mole installation needs repair"* ]] || return 1
+	[[ "$output" == *"Mole 安装需要修复"* ]] || return 1
 	[[ "$output" == *"missing analyze-go"* ]] || return 1
 	[ -f "$installer_args_log" ]
 	if grep -q -- "--update" "$installer_args_log"; then
@@ -396,10 +396,10 @@ SCRIPT
 		"$manual_bin/mo" update
 
 	[ "$status" -eq 1 ] || return 1
-	[[ "$output" == *"Unable to check for updates"* ]] || return 1
+	[[ "$output" == *"无法检查更新"* ]] || return 1
 	[[ "$output" == *"https://github.com"* ]] || return 1
 	# The bounded retry must not run behind a blank screen.
-	[[ "$output" == *"Checking for updates"* ]] || return 1
+	[[ "$output" == *"正在检查更新"* ]] || return 1
 	# Two endpoints per round, three bounded rounds.
 	[ "$(wc -l < "$curl_attempt_log" | tr -d ' ')" -eq 6 ]
 }
@@ -448,8 +448,8 @@ SCRIPT
 
 	# Round one is done but the resolver has not finished: the label must already
 	# be visible, and the final verdict must not be.
-	[[ "$mid_output" == *"Checking for updates"* ]] || return 1
-	[[ "$mid_output" != *"Unable to check for updates"* ]]
+	[[ "$mid_output" == *"正在检查更新"* ]] || return 1
+	[[ "$mid_output" != *"无法检查更新"* ]]
 }
 
 @test "mo update targets the invoked manual install, not another Homebrew mole in PATH" {
@@ -518,7 +518,7 @@ SCRIPT
 		"$manual_bin/mo" update --nightly
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Already on latest nightly, e31d46f"* ]] || return 1
+	[[ "$output" == *"已是最新 nightly，e31d46f"* ]] || return 1
 	[ ! -e "$installer_args_log" ]
 	grep -q "api.github.com/repos/tw93/mole/commits/main" "$curl_url_log"
 	if grep -q "raw.githubusercontent.com/tw93/mole/main/install.sh" "$curl_url_log"; then
@@ -557,7 +557,7 @@ SCRIPT
 		"$manual_bin/mo" update --nightly
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Already on latest nightly, e31d46f"* ]] || return 1
+	[[ "$output" == *"已是最新 nightly，e31d46f"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
 	[ ! -e "$git_poison_log" ] || return 1
 	grep -qF 'ls-remote https://github.com/tw93/mole.git refs/heads/main' "$git_args_log" || return 1
@@ -655,7 +655,7 @@ INNER
 		"$manual_bin/mo" update --nightly
 
 	[ "$status" -eq 1 ] || return 1
-	[[ "$output" == *"Unable to resolve latest nightly commit"* ]] || return 1
+	[[ "$output" == *"无法解析最新的 nightly 提交"* ]] || return 1
 	[[ "$output" == *"mo update --nightly --force"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
 	grep -qF 'ls-remote https://github.com/tw93/mole.git refs/heads/main' "$git_args_log" || return 1
@@ -696,7 +696,7 @@ INNER
 		elapsed=$((SECONDS - start))
 
 		[ "$status" -eq 1 ] || return 1
-		[[ "$output" == *"Unable to resolve latest nightly commit"* ]] || return 1
+		[[ "$output" == *"无法解析最新的 nightly 提交"* ]] || return 1
 		[ ! -e "$installer_args_log" ] || return 1
 		[ "$elapsed" -lt 5 ] || return 1
 	done
@@ -865,7 +865,7 @@ SCRIPT
 	chmod u+w "$manual_bin"
 
 	[ "$status" -eq 1 ] || return 1
-	[[ "$output" == *"Admin access cannot be handed to the installer"* ]] || return 1
+	[[ "$output" == *"此环境下无法将管理员权限移交给安装程序"* ]] || return 1
 	[[ "$output" == *"sudo -v && mo update"* ]] || return 1
 	[ ! -e "$installer_args_log" ] || return 1
 	[ "$(cat "$sudo_count")" -ge 2 ] || return 1
@@ -955,7 +955,7 @@ EOF
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"Already on latest version, 9.9.9"* ]] || return 1
+	[[ "$output" == *"已是最新版本，9.9.9"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_DIRECT_MO"* ]]
 }
 
@@ -978,7 +978,7 @@ EOF
 		"$fake_brew_bin/mo" update
 
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
+	[[ "$output" == *"Homebrew 升级失败"* ]] || return 1
 	[[ "$output" == *"Please update to Xcode 27.0 (or delete it)."* ]] || return 1
 	[[ "$output" == *"https://developer.apple.com/download/all/"* ]]
 }
@@ -1000,7 +1000,7 @@ EOF
 		"$fake_brew_bin/mo" update
 
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
+	[[ "$output" == *"Homebrew 升级失败"* ]] || return 1
 	[[ "$output" == *"The upgrade command was interrupted"* ]] || return 1
 	[[ "$output" != *"Updated to latest version"* ]]
 }
@@ -1024,7 +1024,7 @@ EOF
 		"$fake_brew_bin/mo" update
 
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Homebrew upgrade failed"* ]] || return 1
+	[[ "$output" == *"Homebrew 升级失败"* ]] || return 1
 	[[ "$output" == *"Error: simulated upgrade failure"* ]] || return 1
 	[[ "$output" != *"Already on latest version"* ]]
 }
@@ -1166,8 +1166,8 @@ SCRIPT
 		"$manual_bin/mo" update
 
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
-	[[ "$output" == *"Update failed"* ]] || return 1
+	[[ "$output" == *"正在从 GitHub 直接重装重试"* ]] || return 1
+	[[ "$output" == *"更新失败"* ]] || return 1
 	[[ "$output" != *"Updated to latest version"* ]] || return 1
 	[ "$("$manual_bin/mole" --version | awk 'NF {print $NF; exit}')" = "0.0.1" ]
 }
@@ -1188,8 +1188,8 @@ SCRIPT
 		"$manual_bin/mo" update --nightly
 
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
-	[[ "$output" == *"Nightly update failed"* ]] || return 1
+	[[ "$output" == *"正在从 GitHub 直接重装重试"* ]] || return 1
+	[[ "$output" == *"Nightly 更新失败"* ]] || return 1
 	[[ "$output" != *"Updated to latest version"* ]] || return 1
 	grep -qFx 'COMMIT_HASH=deadbee' "$manual_config/install_channel"
 }
@@ -1221,8 +1221,8 @@ SCRIPT
 
 	[ "$status" -eq 0 ] || return 1
 	grep -q -- "--update" "$installer_args_log" || return 1
-	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
-	[[ "$output" == *"Updated to latest version, $current_version"* ]] || return 1
+	[[ "$output" == *"正在从 GitHub 直接重装重试"* ]] || return 1
+	[[ "$output" == *"已更新到 最新版本，$current_version"* ]] || return 1
 	[ "$(cat "$heal_log")" = "V$current_version|$manual_bin|$manual_config" ]
 }
 
@@ -1252,8 +1252,8 @@ SCRIPT
 		"$manual_bin/mo" update
 
 	[ "$status" -ne 0 ] || return 1
-	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
-	[[ "$output" == *"Update failed"* ]] || return 1
+	[[ "$output" == *"正在从 GitHub 直接重装重试"* ]] || return 1
+	[[ "$output" == *"更新失败"* ]] || return 1
 	[[ "$output" == *"MOLE_VERSION=V$current_version"* ]] || return 1
 	[[ "$output" == *"--prefix $manual_bin"* ]] || return 1
 	[[ "$output" == *"--config $manual_config"* ]]
@@ -1351,8 +1351,8 @@ SCRIPT
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"Retrying with a direct reinstall"* ]] || return 1
-	[[ "$output" == *"Updated to nightly build, abc1234"* ]] || return 1
+	[[ "$output" == *"正在从 GitHub 直接重装重试"* ]] || return 1
+	[[ "$output" == *"已更新到 nightly 构建，abc1234"* ]] || return 1
 	[ "$(cat "$heal_log")" = "main|$manual_bin|$manual_config" ] || return 1
 	grep -qFx 'CHANNEL=nightly' "$manual_config/install_channel" || return 1
 	grep -qFx 'COMMIT_HASH=abc1234' "$manual_config/install_channel"
@@ -1557,7 +1557,7 @@ INNER
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"Updated to nightly build, def5678"* ]]
+	[[ "$output" == *"已更新到 nightly build，def5678"* ]]
 }
 
 @test "nightly self-heal accepts a fresh receipt without reusing a stale commit when HEAD is unknown" {
@@ -1595,7 +1595,7 @@ INSTALLER
 }
 
 # A GitHub API rate limit leaves the expected commit empty. The verified
-# reinstall must still report success instead of "Nightly update failed".
+# reinstall must still report success instead of "Nightly 更新失败".
 _update_self_heal_reinstall 0 main "$HOME/bin" "$HOME/config" "$HOME/bin/mole" "nightly build" ""
 INNER
 
@@ -1603,7 +1603,7 @@ INNER
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"Updated to nightly build"* ]] || return 1
+	[[ "$output" == *"已更新到 nightly build"* ]] || return 1
 	[[ "$output" != *"deadbee"* ]] || return 1
 	run grep -q '^COMMIT_HASH=' "$HOME/unknown-head-self-heal/config/install_channel"
 	[ "$status" -eq 1 ]

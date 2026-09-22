@@ -95,7 +95,7 @@ SCRIPT
 
     run_cleanup false
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"stopped 0 processes"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"已停止 0 个进程"* ]] || { echo "$output"; return 1; }
     [ ! -s "$HOME/kill.trace" ] || { cat "$HOME/kill.trace"; return 1; }
 }
 
@@ -141,7 +141,7 @@ EOF
 
     run_cleanup false
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"stopped 1 processes"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"已停止 1 个进程"* ]] || { echo "$output"; return 1; }
     grep -q 'KILL -TERM 902' "$HOME/kill.trace" || return 1
     # The playwright-cli daemon is spawned detached and unref'd, so ppid 1 is
     # its steady state for an active session. Killing it ends a live session.
@@ -161,7 +161,7 @@ EOF
 
     run_cleanup true
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"would stop 1 processes"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"将停止 1 个进程"* ]] || { echo "$output"; return 1; }
     [ ! -s "$HOME/kill.trace" ] || { cat "$HOME/kill.trace"; return 1; }
 }
 

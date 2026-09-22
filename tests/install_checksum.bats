@@ -89,7 +89,7 @@ test -x "$CONFIG_DIR/bin/analyze-go"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"SUCCESS:Installed analyze"* ]]
+	[[ "$output" == *"SUCCESS:已安装 analyze"* ]]
 }
 
 @test "download_binary retries transient asset and checksum failures" {
@@ -155,7 +155,7 @@ grep -qx "$content" "$CONFIG_DIR/bin/analyze-go"
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"SUCCESS:Installed analyze"* ]]
+	[[ "$output" == *"SUCCESS:已安装 analyze"* ]]
 }
 
 @test "download_binary aborts on checksum mismatch without downgrading to a source build" {
@@ -223,7 +223,7 @@ EOF
 	[[ "$output" != *"UNEXPECTED_SUCCESS"* ]] || return 1
 	[[ "$output" != *"TAMPERED_INSTALLED"* ]] || return 1
 	[[ "$output" != *"SOURCE_INSTALLED"* ]] || return 1
-	[[ "$output" == *"aborting instead of falling back"* ]]
+	[[ "$output" == *"中止安装，而非回退到未验证的构建"* ]]
 }
 
 @test "download_binary preserves the installed helper when verification and rebuild fail (#1193)" {
@@ -339,7 +339,7 @@ EOF
 	[ "$status" -eq 0 ]
 	[[ "$output" != *"SOURCE_BUILD_INVOKED"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SUCCESS"* ]] || return 1
-	[[ "$output" == *"aborting instead of falling back"* ]]
+	[[ "$output" == *"中止安装，而非回退到未验证的构建"* ]]
 }
 
 @test "download_binary aborts when SHA256SUMS cannot be downloaded" {
@@ -397,7 +397,7 @@ EOF
 	[ "$status" -eq 0 ]
 	[[ "$output" != *"SOURCE_BUILD_INVOKED"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SUCCESS"* ]] || return 1
-	[[ "$output" == *"aborting instead of falling back"* ]]
+	[[ "$output" == *"中止安装，而非回退到未验证的构建"* ]]
 }
 
 @test "download_binary verifies fallback release asset against fallback checksums" {
@@ -448,7 +448,7 @@ grep -q "fallback-binary" "$CONFIG_DIR/bin/status-go"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"SUCCESS:Installed status from V1.2.2"* ]]
+	[[ "$output" == *"SUCCESS:已从 V1.2.2 安装 status"* ]]
 }
 
 @test "download_binary aborts on fallback-tag checksum mismatch without a source build" {
@@ -513,7 +513,7 @@ EOF
 	[[ "$output" != *"SOURCE_BUILD_INVOKED"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SUCCESS"* ]] || return 1
 	[[ "$output" != *"BINARY_INSTALLED_ANYWAY"* ]] || return 1
-	[[ "$output" == *"aborting instead of falling back"* ]] || return 1
+	[[ "$output" == *"中止安装，而非回退到未验证的构建"* ]] || return 1
 }
 
 @test "install_files fails closed when sudo is unavailable, even under || caller (#update-incident)" {
@@ -561,7 +561,7 @@ EOF
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"HANDLED_FAILURE"* ]] || return 1
 	[[ "$output" == *"sudo -v && mo update"* ]] || return 1
-	[[ "$output" != *"SUCCESS:Installed mole"* ]] || return 1
+	[[ "$output" != *"SUCCESS:已安装 mole"* ]] || return 1
 	[[ "$output" != *"DOWNLOAD_CALLED"* ]] || return 1
 }
 
@@ -596,7 +596,7 @@ EOF
 	# verify_installation exits 1 on the mixed-version state.
 	[ "$status" -eq 1 ] || return 1
 	[[ "$output" != *"UNEXPECTED_PASS"* ]] || return 1
-	[[ "$output" == *"was not replaced"* ]] || return 1
+	[[ "$output" == *"未被替换"* ]] || return 1
 	[[ "$output" == *"1.45.0"* && "$output" == *"1.47.0"* ]] || return 1
 }
 
@@ -676,7 +676,7 @@ EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
 	[[ "$output" == *"OLD_RC=1"* ]] || return 1
-	[[ "$output" == *"requires macOS 12 or newer"* ]] || return 1
+	[[ "$output" == *"需要 macOS 12 或更高版本"* ]] || return 1
 	[[ "$output" == *"SUPPORTED=yes"* ]] || return 1
 }
 
@@ -968,7 +968,7 @@ awk '/^report_install_lock_failure\(\)/{inside=1; next}
          if (name != "" && errors > 0 && !next_step) {print "NO_NEXT_STEP:" name; bad=1}
          name=$1; errors=0; next_step=0; next
      }
-     inside && /log_error/{errors++; if ($0 ~ /retry/) next_step=1}
+     inside && /log_error/{errors++; if ($0 ~ /retry|重试/) next_step=1}
      END{
          if (name != "" && errors > 0 && !next_step) {print "NO_NEXT_STEP:" name; bad=1}
          exit bad
@@ -1084,7 +1084,7 @@ EOF
 @test "installer source-build guidance names the main branch explicitly" {
 	run awk '
 		/^[[:space:]]*#/ { next }
-		/piping from curl:/ {
+		/curl 管道/ {
 			seen = 1
 			if ($0 !~ /\| bash -s -- main/) bad = 1
 		}
@@ -1172,13 +1172,13 @@ download_release_checksums() { printf '%s  %s\n' "$hash" "$asset" > "$2"; return
 verify_release_attestation() { return 1; }
 out="$(verify_release_asset_checksum V1.0.0 "$asset" "$file")" && rc=0 || rc=$?
 [ "$rc" -eq 1 ] || { echo "WRONG: status1 rc=$rc want 1"; exit 1; }
-[[ "$out" == *"ERROR:Release attestation verification failed"* ]] || { echo "WRONG: status1 error missing: $out"; exit 1; }
+[[ "$out" == *"发布证明校验失败"* ]] || { echo "WRONG: status1 error missing: $out"; exit 1; }
 
 # cannot verify (status 2) + MOLE_REQUIRE_ATTESTATION=1 -> fatal
 verify_release_attestation() { return 2; }
 out="$(MOLE_REQUIRE_ATTESTATION=1 verify_release_asset_checksum V1.0.0 "$asset" "$file")" && rc=0 || rc=$?
 [ "$rc" -eq 1 ] || { echo "WRONG: require-gate rc=$rc want 1"; exit 1; }
-[[ "$out" == *"ERROR:MOLE_REQUIRE_ATTESTATION=1 set but gh"* ]] || { echo "WRONG: require-gate error missing: $out"; exit 1; }
+[[ "$out" == *"已设置 MOLE_REQUIRE_ATTESTATION=1，但 gh"* ]] || { echo "WRONG: require-gate error missing: $out"; exit 1; }
 
 # cannot verify (status 2) without the gate -> falls back to checksum-only
 verify_release_attestation() { return 2; }
@@ -1189,7 +1189,7 @@ out="$(verify_release_asset_checksum V1.0.0 "$asset" "$file")" && rc=0 || rc=$?
 verify_release_attestation() { return 0; }
 out="$(verify_release_asset_checksum V1.0.0 "$asset" "$file")" && rc=0 || rc=$?
 [ "$rc" -eq 0 ] || { echo "WRONG: verified rc=$rc want 0"; exit 1; }
-[[ "$out" == *"SUCCESS:Verified ${asset} · sha256 + attestation"* ]] || { echo "WRONG: verified success missing: $out"; exit 1; }
+[[ "$out" == *"SUCCESS:已校验 ${asset} · sha256 + 证明"* ]] || { echo "WRONG: verified success missing: $out"; exit 1; }
 
 rm -f "$file"
 EOF
@@ -1356,7 +1356,7 @@ EOF_INNER
 		return 1
 	}
 	[[ "$output" == *"ROOT_REFUSED"* ]] || return 1
-	[[ "$output" == *"Run Mole without sudo"* ]] || return 1
+	[[ "$output" == *"请不要使用 sudo 运行 Mole"* ]] || return 1
 	[[ "$output" == *"USER_ACCEPTED"* ]] || return 1
 	# The gate must run at top level, before any install work starts.
 	run grep -Fn "refuse_root_invocation \"\${EUID:-0}\" || exit 1" "$PROJECT_ROOT/install.sh"

@@ -232,5 +232,5 @@ load_purge_config
 [[ ! -e "$PURGE_CONFIG_FILE" ]]
 EOF
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"discovery was incomplete"* ]] || return 1
+    [[ "$output" == *"项目发现不完整"* ]] || return 1
 }

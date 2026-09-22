@@ -146,7 +146,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Chrome old versions · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"Chrome 旧版本 · 已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_REMOVE"* ]]
 }
 
@@ -195,7 +195,7 @@ EOF
     }
     [[ "$output" == *"ALL_FAILED:0:0"* ]] || return 1
     [[ "$output" == *"PARTIAL:1:10"* ]] || return 1
-    [[ "$output" == *"Chrome old versions"*"1 dirs"* ]]
+    [[ "$output" == *"Chrome 旧版本"*"1 个目录"* ]]
 }
 
 @test "clean_chrome_old_versions removes old versions but keeps current" {
@@ -236,8 +236,8 @@ echo "Cleaned: $files_cleaned items"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Chrome old versions"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"Chrome 旧版本"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"Cleaned: 2 items"* ]]
 }
 
@@ -447,8 +447,8 @@ echo "Cleaned: $files_cleaned items"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Edge updater old versions"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"Edge 更新器旧版本"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"Cleaned: 2 items"* ]]
 }
 
@@ -544,7 +544,7 @@ EOF
     }
     [[ "$output" == *"ALL_FAILED:0:0"* ]] || return 1
     [[ "$output" == *"PARTIAL:1:10"* ]] || return 1
-    [[ "$output" == *"Edge updater old versions"*"1 dirs"* ]]
+    [[ "$output" == *"Edge 更新器旧版本"*"1 个目录"* ]]
 }
 
 # Issue #1216: after Edge updates itself, the updater staging dir can hold a
@@ -581,7 +581,7 @@ echo "Cleaned: $files_cleaned items"
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Edge updater old versions"* ]] || return 1
+    [[ "$output" == *"Edge 更新器旧版本"* ]] || return 1
     [[ "$output" == *"Cleaned: 1 items"* ]] || return 1
 }
 
@@ -690,7 +690,7 @@ clean_chrome_old_versions
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     # Verify marker file still exists (not deleted in dry run)
     [ -f "$VERSIONS_DIR/128.0.0.0/marker.txt" ]
 }
@@ -792,8 +792,8 @@ echo "Cleaned: $files_cleaned items"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Edge old versions"* ]] || return 1
-    [[ "$output" == *"dry"* ]] || return 1
+    [[ "$output" == *"Edge 旧版本"* ]] || return 1
+    [[ "$output" == *"预览"* ]] || return 1
     [[ "$output" == *"Cleaned: 2 items"* ]]
 }
 

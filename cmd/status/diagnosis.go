@@ -8,50 +8,50 @@ import (
 func statusDiagnosisLine(m MetricsSnapshot) string {
 	for _, disk := range m.Disks {
 		if disk.SmartStatus == smartStatusFailing {
-			return "SMART failing, back up now"
+			return "SMART 故障，请立即备份"
 		}
 	}
 	if m.CPU.Usage > cpuHighThreshold {
 		if processSnapshotFresh(m.ProcessStale) {
 			if proc, ok := leadingCPUProcess(m.TopProcesses, 50); ok {
-				return fmt.Sprintf("%s high CPU", shorten(proc.Name, 18))
+				return fmt.Sprintf("%s 处理器占用过高", shorten(proc.Name, 18))
 			}
 		}
-		return "CPU load high"
+		return "处理器负载过高"
 	}
 	if m.Memory.Pressure == "warn" || m.Memory.Pressure == "critical" || m.Memory.UsedPercent > memHighThreshold {
 		if processSnapshotFresh(m.ProcessStale) {
 			if proc, ok := leadingMemoryProcess(m.TopProcesses); ok && proc.Memory > 0 {
-				return fmt.Sprintf("%s memory pressure", shorten(proc.Name, 18))
+				return fmt.Sprintf("%s 内存压力", shorten(proc.Name, 18))
 			}
 		}
-		return "Memory pressure high"
+		return "内存压力过高"
 	}
 	if disk, ok := rootDisk(m.Disks); ok && disk.UsedPercent > diskCritThreshold {
 		free := uint64(0)
 		if disk.Total > disk.Used {
 			free = disk.Total - disk.Used
 		}
-		return fmt.Sprintf("Disk low, %s free", humanBytesShort(free))
+		return fmt.Sprintf("磁盘空间不足，剩余 %s", humanBytesShort(free))
 	}
 	for _, battery := range m.Batteries {
 		if battery.Capacity > 0 && battery.Capacity < batteryCapWarn {
-			return "Battery health low"
+			return "电池健康度低"
 		}
 		if battery.CycleCount > batteryCycleWarn {
-			return "Battery cycles high"
+			return "电池循环次数过高"
 		}
 	}
 	if m.Thermal.CPUTemp > thermalNormalThreshold {
-		return "CPU temperature high"
+		return "处理器温度过高"
 	}
 	if totalIO := m.DiskIO.ReadRate + m.DiskIO.WriteRate; totalIO > ioHighThreshold {
-		return "Disk I/O busy"
+		return "磁盘 I/O 繁忙"
 	}
 	if strings.Contains(m.HealthScoreMsg, ":") {
 		return m.HealthScoreMsg
 	}
-	return "All clear"
+	return "一切正常"
 }
 
 func leadingCPUProcess(procs []ProcessInfo, threshold float64) (ProcessInfo, bool) {

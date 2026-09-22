@@ -225,7 +225,7 @@ EOF
 
     assert_run_success
     assert_output_contains "CODEX_START_RACE_CLOSED"
-    assert_output_not_contains "Codex Desktop caches · stopped"
+    assert_output_not_contains "Codex Desktop 缓存 · 已停止"
 }
 
 @test "clean_codex_desktop_caches skips while ChatGPT owns the Codex app cache" {
@@ -241,7 +241,7 @@ clean_codex_desktop_caches
 EOF
 
     assert_run_success
-    assert_output_not_contains "Codex Desktop caches · skipped"
+    assert_output_not_contains "Codex Desktop 缓存 · 已跳过"
 }
 
 @test "clean_codex_desktop_caches skips when its process probe fails" {
@@ -257,7 +257,7 @@ clean_codex_desktop_caches
 EOF
 
     assert_run_success
-    assert_output_contains "Codex Desktop caches · skipped (process state unknown)"
+    assert_output_contains "Codex Desktop 缓存 · 已跳过（进程状态未知）"
 }
 
 @test "clean_codex_desktop_caches skips when pgrep is unavailable" {
@@ -273,7 +273,7 @@ clean_codex_desktop_caches
 EOF
 
     assert_run_success
-    assert_output_contains "Codex Desktop caches · skipped (process state unknown)"
+    assert_output_contains "Codex Desktop 缓存 · 已跳过（进程状态未知）"
 }
 
 @test "clean_codex_desktop_caches rejects symlinked Library and Caches ancestors" {
@@ -381,14 +381,14 @@ clean_antigravity_caches
 EOF
 
     assert_run_success
-    assert_output_contains "SAFE_CLEAN:Antigravity browser cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity code cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity GPU cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity Dawn cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity WebGPU cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity Graphite cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity component cache|"
-    assert_output_contains "SAFE_CLEAN:Antigravity extension cache|"
+    assert_output_contains "SAFE_CLEAN:Antigravity 浏览器缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity 代码缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity GPU 缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity Dawn 缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity WebGPU 缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity Graphite 缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity 组件缓存|"
+    assert_output_contains "SAFE_CLEAN:Antigravity 扩展缓存|"
     assert_output_contains "SWC:Antigravity"
     assert_output_not_contains "Default/Extensions"
     assert_output_not_contains "Default/Storage"
@@ -430,7 +430,7 @@ EOF
     assert_output_not_contains "UNEXPECTED_DEFER"
     assert_output_not_contains "UNEXPECTED_CLEAN"
     assert_output_not_contains "UNEXPECTED_SWC"
-    assert_output_not_contains "process state unknown"
+    assert_output_not_contains "进程状态未知"
 }
 
 @test "clean_antigravity_caches recognizes root-level cache candidates" {
@@ -450,7 +450,7 @@ clean_antigravity_caches
 EOF
 
     assert_run_success
-    assert_output_contains "SAFE_CLEAN:Antigravity component cache|$ag/component_crx_cache/candidate"
+    assert_output_contains "SAFE_CLEAN:Antigravity 组件缓存|$ag/component_crx_cache/candidate"
 }
 
 @test "clean_antigravity_caches never touches gemini tmp chat checkpoints" {
@@ -542,8 +542,8 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "SAFE_CLEAN:Claude Desktop bundled Claude Code old version|$claude_support/claude-code/2.1.140"
-    assert_output_contains "SAFE_CLEAN:Claude Desktop bundled Claude Code VM old version|$claude_support/claude-code-vm/2.1.140"
+    assert_output_contains "SAFE_CLEAN:Claude Desktop 内置的 Claude Code 旧版本|$claude_support/claude-code/2.1.140"
+    assert_output_contains "SAFE_CLEAN:Claude Desktop 内置的 Claude Code VM 旧版本|$claude_support/claude-code-vm/2.1.140"
     assert_output_not_contains "$claude_support/claude-code/2.1.142"
     assert_output_not_contains "$claude_support/claude-code-vm/2.1.142"
     assert_output_not_contains "$claude_support/claude-code/2.1.150"
@@ -570,8 +570,8 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "SAFE_CLEAN:Claude Desktop bundled Claude Code old version|$claude_support/claude-code/2.1.142"
-    assert_output_contains "SAFE_CLEAN:Claude Desktop bundled Claude Code VM old version|$claude_support/claude-code-vm/2.1.142"
+    assert_output_contains "SAFE_CLEAN:Claude Desktop 内置的 Claude Code 旧版本|$claude_support/claude-code/2.1.142"
+    assert_output_contains "SAFE_CLEAN:Claude Desktop 内置的 Claude Code VM 旧版本|$claude_support/claude-code-vm/2.1.142"
     assert_output_not_contains "$claude_support/claude-code/2.1.140"
     assert_output_not_contains "$claude_support/claude-code-vm/2.1.140"
     assert_output_not_contains "$claude_support/claude-code/2.1.150"
@@ -594,7 +594,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_not_contains "Claude Desktop bundled Claude Code"
+    assert_output_not_contains "Claude Desktop 内置的 Claude Code"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -614,7 +614,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "· skipped (active version unknown)"
+    assert_output_contains "· 已跳过（当前版本未知）"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -636,7 +636,7 @@ clean_claude_desktop_bundled_versions 1
 EOF
 
     assert_run_success
-    assert_output_contains "skipped (active version unknown)"
+    assert_output_contains "已跳过（当前版本未知）"
     assert_output_not_contains "UNEXPECTED_DEFER"
     assert_output_not_contains "UNEXPECTED_CLEAN"
 }
@@ -875,7 +875,7 @@ EOF
 
     assert_run_success
     assert_output_not_contains "UNEXPECTED_DELETE"
-    assert_output_contains "Claude Code old version · stopped (retention changed)"
+    assert_output_contains "Claude Code 旧版本 · 已停止（保留策略已变化）"
 }
 
 @test "versioned agent cleanup rechecks the active symlink after retention planning" {
@@ -911,7 +911,7 @@ EOF
 
     assert_run_success
     assert_output_not_contains "UNEXPECTED_DELETE"
-    assert_output_contains "Claude Code old version · stopped (active version changed)"
+    assert_output_contains "Claude Code 旧版本 · 已停止（当前版本已变化）"
 }
 
 @test "Claude Desktop bundled cleanup rechecks activity after sizing" {
@@ -977,7 +977,7 @@ EOF
 
     assert_run_success
     assert_output_not_contains "UNEXPECTED_DELETE"
-    assert_output_contains "stopped (active version changed)"
+    assert_output_contains "已停止（当前版本已变化）"
 }
 
 @test "Claude Desktop bundled cleanup rechecks the SDK after retention planning" {
@@ -1013,7 +1013,7 @@ EOF
 
     assert_run_success
     assert_output_not_contains "UNEXPECTED_DELETE"
-    assert_output_contains "stopped (active version changed)"
+    assert_output_contains "已停止（当前版本已变化）"
 }
 
 @test "Claude Desktop bundled cleanup rechecks compiled-model policy after sizing" {
@@ -1041,7 +1041,7 @@ EOF
 
     assert_run_success
     assert_output_not_contains "UNEXPECTED_DELETE"
-    assert_output_contains "stopped (retention changed)"
+    assert_output_contains "已停止（保留策略已变化）"
 }
 
 @test "clean_dev_ai_agents skips Claude Desktop bundled versions when sdk version is path-like" {
@@ -1061,7 +1061,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "· skipped (active version unknown)"
+    assert_output_contains "· 已跳过（当前版本未知）"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -1082,7 +1082,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "· skipped (active version unknown)"
+    assert_output_contains "· 已跳过（当前版本未知）"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -1101,7 +1101,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_contains "· skipped (active version unknown)"
+    assert_output_contains "· 已跳过（当前版本未知）"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -1124,7 +1124,7 @@ clean_dev_ai_agents
 EOF
 
     assert_run_success
-    assert_output_not_contains "Claude Desktop bundled Claude Code · skipped"
+    assert_output_not_contains "Claude Desktop 内置的 Claude Code · 已跳过"
     assert_output_not_contains "SAFE_CLEAN:"
 }
 
@@ -1179,9 +1179,9 @@ clean_codex_marketplace_staging
 INNER
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"SAFE_CLEAN:Codex marketplace staging|$bundled/openai-bundled.staging-old"* ]] || return 1
-    [[ "$output" == *"SAFE_CLEAN:Codex marketplace staging|$staging/marketplace-upgrade-old"* ]] || return 1
-    [[ "$output" == *"SAFE_CLEAN:Codex marketplace staging|$staging/marketplace-add-old"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN:Codex marketplace 暂存|$bundled/openai-bundled.staging-old"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN:Codex marketplace 暂存|$staging/marketplace-upgrade-old"* ]] || return 1
+    [[ "$output" == *"SAFE_CLEAN:Codex marketplace 暂存|$staging/marketplace-add-old"* ]] || return 1
     [[ "$output" != *"openai-bundled|"* ]] || return 1
     [[ "$output" != *"openai-bundled.staging-fresh"* ]] || return 1
     [[ "$output" != *"my-marketplace"* ]] || return 1

@@ -95,7 +95,7 @@ MOLE_SELECTION_RESULT=""
 # shellcheck disable=SC2154  # apps_data is set by caller
 select_apps_for_uninstall() {
     if [[ ${#apps_data[@]} -eq 0 ]]; then
-        log_warning "No applications available for uninstallation"
+        log_warning "没有可用于卸载的应用"
         return 1
     fi
 
@@ -105,7 +105,7 @@ select_apps_for_uninstall() {
     local terminal_width=$(tput cols 2> /dev/null || echo 80)
     if [[ $app_count -gt 100 ]]; then
         if [[ -t 2 ]]; then
-            printf "\rPreparing %d applications...    " "$app_count" >&2
+            printf "\r正在准备 %d 个应用...    " "$app_count" >&2
         fi
     fi
 
@@ -195,7 +195,7 @@ select_apps_for_uninstall() {
     # Use paginated menu - result will be stored in MOLE_SELECTION_RESULT
     # Note: paginated_multi_select enters alternate screen and handles clearing
     MOLE_SELECTION_RESULT=""
-    paginated_multi_select "Select Apps to Remove" "${menu_options[@]}"
+    paginated_multi_select "选择要移除的应用" "${menu_options[@]}"
     local exit_code=$?
 
     # Clean env leakage for safety
@@ -207,7 +207,7 @@ select_apps_for_uninstall() {
     fi
 
     if [[ -z "$MOLE_SELECTION_RESULT" ]]; then
-        echo "No apps selected"
+        echo "未选择任何应用"
         return 1
     fi
 
@@ -228,6 +228,6 @@ select_apps_for_uninstall() {
 
 # Export function for external use
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    echo "This is a library file. Source it from other scripts." >&2
+    echo "这是一个库文件，请在其他脚本中 source 引用。" >&2
     exit 1
 fi

@@ -345,7 +345,7 @@ func collectConcurrently(tasks ...func() error) error {
 			defer func() {
 				if r := recover(); r != nil {
 					errMu.Lock()
-					panicErr := fmt.Errorf("collector panic: %v", r)
+					panicErr := fmt.Errorf("采集器 panic：%v", r)
 					if merged == nil {
 						merged = panicErr
 					} else {

@@ -11,5 +11,5 @@ if [[ -x "$GO_BIN" ]]; then
     exec "$GO_BIN" "$@"
 fi
 
-echo "Bundled analyzer binary not found. Please reinstall Mole or run mo update to restore it." >&2
+echo "未找到内置分析器二进制文件。请重新安装 Mole，或运行 mo update 恢复。" >&2
 exit 1

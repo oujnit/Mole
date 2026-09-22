@@ -49,7 +49,7 @@ EOF
 
 	rm -rf "$tmp_dir"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"healthy"* ]]
+	[[ "$output" == *"数据库正常"* ]]
 }
 
 @test "opt_notification_cleanup prefers the usernoted group-container database" {
@@ -78,7 +78,7 @@ EOF
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"healthy"* ]] || return 1
+	[[ "$output" == *"数据库正常"* ]] || return 1
 	[[ "$output" == *"DEBUG:Notification Center database: $group_dir/db"* ]] || return 1
 }
 
@@ -96,7 +96,7 @@ EOF
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"unavailable"* ]] || return 1
+	[[ "$output" == *"不可用"* ]] || return 1
 	[[ "$output" != *"not found"* ]] || return 1
 	[[ "$output" != *"already optimized"* ]] || return 1
 }
@@ -119,7 +119,7 @@ EOF
 
 	rm -rf "$tmp_dir"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"busy or locked"* ]]
+	[[ "$output" == *"数据库忙或被锁定"* ]]
 }
 
 @test "opt_coreduet_cleanup reports healthy when db is small" {
@@ -138,7 +138,7 @@ EOF
 
 	rm -rf "$tmp_dir"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"healthy"* ]]
+	[[ "$output" == *"数据库正常"* ]]
 }
 
 @test "opt_coreduet_cleanup warns when sqlite3 fails" {
@@ -165,7 +165,7 @@ EOF
 
 	rm -rf "$tmp_dir"
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"busy or locked"* ]]
+	[[ "$output" == *"数据库忙或被锁定"* ]]
 }
 
 @test "SQLite optimization is unavailable when pgrep is missing" {
@@ -181,7 +181,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
-	[[ "$output" == *"process probe unavailable"* ]] || return 1
+	[[ "$output" == *"进程探测不可用"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SQLITE"* ]]
 }
 
@@ -198,7 +198,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to inspect active apps"* ]] || return 1
+	[[ "$output" == *"数据库优化前无法检查正在运行的应用"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SQLITE"* ]]
 }
 
@@ -217,7 +217,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
-	[[ "$output" == *"Close these apps before database optimization: Mail"* ]] || return 1
+	[[ "$output" == *"数据库优化前请关闭这些应用：Mail"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SQLITE"* ]]
 }
 
@@ -249,7 +249,7 @@ EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
 	[[ "$output" == *"VACUUM_CALLED"* ]] || return 1
-	[[ "$output" == *"Optimized 1 databases"* ]]
+	[[ "$output" == *"已优化 1 个"* ]]
 }
 
 @test "SQLite optimization does not claim all optimized when size policy skips" {
@@ -276,8 +276,8 @@ EOF
 		echo "$output"
 		return 1
 	}
-	[[ "$output" == *"No databases compacted"* ]] || return 1
-	[[ "$output" == *"100 MB safety limit"* ]] || return 1
+	[[ "$output" == *"没有数据库被压缩"* ]] || return 1
+	[[ "$output" == *"超过 100 MB 安全限制"* ]] || return 1
 	[[ "$output" == *"Messages/chat.db"* ]] || return 1
 	[[ "$output" != *"All databases already optimized"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_SQLITE"* ]] || return 1

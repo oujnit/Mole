@@ -178,7 +178,7 @@ EOF
 @test "mole unknown command returns error" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" unknown-command
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Unknown command: unknown-command"* ]]
+	[[ "$output" == *"未知命令：unknown-command"* ]]
 }
 
 @test "mole unknown command writes the diagnostic to stderr" {
@@ -187,7 +187,7 @@ EOF
 	run env HOME="$HOME" bash -c "'$PROJECT_ROOT/mole' unknown-command > '$out' 2> '$err'"
 	[ "$status" -ne 0 ]
 	[ ! -s "$out" ] || { cat "$out"; return 1; }
-	grep -q "Unknown command: unknown-command" "$err" || { cat "$err"; return 1; }
+	grep -q "未知命令：unknown-command" "$err" || { cat "$err"; return 1; }
 }
 
 # Every subcommand that rejects an option must do it the way bin/history.sh
@@ -205,7 +205,7 @@ EOF
 		run env HOME="$HOME" bash -c "'$PROJECT_ROOT/mole' $cmd > '$out' 2> '$err'"
 		[ "$status" -ne 0 ] || { echo "mo $cmd exited 0"; return 1; }
 		[ ! -s "$out" ] || { echo "mo $cmd wrote to stdout:"; cat "$out"; return 1; }
-		grep -qiE "unknown|not defined" "$err" || { echo "mo $cmd stderr:"; cat "$err"; return 1; }
+		grep -qE "未知|未定义" "$err" || { echo "mo $cmd stderr:"; cat "$err"; return 1; }
 	done
 }
 
@@ -224,25 +224,25 @@ EOF
 @test "mole check is not a public command" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" check --help
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Unknown command: check"* ]]
+	[[ "$output" == *"未知命令：check"* ]]
 }
 
 @test "mole doctor is not a public command" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" doctor --help
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Unknown command: doctor"* ]]
+	[[ "$output" == *"未知命令：doctor"* ]]
 }
 
 @test "mole optimize --check is not a public option" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" optimize --check
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Unknown optimize option: --check"* ]]
+	[[ "$output" == *"未知的 optimize 选项：--check"* ]]
 }
 
 @test "mole uninstall --whitelist returns unsupported option error" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" uninstall --whitelist
 	[ "$status" -ne 0 ]
-	[[ "$output" == *"Unknown uninstall option: --whitelist"* ]]
+	[[ "$output" == *"未知的卸载选项：--whitelist"* ]]
 }
 
 @test "main menu controls line shows the update shortcut only when an update is available" {
@@ -251,17 +251,17 @@ EOF
 	# cannot pass vacuously.
 	run /bin/bash --noprofile --norc -c "MOLE_TEST_MODE=1 MOLE_SKIP_MAIN=1 HOME=\"\$(mktemp -d)\" source '$PROJECT_ROOT/mole'; _main_menu_controls_line true false"
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" != *"U Update"* ]] || return 1
+	[[ "$output" != *"U 更新"* ]] || return 1
 
 	run /bin/bash --noprofile --norc -c "MOLE_TEST_MODE=1 MOLE_SKIP_MAIN=1 HOME=\"\$(mktemp -d)\" source '$PROJECT_ROOT/mole'; _main_menu_controls_line true true"
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"U Update"* ]] || return 1
+	[[ "$output" == *"U 更新"* ]] || return 1
 
 	# TouchID setup takes precedence: no update shortcut even if one is ready.
 	run /bin/bash --noprofile --norc -c "MOLE_TEST_MODE=1 MOLE_SKIP_MAIN=1 HOME=\"\$(mktemp -d)\" source '$PROJECT_ROOT/mole'; _main_menu_controls_line false true"
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"T TouchID"* ]] || return 1
-	[[ "$output" != *"U Update"* ]] || return 1
+	[[ "$output" != *"U 更新"* ]] || return 1
 }
 
 @test "show_main_menu keeps history out of the primary menu" {
@@ -279,7 +279,7 @@ show_main_menu 1 true
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Clean        Free up disk space"* ]] || return 1
+	[[ "$output" == *"Clean        清理磁盘空间"* ]] || return 1
 	[[ "$output" != *"History"* ]] || return 1
 	[[ "$output" != *"history"* ]]
 }
@@ -422,7 +422,7 @@ EOF
 	run grep "Mole Debug Session" "$DEBUG_LOG"
 	[ "$status" -eq 0 ]
 
-	[[ "$MOLE_OUTPUT" =~ "Debug session log saved to" ]]
+	[[ "$MOLE_OUTPUT" =~ "调试日志已启用。会话日志：" ]]
 }
 
 @test "mo clean without debug does not show debug log path" {
@@ -430,7 +430,7 @@ EOF
 	run env HOME="$HOME" TERM="xterm-256color" MOLE_TEST_MODE=1 MO_DEBUG=0 "$PROJECT_ROOT/mole" clean --dry-run
 	[ "$status" -eq 0 ]
 
-	[[ "$output" != *"Debug session log saved to"* ]]
+	[[ "$output" != *"调试日志已启用。会话日志："* ]]
 }
 
 @test "mo clean --debug logs system info" {
@@ -451,13 +451,13 @@ EOF
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" clean --help
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"--external PATH"* ]] || return 1
-	[[ "$output" == *"already-uninstalled apps"* ]]
+	[[ "$output" == *"已卸载应用的残留"* ]]
 }
 
 @test "mo uninstall --help directs leftover-only cleanup to clean" {
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" uninstall --help
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already gone, use mo clean"* ]]
+	[[ "$output" == *"已卸载应用的残留，请使用 mo clean"* ]]
 }
 
 @test "mo clean --external accepts canonicalized custom root" {
@@ -478,8 +478,8 @@ EOF
 	run env HOME="$HOME" PATH="$mock_bin:$PATH" MOLE_EXTERNAL_VOLUMES_ROOT="$link_root" \
 		MOLE_TEST_NO_AUTH=1 "$PROJECT_ROOT/mole" clean --external "$link_root/USB" --dry-run
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Clean External Volume"* ]] || return 1
-	[[ "$output" == *"External volume cleanup"* ]]
+	[[ "$output" == *"清理外置硬盘"* ]] || return 1
+	[[ "$output" == *"外置硬盘清理"* ]]
 }
 
 @test "touchid status reflects pam file contents" {
@@ -490,7 +490,7 @@ EOF
 
 	run env MOLE_PAM_SUDO_FILE="$pam_file" "$PROJECT_ROOT/bin/touchid.sh" status
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"not configured"* ]] || return 1
+	[[ "$output" == *"尚未为 sudo 配置"* ]] || return 1
 
 	cat >"$pam_file" <<'EOF'
 auth       sufficient     pam_tid.so
@@ -498,7 +498,7 @@ EOF
 
 	run env MOLE_PAM_SUDO_FILE="$pam_file" "$PROJECT_ROOT/bin/touchid.sh" status
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"enabled"* ]]
+	[[ "$output" == *"已为 sudo 启用"* ]]
 }
 
 @test "enable_touchid inserts pam_tid line in pam file" {
@@ -540,7 +540,7 @@ EOF
 
 	run env MOLE_PAM_SUDO_FILE="$pam_file" "$PROJECT_ROOT/bin/touchid.sh" enable --dry-run
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"DRY RUN MODE"* ]] || return 1
+	[[ "$output" == *"预览模式"* ]] || return 1
 
 	run grep "pam_tid.so" "$pam_file"
 	[ "$status" -ne 0 ]
@@ -793,7 +793,7 @@ PY
         # so the test never requests root or runs a maintenance command.
         run /bin/bash -c "${prefix//\$EUID/0}"
         [ "$status" -eq 1 ] || return 1
-        [[ "$output" == *"Run Mole without sudo"* ]] || return 1
+        [[ "$output" == *"请不要使用 sudo 运行 Mole"* ]] || return 1
         run /bin/bash -c "${prefix//\$EUID/501}"
         [ "$status" -eq 0 ] || return 1
     done

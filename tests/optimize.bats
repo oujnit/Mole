@@ -94,8 +94,8 @@ execute_optimization disk_permissions_repair
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Network stack already optimal"* ]] || return 1
-	[[ "$output" == *"User directory permissions already optimal"* ]] || return 1
+	[[ "$output" == *"网络栈已是最优"* ]] || return 1
+	[[ "$output" == *"用户目录权限已是最优"* ]] || return 1
 }
 
 @test "opt_system_maintenance reports DNS and Spotlight" {
@@ -112,8 +112,8 @@ execute_optimization system_maintenance
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"DNS cache flushed"* ]] || return 1
-	[[ "$output" == *"Spotlight index verified"* ]]
+	[[ "$output" == *"DNS 缓存已刷新"* ]] || return 1
+	[[ "$output" == *"Spotlight 索引已验证"* ]]
 }
 
 @test "opt_network_optimization refreshes DNS" {
@@ -126,8 +126,8 @@ execute_optimization network_optimization
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"DNS cache refreshed"* ]] || return 1
-	[[ "$output" == *"mDNSResponder restarted"* ]]
+	[[ "$output" == *"DNS 缓存已刷新"* ]] || return 1
+	[[ "$output" == *"mDNSResponder 已重启"* ]]
 }
 
 @test "fix_broken_preferences repairs only non-Apple preference plists" {
@@ -216,8 +216,8 @@ execute_optimization fix_broken_configs
 EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
-	[[ "$output" == *"Repaired 1 corrupted preference files"* ]] || return 1
-	[[ "$output" == *"Removed corrupted preference:"* ]] || return 1
+	[[ "$output" == *"已修复 1 个损坏的偏好设置文件"* ]] || return 1
+	[[ "$output" == *"已移除损坏的偏好设置"* ]] || return 1
 	[[ "$output" == *"$repaired"* ]] || return 1
 	[[ "$output" != *"$failed"* ]] || return 1
 }
@@ -294,8 +294,8 @@ execute_optimization fix_broken_configs
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Preference scan hit its time budget"* ]] || return 1
-	[[ "$output" != *"All preference files valid"* ]] || return 1
+	[[ "$output" == *"偏好设置扫描已达到时间预算"* ]] || return 1
+	[[ "$output" != *"所有偏好设置文件均有效"* ]] || return 1
 }
 
 @test "opt_cache_refresh reuses measured cache sizes for deletion" {
@@ -326,7 +326,7 @@ cat "$CALL_LOG"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"QuickLook thumbnails refreshed"* ]] || return 1
+	[[ "$output" == *"QuickLook 缩略图已刷新"* ]] || return 1
 	[[ "$output" == *"cleaned=42"* ]] || return 1
 	[[ "$output" == *"remove:$HOME/Library/Caches/com.apple.QuickLook.thumbnailcache:42"* ]] || return 1
 	[ "$(grep -c "size:$HOME/Library/Caches/com.apple.QuickLook.thumbnailcache" <<< "$output")" -eq 1 ]
@@ -407,7 +407,7 @@ execute_optimization quarantine_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already clean"* ]]
+	[[ "$output" == *"隔离数据库已清理"* ]]
 }
 
 @test "opt_quarantine_cleanup reports entries in dry-run" {
@@ -427,8 +427,8 @@ execute_optimization quarantine_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Quarantine history cleared"* ]] || return 1
-	[[ "$output" == *"2 entries"* ]]
+	[[ "$output" == *"已清除隔离历史"* ]] || return 1
+	[[ "$output" == *"2 条记录"* ]]
 }
 
 @test "opt_quarantine_cleanup skips when sqlite3 unavailable" {
@@ -441,7 +441,7 @@ execute_optimization quarantine_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"sqlite3 unavailable"* ]]
+	[[ "$output" == *"sqlite3 不可用"* ]]
 }
 
 @test "execute_optimization dispatches quarantine_cleanup" {
@@ -470,7 +470,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"sqlite3 unavailable"* ]]
+	[[ "$output" == *"sqlite3 不可用"* ]]
 }
 
 @test "opt_sqlite_vacuum reports failed when only some databases optimize" {
@@ -503,8 +503,8 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Optimized 1 databases"* ]] || return 1
-	[[ "$output" == *"Failed on 1 databases"* ]] || return 1
+	[[ "$output" == *"已优化 1 个 Mail、Safari、Messages 数据库"* ]] || return 1
+	[[ "$output" == *"1 个数据库失败"* ]] || return 1
 }
 
 @test "opt_sqlite_vacuum reports a failed integrity probe" {
@@ -534,7 +534,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed on 1 databases"* ]] || return 1
+	[[ "$output" == *"1 个数据库失败"* ]] || return 1
 }
 
 @test "opt_sqlite_vacuum reports oversized databases as skipped" {
@@ -555,7 +555,7 @@ execute_optimization sqlite_vacuum
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Skipped 1 databases over the 100 MB safety limit"* ]] || return 1
+	[[ "$output" == *"已跳过 1 个超过 100 MB 安全限制的数据库"* ]] || return 1
 }
 
 @test "optimize does not auto-fix Gatekeeper anymore" {
@@ -579,7 +579,7 @@ execute_optimization prevent_network_dsstore
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *".DS_Store prevention enabled"* ]]
+	[[ "$output" == *"已在网络与 USB 卷上启用 .DS_Store 防生成"* ]]
 }
 
 @test "opt_prevent_network_dsstore idempotent when already set" {
@@ -598,7 +598,7 @@ execute_optimization prevent_network_dsstore
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already enabled"* ]]
+	[[ "$output" == *"网络与 USB 卷上已启用 .DS_Store 防生成"* ]]
 }
 
 @test "opt_prevent_network_dsstore reports a partial write failure" {
@@ -620,8 +620,8 @@ execute_optimization prevent_network_dsstore
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *".DS_Store prevention enabled"* ]] || return 1
-	[[ "$output" == *"Failed to enable .DS_Store prevention for 1 volume type(s)"* ]] || return 1
+	[[ "$output" == *"已在网络与 USB 卷上启用 .DS_Store 防生成"* ]] || return 1
+	[[ "$output" == *"无法为 1 种卷类型启用 .DS_Store 防生成"* ]] || return 1
 }
 
 @test "opt_legacy_overrides_audit stays silent-positive when defaults are in effect" {
@@ -638,7 +638,7 @@ execute_optimization legacy_overrides_audit
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"No legacy App Nap or disk-image overrides found"* ]] || return 1
+	[[ "$output" == *"未发现旧版 App Nap 或磁盘映像覆盖设置"* ]] || return 1
 	[[ "$output" != *"DELETE_CALLED"* ]] || return 1
 }
 
@@ -665,8 +665,8 @@ EOF
 	[[ "$output" == *"DELETE_CALLED:-g NSAppSleepDisabled"* ]] || return 1
 	[[ "$output" == *"DELETE_CALLED:com.apple.frameworks.diskimages skip-verify"* ]] || return 1
 	[[ "$output" != *"skip-verify-locked"* ]] || return 1
-	[[ "$output" == *"Removed override: App Nap disabled globally"* ]] || return 1
-	[[ "$output" == *"Removed override: Disk-image verification skipped (skip-verify)"* ]] || return 1
+	[[ "$output" == *"已移除覆盖设置：已全局禁用 App Nap（NSAppSleepDisabled）"* ]] || return 1
+	[[ "$output" == *"已移除覆盖设置：磁盘映像验证已跳过（skip-verify）"* ]] || return 1
 }
 
 @test "opt_legacy_overrides_audit dry-run previews without deleting" {
@@ -686,7 +686,7 @@ execute_optimization legacy_overrides_audit
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Would remove override: App Nap disabled globally"* ]] || return 1
+	[[ "$output" == *"将移除覆盖设置：已全局禁用 App Nap（NSAppSleepDisabled）"* ]] || return 1
 	[[ "$output" != *"DELETE_CALLED"* ]] || return 1
 }
 
@@ -708,7 +708,7 @@ execute_optimization legacy_overrides_audit
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Skipped (whitelisted): App Nap disabled globally"* ]] || return 1
+	[[ "$output" == *"已跳过（白名单）：已全局禁用 App Nap（NSAppSleepDisabled）"* ]] || return 1
 	[[ "$output" != *"DELETE_CALLED"* ]] || return 1
 }
 
@@ -732,8 +732,8 @@ execute_optimization legacy_overrides_audit
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Removed override: App Nap disabled globally"* ]] || return 1
-	[[ "$output" == *"Could not remove override"* ]] || return 1
+	[[ "$output" == *"已移除覆盖设置：已全局禁用 App Nap（NSAppSleepDisabled）"* ]] || return 1
+	[[ "$output" == *"无法移除覆盖设置"* ]] || return 1
 }
 
 # cc31ee3a ("Remove optimize confirmation prompt, run all tasks automatically")
@@ -783,7 +783,7 @@ execute_optimization unknown_action
 EOF
 
 	[ "$status" -eq 1 ] || return 1
-	[[ "$output" == *"Unknown action"* ]] || return 1
+	[[ "$output" == *"未知操作"* ]] || return 1
 }
 
 @test "execute_optimization rejects unknown action before whitelist policy" {
@@ -796,7 +796,7 @@ execute_optimization unknown_action
 EOF
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Unknown action"* ]]
+	[[ "$output" == *"未知操作"* ]]
 }
 
 @test "opt_prune_spotlight_orphan_rules removes orphan but keeps system, apple and installed rules" {
@@ -825,7 +825,7 @@ execute_optimization spotlight_orphan_rules_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Removed 1 orphan"* ]] || return 1
+	[[ "$output" == *"已移除 1 条孤立的 Spotlight 规则"* ]] || return 1
 	[[ "$output" == *"DEFAULTS: write"* ]] || return 1
 	[[ "$output" == *"System.iphoneApps"* ]] || return 1
 	[[ "$output" == *"com.apple.Safari"* ]] || return 1
@@ -857,7 +857,7 @@ execute_optimization spotlight_orphan_rules_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Would remove 1 orphan"* ]] || return 1
+	[[ "$output" == *"将移除 1 条孤立的 Spotlight 规则"* ]] || return 1
 	[[ "$output" != *"DEFAULTS: write"* ]] || return 1
 	[[ "$output" != *"DEFAULTS: delete"* ]]
 }
@@ -887,7 +887,7 @@ execute_optimization spotlight_orphan_rules_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already clean"* ]] || return 1
+	[[ "$output" == *"Spotlight 搜索规则已清理"* ]] || return 1
 	[[ "$output" != *"DEFAULTS: write"* ]]
 }
 
@@ -937,7 +937,7 @@ echo "probes=$(wc -l < "$HOME/mdfind-calls.log" | tr -d ' ')"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Spotlight index already optimal"* ]] || return 1
+	[[ "$output" == *"Spotlight 索引已是最优"* ]] || return 1
 	[[ "$output" == *"probes=2"* ]] || return 1
 }
 
@@ -958,7 +958,7 @@ execute_optimization spotlight_index_optimize
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Spotlight index already optimal"* ]] || return 1
+	[[ "$output" == *"Spotlight 索引已是最优"* ]] || return 1
 	[[ "$output" == *"no-probe"* ]] || return 1
 }
 
@@ -978,7 +978,7 @@ execute_optimization spotlight_index_optimize
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Spotlight index rebuild started"* ]] || return 1
+	[[ "$output" == *"Spotlight 索引重建已开始"* ]] || return 1
 }
 
 @test "opt_prune_spotlight_orphan_rules reports clean when rules key is absent" {
@@ -991,7 +991,7 @@ execute_optimization spotlight_orphan_rules_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already clean"* ]]
+	[[ "$output" == *"Spotlight 搜索规则已清理"* ]]
 }
 
 @test "execute_optimization dispatches spotlight_orphan_rules_cleanup" {
@@ -1023,7 +1023,7 @@ echo "survived"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"lsregister not found"* ]] || return 1
+	[[ "$output" == *"未找到 lsregister"* ]] || return 1
 	[[ "$output" == *"survived"* ]]
 }
 
@@ -1036,7 +1036,7 @@ execute_optimization launch_agents_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Launch Agents all healthy"* ]]
+	[[ "$output" == *"LaunchAgent 全部正常"* ]]
 }
 
 @test "opt_launch_agents_cleanup detects broken agents" {
@@ -1065,7 +1065,7 @@ execute_optimization launch_agents_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Cleaned 1 broken Launch Agent"* ]]
+	[[ "$output" == *"已清理 1 个损坏的 LaunchAgent"* ]]
 }
 
 @test "opt_launch_agents_cleanup skips healthy agents" {
@@ -1095,7 +1095,7 @@ execute_optimization launch_agents_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Launch Agents all healthy"* ]]
+	[[ "$output" == *"LaunchAgent 全部正常"* ]]
 }
 
 @test "opt_launch_agents_cleanup spares agents on unmounted volumes" {
@@ -1126,7 +1126,7 @@ execute_optimization launch_agents_cleanup
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Launch Agents all healthy"* ]]
+	[[ "$output" == *"LaunchAgent 全部正常"* ]]
 }
 
 @test "execute_optimization dispatches launch_agents_cleanup" {
@@ -1159,7 +1159,7 @@ rm -f "$tmplog"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already current"* ]]
+	[[ "$output" == *"定期维护已是最新"* ]]
 }
 
 @test "opt_periodic_maintenance ignores non-BSD stat earlier in PATH" {
@@ -1184,7 +1184,7 @@ rm -rf "$tmpdir"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"already current"* ]] || return 1
+	[[ "$output" == *"定期维护已是最新"* ]] || return 1
 	[[ "$output" != *"unbound variable"* ]]
 }
 
@@ -1203,7 +1203,7 @@ rm -f "$tmplog"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Periodic maintenance triggered"* ]]
+	[[ "$output" == *"定期维护已触发"* ]]
 }
 
 @test "opt_periodic_maintenance triggers in dry-run when log is missing" {
@@ -1218,7 +1218,7 @@ MOLE_PERIODIC_LOG="/tmp/mole-test-nonexistent-daily.out" execute_optimization pe
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Periodic maintenance triggered"* ]]
+	[[ "$output" == *"定期维护已触发"* ]]
 }
 
 @test "opt_periodic_maintenance reports skipped without admin access" {
@@ -1233,7 +1233,7 @@ MOLE_PERIODIC_LOG="$HOME/missing-daily.out" execute_optimization periodic_mainte
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Periodic maintenance skipped (requires sudo)"* ]] || return 1
+	[[ "$output" == *"定期维护已跳过（需要 sudo）"* ]] || return 1
 }
 
 @test "opt_periodic_maintenance reports command failure" {
@@ -1249,7 +1249,7 @@ MOLE_PERIODIC_LOG="$HOME/missing-daily.out" execute_optimization periodic_mainte
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Failed to run periodic maintenance (exit=7)"* ]] || return 1
+	[[ "$output" == *"无法运行定期维护（exit=7）"* ]] || return 1
 }
 
 @test "opt_disk_verify reports a timed out probe as failed" {
@@ -1265,7 +1265,7 @@ execute_optimization disk_verify
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Disk verification timed out"* ]] || return 1
+	[[ "$output" == *"磁盘验证超时"* ]] || return 1
 }
 
 @test "opt_network_stack_optimize reports a partial flush failure" {
@@ -1293,8 +1293,8 @@ execute_optimization network_stack_optimize
 EOF
 
 	[[ "$status" -eq 0 ]] || { echo "$output"; return 1; }
-	[[ "$output" == *"Network routing table refreshed"* ]] || return 1
-	[[ "$output" == *"Network stack refresh incomplete (1 operation(s) failed)"* ]] || return 1
+	[[ "$output" == *"网络路由表已刷新"* ]] || return 1
+	[[ "$output" == *"网络栈刷新未完成（1 个操作失败）"* ]] || return 1
 }
 
 @test "run_optimize_diagnostics flags sustained CloudShell as primary bottleneck" {
@@ -1315,8 +1315,8 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Likely bottleneck: CloudShell / AliEntSafe"* ]] || return 1
-	[[ "$output" == *"Mole will not terminate enterprise security processes"* ]]
+	[[ "$output" == *"疑似瓶颈：CloudShell / AliEntSafe"* ]] || return 1
+	[[ "$output" == *"Mole 不会终止企业安全进程"* ]]
 }
 
 @test "run_optimize_diagnostics treats CoreSimulator images as informational for syspolicyd" {
@@ -1339,9 +1339,9 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Likely bottleneck: syspolicyd"* ]] || return 1
-	[[ "$output" == *"Gatekeeper status: assessments enabled"* ]] || return 1
-	[[ "$output" == *"Only system-managed CoreSimulator images are mounted"* ]] || return 1
+	[[ "$output" == *"疑似瓶颈：syspolicyd"* ]] || return 1
+	[[ "$output" == *"Gatekeeper 状态：assessments enabled"* ]] || return 1
+	[[ "$output" == *"仅挂载了系统管理的 CoreSimulator 映像，仅供参考，不是卸载目标"* ]] || return 1
 	[[ "$output" != *"assessment overhead:"* ]]
 }
 
@@ -1363,7 +1363,7 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"No sustained high-CPU bottleneck detected"* ]]
+	[[ "$output" == *"未检测到持续的高 CPU 占用瓶颈"* ]]
 }
 
 @test "run_optimize_diagnostics offers user-mounted images under syspolicyd pressure in dry-run" {
@@ -1386,11 +1386,11 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Likely bottleneck: syspolicyd"* ]] || return 1
-	[[ "$output" == *"Mounted image adds assessment overhead:"* ]] || return 1
+	[[ "$output" == *"疑似瓶颈：syspolicyd"* ]] || return 1
+	[[ "$output" == *"已挂载的映像会增加评估开销"* ]] || return 1
 	[[ "$output" == *"TestInstaller.dmg"* ]] || return 1
 	[[ "$output" == *"/Volumes/Test Installer"* ]] || return 1
-	[[ "$output" == *"Would offer detach for 1 mounted image"* ]]
+	[[ "$output" == *"将提示卸载 1 个已挂载映像"* ]]
 }
 
 @test "run_optimize_diagnostics keeps healthy runs quiet even with user-mounted images" {
@@ -1412,7 +1412,7 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"No sustained high-CPU bottleneck detected"* ]] || return 1
+	[[ "$output" == *"未检测到持续的高 CPU 占用瓶颈"* ]] || return 1
 	[[ "$output" != *"assessment overhead:"* ]] || return 1
 	[[ "$output" != *"Would offer detach"* ]] || return 1
 	[[ "$output" != *"/Volumes/Test Installer"* ]]
@@ -1440,7 +1440,7 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Likely bottleneck: syspolicyd"* ]] || return 1
+	[[ "$output" == *"疑似瓶颈：syspolicyd"* ]] || return 1
 	[[ "$output" != *"assessment overhead:"* ]] || return 1
 	[[ "$output" != *"Would offer detach"* ]]
 }
@@ -1472,7 +1472,7 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Likely bottleneck: syspolicyd"* ]] || return 1
+	[[ "$output" == *"疑似瓶颈：syspolicyd"* ]] || return 1
 	[[ "$output" != *"assessment overhead:"* ]] || return 1
 	[[ "$output" != *"Would offer detach"* ]]
 }
@@ -1495,7 +1495,7 @@ run_optimize_diagnostics
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"No sustained high-CPU bottleneck detected"* ]]
+	[[ "$output" == *"未检测到持续的高 CPU 占用瓶颈"* ]]
 }
 
 @test "opt_diag_detach_candidates prints summary line only for multiple images" {
@@ -1514,9 +1514,9 @@ EOF
 	single="${output#*--- single ---}"
 	single="${single%%--- double ---*}"
 	double="${output#*--- double ---}"
-	[[ "$single" == *"Detached /Volumes/A"* ]] || return 1
+	[[ "$single" == *"已卸载 /Volumes/A"* ]] || return 1
 	[[ "$single" != *"mounted images"* ]] || return 1
-	[[ "$double" == *"Detached 2 mounted images"* ]] || return 1
+	[[ "$double" == *"已卸载 2 个已挂载映像"* ]] || return 1
 }
 
 @test "opt_diag_offer_detach_candidates renders image paths without terminal escapes" {
@@ -1554,8 +1554,8 @@ opt_diag_detach_candidates "$candidates"
 EOF
 
 	[ "$status" -eq 0 ] || { echo "$output"; return 1; }
-	[[ "$output" == *'Detached /Volumes/Success\033[2J-'* ]] || return 1
-	[[ "$output" == *'Failed to detach /Volumes/Failed\033[H-'* ]] || return 1
+	[[ "$output" == *'已卸载 /Volumes/Success\033[2J-'* ]] || return 1
+	[[ "$output" == *'无法卸载 /Volumes/Failed\033[H-'* ]] || return 1
 	[[ "$output" != *$'\033[2J'* ]] || return 1
 	[[ "$output" != *$'\033[H'* ]]
 }
@@ -1577,7 +1577,7 @@ execute_optimization periodic_maintenance
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Periodic maintenance skipped (not available on this macOS version)"* ]]
+	[[ "$output" == *"定期维护已跳过（此 macOS 版本不可用）"* ]]
 }
 
 @test "execute_optimization dispatches periodic_maintenance" {
@@ -1608,7 +1608,7 @@ execute_optimization cache_refresh
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Skipped (whitelisted): Finder Cache Refresh"* ]] || return 1
+	[[ "$output" == *"已跳过（白名单）：Finder Cache Refresh"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_CACHE"* ]]
 }
 
@@ -1659,9 +1659,9 @@ show_system_health "$health_json"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"6/8 GB RAM"* ]] || return 1
-	[[ "$output" == *"288/351 GB Disk"* ]] || return 1
-	[[ "$output" == *"Uptime 6d"* ]]
+	[[ "$output" == *"内存 6/8 GB"* ]] || return 1
+	[[ "$output" == *"磁盘 288/351 GB"* ]] || return 1
+	[[ "$output" == *"运行时间 6d"* ]]
 }
 
 @test "optimize whitelist items include task ids" {

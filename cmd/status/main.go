@@ -23,14 +23,14 @@ const (
 
 var (
 	// Command-line flags
-	jsonOutput       = flag.Bool("json", false, "output metrics as JSON instead of TUI")
-	procCPUThreshold = flag.Float64("proc-cpu-threshold", 100, "alert when a process stays above this CPU percent")
-	procCPUWindow    = flag.Duration("proc-cpu-window", 5*time.Minute, "continuous duration a process must exceed the CPU threshold")
-	procCPUAlerts    = flag.Bool("proc-cpu-alerts", true, "enable persistent high-CPU process alerts")
+	jsonOutput       = flag.Bool("json", false, "以 JSON 格式输出指标，而非 TUI")
+	procCPUThreshold = flag.Float64("proc-cpu-threshold", 100, "当某个进程持续高于此 CPU 百分比时告警")
+	procCPUWindow    = flag.Duration("proc-cpu-window", 5*time.Minute, "进程必须持续超过 CPU 阈值的时间")
+	procCPUAlerts    = flag.Bool("proc-cpu-alerts", true, "启用持续的高 CPU 进程告警")
 
 	// Watch mode: stream NDJSON (one snapshot per line) from a single warm collector.
-	watchMode     = flag.Bool("watch", false, "stream metrics continuously as newline-delimited JSON instead of the one-shot TUI/JSON")
-	watchInterval = flag.String("interval", "", "with --watch, collection interval (e.g. 1s, 2s); defaults to 1s")
+	watchMode     = flag.Bool("watch", false, "以换行分隔的 JSON 持续流式输出指标，而非单次 TUI/JSON")
+	watchInterval = flag.String("interval", "", "配合 --watch 使用，采集间隔（如 1s、2s）；默认 1s")
 )
 
 func shouldUseJSONOutput(forceJSON bool, stdout *os.File) bool {
@@ -113,10 +113,10 @@ func processWatchOptionsFromFlags() ProcessWatchOptions {
 
 func validateFlags() error {
 	if *procCPUThreshold < 0 {
-		return fmt.Errorf("--proc-cpu-threshold must be >= 0")
+		return fmt.Errorf("--proc-cpu-threshold 必须 >= 0")
 	}
 	if *procCPUWindow <= 0 {
-		return fmt.Errorf("--proc-cpu-window must be > 0")
+		return fmt.Errorf("--proc-cpu-window 必须 > 0")
 	}
 	return nil
 }
@@ -183,7 +183,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if !m.ready {
-		return "Loading..."
+		return "加载中…"
 	}
 
 	termWidth := m.width
@@ -311,14 +311,14 @@ func runJSONMode() {
 
 	data, err := collector.Collect()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error collecting metrics: %v\n", err)
+		fmt.Fprintf(os.Stderr, "采集指标出错：%v\n", err)
 		os.Exit(1)
 	}
 
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(data); err != nil {
-		fmt.Fprintf(os.Stderr, "error encoding JSON: %v\n", err)
+		fmt.Fprintf(os.Stderr, "编码 JSON 出错：%v\n", err)
 		os.Exit(1)
 	}
 }
@@ -327,7 +327,7 @@ func runJSONMode() {
 func runTUIMode() {
 	p := tea.NewProgram(newModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "system status error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "系统状态错误：%v\n", err)
 		os.Exit(1)
 	}
 }
@@ -339,10 +339,10 @@ func parseWatchInterval(raw string) (time.Duration, error) {
 
 	d, err := time.ParseDuration(raw)
 	if err != nil {
-		return 0, fmt.Errorf("invalid --interval %q (want e.g. 1s, 2s): %w", raw, err)
+		return 0, fmt.Errorf("无效的 --interval %q（例如 1s、2s）：%w", raw, err)
 	}
 	if d <= 0 {
-		return 0, fmt.Errorf("invalid --interval %q (must be > 0)", raw)
+		return 0, fmt.Errorf("无效的 --interval %q（必须 > 0）", raw)
 	}
 	return d, nil
 }
@@ -388,13 +388,13 @@ func parseArgs(args []string, stdout, stderr io.Writer) (int, bool) {
 		return 0, false
 	case err != nil:
 		_, _ = fmt.Fprintln(stderr, err)
-		_, _ = fmt.Fprintln(stderr, "Use 'mo status --help' for usage information")
+		_, _ = fmt.Fprintln(stderr, "使用 'mo status --help' 查看用法信息")
 		return 1, false
 	}
 
 	if err := validateFlags(); err != nil {
 		_, _ = fmt.Fprintln(stderr, err)
-		_, _ = fmt.Fprintln(stderr, "Use 'mo status --help' for usage information")
+		_, _ = fmt.Fprintln(stderr, "使用 'mo status --help' 查看用法信息")
 		return 1, false
 	}
 	return 0, true
@@ -409,7 +409,7 @@ func main() {
 		interval, err := parseWatchInterval(*watchInterval)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
-			fmt.Fprintln(os.Stderr, "Use 'mo status --help' for usage information")
+			fmt.Fprintln(os.Stderr, "使用 'mo status --help' 查看用法信息")
 			os.Exit(1)
 		}
 		runWatchMode(interval)

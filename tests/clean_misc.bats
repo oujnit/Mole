@@ -37,8 +37,8 @@ clean_cloud_storage
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Dropbox cache"* ]] || return 1
-    [[ "$output" == *"Google Drive cache"* ]]
+    [[ "$output" == *"Dropbox 缓存"* ]] || return 1
+    [[ "$output" == *"Google Drive 缓存"* ]]
 }
 
 @test "clean_virtualization_tools hits cache paths" {
@@ -53,11 +53,11 @@ clean_virtualization_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"VMware Fusion cache"* ]] || return 1
-    [[ "$output" == *"Parallels cache"* ]] || return 1
-    [[ "$output" == *"UTM app cache|$HOME/Library/Caches/com.utmapp.UTM/"* ]] || return 1
-    [[ "$output" == *"UTM sandbox cache|$HOME/Library/Containers/com.utmapp.UTM/Data/Library/Caches/"* ]] || return 1
-    [[ "$output" == *"UTM temporary files|$HOME/Library/Containers/com.utmapp.UTM/Data/tmp/"* ]]
+    [[ "$output" == *"VMware Fusion 缓存"* ]] || return 1
+    [[ "$output" == *"Parallels 缓存"* ]] || return 1
+    [[ "$output" == *"UTM 应用缓存|$HOME/Library/Caches/com.utmapp.UTM/"* ]] || return 1
+    [[ "$output" == *"UTM 沙盒缓存|$HOME/Library/Containers/com.utmapp.UTM/Data/Library/Caches/"* ]] || return 1
+    [[ "$output" == *"UTM 临时文件|$HOME/Library/Containers/com.utmapp.UTM/Data/tmp/"* ]]
 }
 
 @test "clean_virtualization_tools skips UTM caches while UTM is running" {
@@ -75,10 +75,10 @@ clean_virtualization_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"VMware Fusion cache"* ]] || return 1
-    [[ "$output" == *"Parallels cache"* ]] || return 1
-    [[ "$output" != *"UTM app cache"* ]] || return 1
-    [[ "$output" != *"UTM sandbox cache"* ]]
+    [[ "$output" == *"VMware Fusion 缓存"* ]] || return 1
+    [[ "$output" == *"Parallels 缓存"* ]] || return 1
+    [[ "$output" != *"UTM 应用缓存"* ]] || return 1
+    [[ "$output" != *"UTM 沙盒缓存"* ]]
 }
 
 @test "clean_email_clients calls expected caches" {
@@ -90,8 +90,8 @@ clean_email_clients
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Spark cache"* ]] || return 1
-    [[ "$output" == *"Airmail cache"* ]]
+    [[ "$output" == *"Spark 缓存"* ]] || return 1
+    [[ "$output" == *"Airmail 缓存"* ]]
 }
 
 @test "clean_virtualization_tools includes Lima download cache" {
@@ -105,7 +105,7 @@ clean_virtualization_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Lima download cache|$HOME/Library/Caches/lima/download/by-url-sha256/"* ]]
+    [[ "$output" == *"Lima 下载缓存|$HOME/Library/Caches/lima/download/by-url-sha256/"* ]]
 }
 
 @test "clean_tart_caches runs only the native cache-only age prune" {
@@ -135,7 +135,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [ "$(< "$HOME/tart-args")" = "prune --entries caches --older-than 30" ] || return 1
-    [[ "$output" == *"Tart caches · pruned"* ]] || return 1
+    [[ "$output" == *"Tart 缓存 · 已清理"* ]] || return 1
     [[ "$output" != *"--entries vms"* ]] || return 1
 }
 
@@ -157,7 +157,7 @@ clean_tart_caches
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"would prune items older than 30 days (2MB)"* ]] || return 1
+    [[ "$output" == *"将清理超过 30 天的项目（2MB）"* ]] || return 1
     [[ "$output" == *"tart prune --entries caches --older-than 30"* ]] || return 1
     [ ! -e "$HOME/tart-called" ] || return 1
 }
@@ -195,7 +195,7 @@ clean_tart_caches
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"would skip (whitelist)"* ]] || return 1
+    [[ "$output" == *"将跳过（白名单）"* ]] || return 1
     [[ "$output" != *"TART_CALLED"* ]] || return 1
 }
 
@@ -219,7 +219,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Tart caches · skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"Tart 缓存 · 已跳过（进程状态未知）"* ]] || return 1
     [ ! -e "$HOME/tart-called" ]
 }
 
@@ -275,8 +275,8 @@ clean_tart_caches
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Tart caches · prune failed"* ]] || return 1
-    [[ "$output" != *"Tart caches · pruned"* ]] || return 1
+    [[ "$output" == *"Tart 缓存 · 清理失败"* ]] || return 1
+    [[ "$output" != *"Tart 缓存 · 已清理"* ]] || return 1
 }
 
 @test "clean_tart_caches is silent without Tart or a cache" {
@@ -304,8 +304,8 @@ clean_note_apps
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Notion cache"* ]] || return 1
-    [[ "$output" == *"Obsidian cache"* ]]
+    [[ "$output" == *"Notion 缓存"* ]] || return 1
+    [[ "$output" == *"Obsidian 缓存"* ]]
 }
 
 @test "clean_task_apps calls expected caches" {
@@ -317,8 +317,8 @@ clean_task_apps
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Todoist cache"* ]] || return 1
-    [[ "$output" == *"Any.do cache"* ]]
+    [[ "$output" == *"Todoist 缓存"* ]] || return 1
+    [[ "$output" == *"Any.do 缓存"* ]]
 }
 
 @test "clean_video_tools calls expected caches" {
@@ -330,8 +330,8 @@ clean_video_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"ScreenFlow cache"* ]] || return 1
-    [[ "$output" == *"Final Cut Pro cache"* ]]
+    [[ "$output" == *"ScreenFlow 缓存"* ]] || return 1
+    [[ "$output" == *"Final Cut Pro 缓存"* ]]
 }
 
 @test "clean_video_players calls expected caches" {
@@ -343,8 +343,8 @@ clean_video_players
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"IINA cache"* ]] || return 1
-    [[ "$output" == *"VLC cache"* ]]
+    [[ "$output" == *"IINA 缓存"* ]] || return 1
+    [[ "$output" == *"VLC 缓存"* ]]
 }
 
 @test "clean_3d_tools calls expected caches" {
@@ -376,9 +376,9 @@ clean_3d_tools
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Blender cache"* ]] || return 1
-    [[ "$output" == *"Cinema 4D cache"* ]]
-    [[ "$output" == *"Autodesk cache"* ]] || return 1
+    [[ "$output" == *"Blender 缓存"* ]] || return 1
+    [[ "$output" == *"Cinema 4D 缓存"* ]]
+    [[ "$output" == *"Autodesk 缓存"* ]] || return 1
 }
 
 @test "clean_gaming_platforms calls expected caches" {
@@ -390,8 +390,8 @@ clean_gaming_platforms
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Steam cache"* ]] || return 1
-    [[ "$output" == *"Epic Games cache"* ]]
+    [[ "$output" == *"Steam 缓存"* ]] || return 1
+    [[ "$output" == *"Epic Games 缓存"* ]]
 }
 
 @test "clean_translation_apps calls expected caches" {
@@ -403,8 +403,8 @@ clean_translation_apps
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Youdao Dictionary cache"* ]] || return 1
-    [[ "$output" == *"Eudict cache"* ]]
+    [[ "$output" == *"有道词典缓存"* ]] || return 1
+    [[ "$output" == *"欧路词典缓存"* ]]
 }
 
 @test "clean_launcher_apps calls expected caches" {
@@ -416,8 +416,8 @@ clean_launcher_apps
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Alfred cache"* ]] || return 1
-    [[ "$output" == *"The Unarchiver cache"* ]]
+    [[ "$output" == *"Alfred 缓存"* ]] || return 1
+    [[ "$output" == *"The Unarchiver 缓存"* ]]
 }
 
 @test "clean_remote_desktop calls expected caches" {
@@ -429,8 +429,8 @@ clean_remote_desktop
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"TeamViewer cache"* ]] || return 1
-    [[ "$output" == *"AnyDesk cache"* ]]
+    [[ "$output" == *"TeamViewer 缓存"* ]] || return 1
+    [[ "$output" == *"AnyDesk 缓存"* ]]
 }
 
 @test "clean_system_utils calls expected caches" {
@@ -442,8 +442,8 @@ clean_system_utils
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Input Source Pro cache"* ]] || return 1
-    [[ "$output" == *"WakaTime cache"* ]]
+    [[ "$output" == *"Input Source Pro 缓存"* ]] || return 1
+    [[ "$output" == *"WakaTime 缓存"* ]]
 }
 
 @test "clean_shell_utils calls expected caches" {
@@ -455,6 +455,6 @@ clean_shell_utils
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Zsh completion cache"* ]] || return 1
-    [[ "$output" == *"wget HSTS cache"* ]]
+    [[ "$output" == *"Zsh 补全缓存"* ]] || return 1
+    [[ "$output" == *"wget HSTS 缓存"* ]]
 }

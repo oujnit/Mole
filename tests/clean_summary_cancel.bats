@@ -93,25 +93,25 @@ EOF
 
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
     [[ "$output" == *"LATER_SECTION"* ]] || return 1
-    [[ "$output" == *"Dry run complete"* ]] || return 1
-    [[ "$output" != *"Dry run cancelled"* ]] || return 1
+    [[ "$output" == *"预览完成 - 未做任何更改"* ]] || return 1
+    [[ "$output" != *"预览已取消"* ]] || return 1
 }
 
 @test "sizing timeout (124) still prints the summary (#1342)" {
     run_perform_cleanup_with 124
 
     [ "$status" -eq 124 ]
-    [[ "$output" == *"Cleanup cancelled"* ]]
-    [[ "$output" == *"timed out (exit 124)"* ]]
-    [[ "$output" == *"Remaining cleanup was skipped"* ]]
+    [[ "$output" == *"清理已取消"* ]]
+    [[ "$output" == *"超时（退出码 124）"* ]]
+    [[ "$output" == *"剩余清理已跳过"* ]]
 }
 
 @test "interrupted section (>=128) prints an interrupted summary" {
     run_perform_cleanup_with 130
 
     [ "$status" -eq 130 ]
-    [[ "$output" == *"Cleanup interrupted"* ]]
-    [[ "$output" == *"was interrupted (exit 130)"* ]]
+    [[ "$output" == *"清理已中断"* ]]
+    [[ "$output" == *"被中断（退出码 130）"* ]]
 }
 
 @test "external volume scan failure makes the command incomplete" {
@@ -135,11 +135,10 @@ EOF
 
     [ "$status" -eq 7 ] || { echo "$output"; return 1; }
     [[ "$output" == *"EXTERNAL_SCAN_FAILED"* ]] || return 1
-    [[ "$output" == *"Cleanup incomplete"* ]] || return 1
-    [[ "$output" == *"failed (exit 7)"* ]] || return 1
-    [[ "$output" != *"Cleanup complete"* ]] || return 1
-    [[ "$output" != *"system already clean"* ]] || return 1
-    [[ "$output" != *"System was already clean"* ]] || return 1
+    [[ "$output" == *"清理未完成"* ]] || return 1
+    [[ "$output" == *"必需的清理步骤失败（退出码 7）"* ]] || return 1
+    [[ "$output" != *"清理完成"* ]] || return 1
+    [[ "$output" != *"系统已经很干净"* ]] || return 1
 }
 
 # Exercise the real external-volume and Finder-metadata helpers through the
@@ -193,7 +192,7 @@ EOF
 @test "external Finder scan failure stops later cleanup and reports incomplete" {
     run_external_finder_scan_with 7 false
     [ "$status" -eq 1 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"Cleanup incomplete"* ]] || return 1
+    [[ "$output" == *"清理未完成"* ]] || return 1
     [[ "$output" == *"RC=1 CANCEL=0 FILES=0"* ]] || return 1
     [[ "$output" == *"SPINNER_STOP"* ]] || return 1
     [[ "$output" != *"REMOVE:"* && "$output" != *"PREVIEW:"* ]] || return 1
@@ -202,7 +201,7 @@ EOF
 @test "external Finder scan timeout stops later cleanup and reports cancellation" {
     run_external_finder_scan_with 124 false
     [ "$status" -eq 124 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"Cleanup cancelled"* ]] || return 1
+    [[ "$output" == *"清理已取消"* ]] || return 1
     [[ "$output" == *"RC=124 CANCEL=124 FILES=0"* ]] || return 1
     [[ "$output" == *"SPINNER_STOP"* ]] || return 1
     [[ "$output" != *"REMOVE:"* && "$output" != *"PREVIEW:"* ]] || return 1
@@ -211,7 +210,7 @@ EOF
 @test "external Finder scan interruption stops later cleanup and reports interruption" {
     run_external_finder_scan_with 130 false
     [ "$status" -eq 130 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"Cleanup interrupted"* ]] || return 1
+    [[ "$output" == *"清理已中断"* ]] || return 1
     [[ "$output" == *"RC=130 CANCEL=130 FILES=0"* ]] || return 1
     [[ "$output" != *"REMOVE:"* && "$output" != *"PREVIEW:"* ]] || return 1
 }
@@ -277,8 +276,8 @@ perform_cleanup
 EOF
 
     [ "$status" -eq 124 ] || return 1
-    [[ "$output" == *"Cleanup cancelled"* ]] || return 1
-    [[ "$output" == *"Remaining cleanup was skipped"* ]] || return 1
+    [[ "$output" == *"清理已取消"* ]] || return 1
+    [[ "$output" == *"剩余清理已跳过"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_"* ]]
 }
 
@@ -286,8 +285,8 @@ EOF
     run_perform_cleanup_with 0
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cleanup complete"* ]]
-    [[ "$output" != *"Cleanup cancelled"* ]]
+    [[ "$output" == *"清理完成"* ]]
+    [[ "$output" != *"清理已取消"* ]]
 }
 
 @test "partial cleanup keeps routine timeouts out of the default summary" {
@@ -322,13 +321,13 @@ EOF
     # The full runner enables ANSI colors; assert the rendered text in either mode.
     local plain_output
     plain_output=$(printf '%s' "$output" | sed -E $'s/\033\\[[0-9;]*m//g')
-    [[ "$output" == *"Cleanup complete"* ]] || return 1
-    [[ "$plain_output" == *"Tracked cleanup: At least 10.74GB | Items cleaned: 42"* ]] || return 1
+    [[ "$output" == *"清理完成"* ]] || return 1
+    [[ "$plain_output" == *"已统计清理：至少 10.74GB | 清理项目：42"* ]] || return 1
     [[ "$output" == *"RECORDED=1/2"* ]] || return 1
-    [[ "$output" == *"Free space:"* ]] || return 1
-    [[ "$output" != *"size-check budget"* && "$output" != *"removal budget"* ]] || return 1
+    [[ "$output" == *"可用空间："* ]] || return 1
+    [[ "$output" != *"大小检查预算"* && "$output" != *"移除预算"* ]] || return 1
     [[ "$output" != *"MOLE_TIMEOUT_DISK_VERIFY_SEC"* && "$output" != *"Run clean again"* ]] || return 1
-    [[ "$output" != *"Categories:"* && "$output" != *"4K movie"* ]] || return 1
+    [[ "$output" != *"分类："* && "$output" != *"4K 电影"* ]] || return 1
 }
 
 @test "debug output retains routine timeout details and paths (#1384)" {
@@ -361,15 +360,15 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"2 item(s) exceeded the 30s removal budget"* ]] || return 1
-    [[ "$output" == *"size-check budget"* ]] || return 1
+    [[ "$output" == *"2 个项目超过了 30 秒的移除预算"* ]] || return 1
+    [[ "$output" == *"大小检查预算"* ]] || return 1
     [[ "$output" == *"XCTestDevices/clone-one"* ]] || return 1
     [[ "$output" == *"XCTestDevices/clone-two"* ]] || return 1
     # Abbreviated to ~: three absolute paths under the home directory run past
     # the one line this note is capped to.
     [[ "$output" == *"~/Library/Developer/XCTestDevices/clone-one"* ]] || { echo "$output"; return 1; }
     [[ "$output" != *"$HOME/Library/Developer/XCTestDevices/clone-one"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"System was already clean"* ]] || return 1
+    [[ "$output" != *"系统已经很干净"* ]] || return 1
 }
 
 @test "sizing timeouts still clean and the summary reports the under-count (#1374)" {
@@ -404,12 +403,12 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Cleanup complete"* ]] || return 1
-    [[ "$output" != *"Cleanup cancelled"* ]] || return 1
+    [[ "$output" == *"清理完成"* ]] || return 1
+    [[ "$output" != *"清理已取消"* ]] || return 1
     local plain_output
     plain_output=$(printf '%s' "$output" | sed -E $'s/\033\\[[0-9;]*m//g')
-    [[ "$plain_output" == *"Tracked cleanup: Partially measured"* ]] || return 1
-    [[ "$output" != *"size-check budget"* ]] || return 1
-    [[ "$output" != *"System was already clean"* ]] || return 1
+    [[ "$plain_output" == *"已统计清理：部分已测量"* ]] || return 1
+    [[ "$output" != *"大小检查预算"* ]] || return 1
+    [[ "$output" != *"系统已经很干净"* ]] || return 1
     [[ ! -e "$HOME/Library/Caches/cache1374" ]]
 }

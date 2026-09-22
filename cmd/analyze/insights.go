@@ -26,7 +26,7 @@ func createInsightEntries() []dirEntry {
 	backupPath := filepath.Join(home, "Library", "Application Support", "MobileSync", "Backup")
 	if info, err := os.Stat(backupPath); err == nil && info.IsDir() {
 		entries = append(entries, dirEntry{
-			Name:  "iOS Backups",
+			Name:  "iOS 备份",
 			Path:  backupPath,
 			IsDir: true,
 			Size:  -1,
@@ -37,7 +37,7 @@ func createInsightEntries() []dirEntry {
 	downloadsPath := filepath.Join(home, "Downloads")
 	if info, err := os.Stat(downloadsPath); err == nil && info.IsDir() {
 		entries = append(entries, dirEntry{
-			Name:  "Old Downloads (90d+)",
+			Name:  "较早的下载（90 天以上）",
 			Path:  downloadsPath,
 			IsDir: true,
 			Size:  -1,
@@ -53,20 +53,20 @@ func createInsightEntries() []dirEntry {
 		path string
 	}{
 		// Universal (everyone has these)
-		{"System Logs", filepath.Join(home, "Library", "Logs")},
-		{"Homebrew Cache", filepath.Join(home, "Library", "Caches", "Homebrew")},
+		{"系统日志", filepath.Join(home, "Library", "Logs")},
+		{"Homebrew 缓存", filepath.Join(home, "Library", "Caches", "Homebrew")},
 
 		// Developer-specific (only shown if path exists)
-		{"Xcode DerivedData", filepath.Join(home, "Library", "Developer", "Xcode", "DerivedData")},
-		{"Xcode Simulators", filepath.Join(home, "Library", "Developer", "CoreSimulator", "Devices")},
-		{"Xcode Archives", filepath.Join(home, "Library", "Developer", "Xcode", "Archives")},
-		{"Spotify Cache", filepath.Join(home, "Library", "Application Support", "Spotify", "PersistentCache")},
-		{"JetBrains Cache", filepath.Join(home, "Library", "Caches", "JetBrains")},
-		{"Docker Data", filepath.Join(home, "Library", "Containers", "com.docker.docker", "Data")},
-		{"pip Cache", filepath.Join(home, "Library", "Caches", "pip")},
+		{"Xcode 派生数据", filepath.Join(home, "Library", "Developer", "Xcode", "DerivedData")},
+		{"Xcode 模拟器", filepath.Join(home, "Library", "Developer", "CoreSimulator", "Devices")},
+		{"Xcode 归档", filepath.Join(home, "Library", "Developer", "Xcode", "Archives")},
+		{"Spotify 缓存", filepath.Join(home, "Library", "Application Support", "Spotify", "PersistentCache")},
+		{"JetBrains 缓存", filepath.Join(home, "Library", "Caches", "JetBrains")},
+		{"Docker 数据", filepath.Join(home, "Library", "Containers", "com.docker.docker", "Data")},
+		{"pip 缓存", filepath.Join(home, "Library", "Caches", "pip")},
 		{"uv Cache", filepath.Join(home, ".cache", "uv")},
-		{"Gradle Cache", filepath.Join(home, ".gradle", "caches")},
-		{"CocoaPods Cache", filepath.Join(home, "Library", "Caches", "CocoaPods")},
+		{"Gradle 缓存", filepath.Join(home, ".gradle", "caches")},
+		{"CocoaPods 缓存", filepath.Join(home, "Library", "Caches", "CocoaPods")},
 	}
 	if matches, err := filepath.Glob(filepath.Join(home, "Library", "Group Containers", "*dev.orbstack", "data")); err == nil {
 		for _, match := range matches {

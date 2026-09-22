@@ -372,7 +372,7 @@ clean_github_cli_cache
 EOF
 
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"GitHub CLI cache · skipped (whitelist)"* ]] || return 1
+    [[ "$output" == *"GitHub CLI 缓存 · 已跳过（白名单）"* ]] || return 1
     [ ! -e "$trace" ] || return 1
 }
 
@@ -431,7 +431,7 @@ EOF
 
     run /bin/bash --noprofile --norc -c "cd '$PROJECT_ROOT'; printf 'q' | HOME='$HOME' ./mo clean --whitelist"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Cancelled"* ]] || return 1
+    [[ "$output" == *"已取消"* ]] || return 1
     after_hash=$(shasum "$whitelist_file" | awk '{print $1}')
     [ "$before_hash" = "$after_hash" ]
 }

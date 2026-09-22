@@ -449,11 +449,11 @@ _update_print_verified_success() {
     local update_ref="$1"
     local success_label="$2"
     if [[ "$update_ref" == "main" && -n "$_MOLE_UPDATE_VERIFIED_COMMIT" ]]; then
-        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} Updated to ${success_label}, ${_MOLE_UPDATE_VERIFIED_COMMIT}"
+        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} 已更新到 ${success_label}，${_MOLE_UPDATE_VERIFIED_COMMIT}"
     elif [[ "$update_ref" == "main" ]]; then
-        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} Updated to ${success_label}"
+        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} 已更新到 ${success_label}"
     else
-        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} Updated to ${success_label}, ${_MOLE_UPDATE_VERIFIED_VERSION}"
+        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} 已更新到 ${success_label}，${_MOLE_UPDATE_VERIFIED_VERSION}"
     fi
 }
 
@@ -480,7 +480,7 @@ _update_self_heal_reinstall() {
         install_commit="$expected_commit"
     fi
 
-    echo "Retrying with a direct reinstall from GitHub..."
+    echo "正在从 GitHub 直接重装重试…"
 
     local heal_output=""
     if command -v curl > /dev/null 2>&1; then
@@ -525,7 +525,7 @@ _update_print_manual_reinstall() {
     printf -v quoted_ref '%q' "$update_ref"
     printf -v quoted_install_dir '%q' "$install_dir"
     printf -v quoted_config_dir '%q' "$config_dir"
-    printf '%s Reinstall manually: curl -fsSL https://raw.githubusercontent.com/tw93/mole/main/install.sh | MOLE_VERSION=%s bash -s -- --prefix %s --config %s\n' \
+    printf '%s 手动重装：curl -fsSL https://raw.githubusercontent.com/tw93/mole/main/install.sh | MOLE_VERSION=%s bash -s -- --prefix %s --config %s\n' \
         "${ICON_REVIEW}" "$quoted_ref" "$quoted_install_dir" "$quoted_config_dir"
 }
 
@@ -862,7 +862,7 @@ check_for_updates() {
                 latest_commit=$(get_latest_commit_from_github api-only)
 
                 if [[ -n "$installed_commit" && -n "$latest_commit" && "${installed_commit:0:7}" != "${latest_commit:0:7}" ]]; then
-                    printf "\nNew nightly commit %s available, run %smo update --nightly%s\n\n" "${latest_commit:0:7}" "$GREEN" "$NC" > "$msg_cache"
+                    printf "\n新的 nightly 提交 %s 可用，运行 %smo update --nightly%s\n\n" "${latest_commit:0:7}" "$GREEN" "$NC" > "$msg_cache"
                 else
                     echo -n > "$msg_cache"
                 fi
@@ -880,12 +880,12 @@ check_for_updates() {
                         local brew_latest
                         brew_latest=$(get_homebrew_latest_version || true)
                         if [[ -n "$brew_latest" && "$brew_latest" != "$VERSION" && "$(printf '%s\n' "$VERSION" "$brew_latest" | sort -V | head -1)" == "$VERSION" ]]; then
-                            printf "\nUpdate %s available, run %smo update%s\n\n" "$brew_latest" "$GREEN" "$NC" > "$msg_cache"
+                            printf "\n更新 %s 可用，运行 %smo update%s\n\n" "$brew_latest" "$GREEN" "$NC" > "$msg_cache"
                         else
                             echo -n > "$msg_cache"
                         fi
                     else
-                        printf "\nUpdate %s available, run %smo update%s\n\n" "$latest" "$GREEN" "$NC" > "$msg_cache"
+                        printf "\n更新 %s 可用，运行 %smo update%s\n\n" "$latest" "$GREEN" "$NC" > "$msg_cache"
                     fi
                 else
                     echo -n > "$msg_cache"
@@ -966,8 +966,8 @@ show_version() {
 show_help() {
     show_brand_banner
     echo
-    printf "%s%s%s\n" "$BLUE" "COMMANDS" "$NC"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo" "$NC" "Main menu"
+    printf "%s%s%s\n" "$BLUE" "命令" "$NC"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo" "$NC" "主菜单"
     for entry in "${MOLE_COMMANDS[@]}"; do
         local name="${entry%%:*}"
         local desc="${entry#*:}"
@@ -977,25 +977,25 @@ show_help() {
         printf "  %s%-28s%s %s\n" "$GREEN" "$display" "$NC" "$desc"
     done
     echo
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --dry-run" "$NC" "Preview cleanup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --whitelist" "$NC" "Manage protected caches"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --dry-run" "$NC" "预览清理"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo clean --whitelist" "$NC" "管理受保护缓存"
 
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --dry-run" "$NC" "Preview optimization"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --whitelist" "$NC" "Manage protected items"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo uninstall --dry-run" "$NC" "Preview app uninstall"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo history --json" "$NC" "Export cleanup history"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --dry-run" "$NC" "Preview project purge"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo installer --dry-run" "$NC" "Preview installer cleanup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo touchid enable --dry-run" "$NC" "Preview Touch ID setup"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo completion --dry-run" "$NC" "Preview shell completion edits"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --paths" "$NC" "Configure scan directories"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo analyze /Volumes" "$NC" "Analyze external drives only"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --force" "$NC" "Force reinstall latest stable version"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --nightly" "$NC" "Install latest unreleased main branch build"
-    printf "  %s%-28s%s %s\n" "$GREEN" "mo remove --dry-run" "$NC" "Preview Mole removal"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --dry-run" "$NC" "预览优化"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo optimize --whitelist" "$NC" "管理受保护项"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo uninstall --dry-run" "$NC" "预览应用卸载"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo history --json" "$NC" "导出清理历史"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --dry-run" "$NC" "预览项目清理"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo installer --dry-run" "$NC" "预览安装包清理"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo touchid enable --dry-run" "$NC" "预览 Touch ID 配置"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo completion --dry-run" "$NC" "预览 Shell 补全修改"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo purge --paths" "$NC" "配置扫描目录"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo analyze /Volumes" "$NC" "仅分析外置硬盘"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --force" "$NC" "强制重装最新稳定版"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo update --nightly" "$NC" "安装最新的未发布 main 分支构建"
+    printf "  %s%-28s%s %s\n" "$GREEN" "mo remove --dry-run" "$NC" "预览 Mole 移除"
     echo
-    printf "%s%s%s\n" "$BLUE" "OPTIONS" "$NC"
-    printf "  %s%-28s%s %s\n" "$GREEN" "--debug" "$NC" "Show detailed operation logs"
+    printf "%s%s%s\n" "$BLUE" "选项" "$NC"
+    printf "  %s%-28s%s %s\n" "$GREEN" "--debug" "$NC" "显示详细操作日志"
     echo
 }
 
@@ -1023,8 +1023,8 @@ update_mole() (
     if is_homebrew_install; then
         if [[ "$nightly_update" == "true" ]]; then
             local review_icon="${ICON_REVIEW:-⊙}"
-            log_error "Nightly update is only available for script installations. Homebrew installs follow stable releases."
-            printf '%s Reinstall via script to use: mo update --nightly\n' "$review_icon"
+            log_error "Nightly 更新仅适用于脚本安装。Homebrew 安装遵循稳定版本。"
+            printf '%s 通过脚本重装以使用：mo update --nightly\n' "$review_icon"
             exit 1
         fi
         update_via_homebrew "$VERSION"
@@ -1035,35 +1035,35 @@ update_mole() (
     # install, not another mole earlier in PATH. Fail before any download.
     local mole_path
     if ! mole_path=$(resolve_mole_source_path); then
-        log_error "Unable to resolve current Mole path"
+        log_error "无法解析当前 Mole 路径"
         exit 1
     fi
     local install_dir
     if ! install_dir="$(cd "$(dirname "$mole_path")" && pwd)"; then
-        log_error "Unable to resolve current Mole install directory"
+        log_error "无法解析当前 Mole 安装目录"
         exit 1
     fi
     local latest=""
     local latest_commit=""
-    local download_label="Downloading latest version..."
-    local install_label="Installing update..."
-    local final_success_label="latest version"
+    local download_label="正在下载最新版本…"
+    local install_label="正在安装更新…"
+    local final_success_label="最新版本"
     local switch_to_stable_channel=false
     local repair_install=false
     local repair_reason=""
 
     if [[ "$nightly_update" == "true" ]]; then
         latest="main"
-        download_label="Downloading nightly installer..."
-        install_label="Installing nightly update..."
-        final_success_label="nightly build"
+        download_label="正在下载 nightly 安装脚本…"
+        install_label="正在安装 nightly 更新…"
+        final_success_label="nightly 构建"
 
         latest_commit=$(get_latest_commit_from_github)
         if [[ "$force_update" != "true" ]]; then
             if [[ ! "$latest_commit" =~ ^[0-9a-f]{40}$ ]]; then
-                log_error "Unable to resolve latest nightly commit. No update was installed."
-                echo -e "${ICON_REVIEW} Check GitHub access and try again."
-                echo -e "${ICON_REVIEW} To explicitly reinstall anyway: ${GRAY}mo update --nightly --force${NC}"
+                log_error "无法解析最新的 nightly 提交。未安装更新。"
+                echo -e "${ICON_REVIEW} 检查 GitHub 访问并重试。"
+                echo -e "${ICON_REVIEW} 如需强制重装：${GRAY}mo update --nightly --force${NC}"
                 exit 1
             fi
 
@@ -1077,7 +1077,7 @@ update_mole() (
                     repair_install=true
                 else
                     echo ""
-                    echo -e "${GREEN}${ICON_SUCCESS}${NC} Already on latest nightly, ${latest_commit:0:7}"
+                    echo -e "${GREEN}${ICON_SUCCESS}${NC} 已是最新 nightly，${latest_commit:0:7}"
                     echo ""
                     exit 0
                 fi
@@ -1087,7 +1087,7 @@ update_mole() (
         # Announce before resolving, never after. The bounded retry can spend
         # ~20s across three rounds on a flaky proxy, and an unannounced wait that
         # long reads as a hang, which is the report this retry was added for.
-        local check_label="Checking for updates..."
+        local check_label="正在检查更新…"
         if [[ -t 1 ]]; then
             start_inline_spinner "$check_label"
         else
@@ -1097,14 +1097,14 @@ update_mole() (
         if [[ -t 1 ]]; then stop_inline_spinner; fi
 
         if [[ -z "$latest" ]]; then
-            log_error "Unable to check for updates. Check network connection."
-            echo -e "${ICON_REVIEW} Check if you can access GitHub, https://github.com"
-            echo -e "${ICON_REVIEW} Try again with: ${GRAY}mo update${NC}"
+            log_error "无法检查更新。请检查网络连接。"
+            echo -e "${ICON_REVIEW} 请检查能否访问 GitHub：https://github.com"
+            echo -e "${ICON_REVIEW} 请使用 ${GRAY}mo update${NC} 重试"
             exit 1
         fi
         if [[ ! "$latest" =~ ^[Vv]?[0-9]+(\.[0-9]+)*$ ]]; then
-            log_error "Invalid version response: $latest"
-            echo -e "${ICON_REVIEW} Try again later or use: ${GRAY}mo update --nightly${NC}"
+            log_error "无效的版本响应：$latest"
+            echo -e "${ICON_REVIEW} 请稍后重试或使用：${GRAY}mo update --nightly${NC}"
             exit 1
         fi
 
@@ -1115,14 +1115,14 @@ update_mole() (
         fi
 
         if [[ "$switch_to_stable_channel" == "true" ]]; then
-            install_label="Switching to stable channel..."
+            install_label="正在切换到稳定渠道…"
         elif [[ "$VERSION" == "$latest" && "$force_update" != "true" ]]; then
             repair_reason=$(manual_install_repair_reason || true)
             if [[ -n "$repair_reason" ]]; then
                 repair_install=true
             else
                 echo ""
-                echo -e "${GREEN}${ICON_SUCCESS}${NC} Already on latest version, ${VERSION}"
+                echo -e "${GREEN}${ICON_SUCCESS}${NC} 已是最新版本，${VERSION}"
                 echo ""
                 exit 0
             fi
@@ -1130,9 +1130,9 @@ update_mole() (
     fi
 
     if [[ "$repair_install" == "true" ]]; then
-        download_label="Downloading repair installer..."
-        install_label="Repairing Mole installation..."
-        log_warning "Mole installation needs repair: $repair_reason"
+        download_label="正在下载修复安装脚本…"
+        install_label="正在修复 Mole 安装…"
+        log_warning "Mole 安装需要修复：$repair_reason"
     fi
 
     if [[ -t 1 ]]; then
@@ -1148,7 +1148,7 @@ update_mole() (
     local installer_url="https://raw.githubusercontent.com/tw93/mole/${installer_ref}/install.sh"
     local tmp_installer
     tmp_installer="$(mktemp_file)" || {
-        log_error "Update failed"
+        log_error "更新失败"
         exit 1
     }
 
@@ -1158,15 +1158,15 @@ update_mole() (
             local curl_exit=$?
             if [[ -t 1 ]]; then stop_inline_spinner; fi
             rm -f "$tmp_installer"
-            log_error "Update failed, curl error: $curl_exit"
+            log_error "更新失败，curl 错误：$curl_exit"
 
             case $curl_exit in
-                6) echo -e "${ICON_REVIEW} Could not resolve host. Check DNS or network connection." ;;
-                7) echo -e "${ICON_REVIEW} Failed to connect. Check network or proxy settings." ;;
-                22) echo -e "${ICON_REVIEW} HTTP 404 Not Found. The installer may have moved." ;;
-                28) echo -e "${ICON_REVIEW} Connection timed out. Try again or check firewall." ;;
-                35 | 56) echo -e "${ICON_REVIEW} TLS connection reset. A local proxy or VPN is likely blocking GitHub." ;;
-                *) echo -e "${ICON_REVIEW} Check network connection and try again." ;;
+                6) echo -e "${ICON_REVIEW} 无法解析主机。请检查 DNS 或网络连接。" ;;
+                7) echo -e "${ICON_REVIEW} 连接失败。请检查网络或代理设置。" ;;
+                22) echo -e "${ICON_REVIEW} HTTP 404 未找到。安装脚本可能已移动。" ;;
+                28) echo -e "${ICON_REVIEW} 连接超时。请重试或检查防火墙。" ;;
+                35 | 56) echo -e "${ICON_REVIEW} TLS 连接被重置。本地代理或 VPN 可能正在拦截 GitHub。" ;;
+                *) echo -e "${ICON_REVIEW} 请检查网络连接并重试。" ;;
             esac
             echo -e "${ICON_REVIEW} URL: $installer_url"
             exit 1
@@ -1175,16 +1175,16 @@ update_mole() (
         download_error=$(wget --timeout=10 --tries=3 -qO "$tmp_installer" "$installer_url" 2>&1) || {
             if [[ -t 1 ]]; then stop_inline_spinner; fi
             rm -f "$tmp_installer"
-            log_error "Update failed, wget error"
-            echo -e "${ICON_REVIEW} Check network connection and try again."
+            log_error "更新失败，wget 错误"
+            echo -e "${ICON_REVIEW} 请检查网络连接并重试。"
             echo -e "${ICON_REVIEW} URL: $installer_url"
             exit 1
         }
     else
         if [[ -t 1 ]]; then stop_inline_spinner; fi
         rm -f "$tmp_installer"
-        log_error "curl or wget required"
-        echo -e "${ICON_REVIEW} Install curl with: ${GRAY}brew install curl${NC}"
+        log_error "需要 curl 或 wget"
+        echo -e "${ICON_REVIEW} 安装 curl：${GRAY}brew install curl${NC}"
         exit 1
     fi
 
@@ -1197,8 +1197,8 @@ update_mole() (
     fi
 
     if [[ "$requires_sudo" == "true" ]]; then
-        if ! request_sudo_access "Mole update requires admin access"; then
-            log_error "Update aborted, admin access denied"
+        if ! request_sudo_access "Mole 更新需要管理员权限"; then
+            log_error "更新已取消，管理员权限被拒绝"
             rm -f "$tmp_installer"
             exit 1
         fi
@@ -1215,7 +1215,7 @@ update_mole() (
         if ! _update_sudo_reaches_subprocess; then
             _update_cleanup
             rm -f "$tmp_installer"
-            log_error "Admin access cannot be handed to the installer in this environment"
+            log_error "此环境下无法将管理员权限移交给安装程序"
             echo -e "${ICON_REVIEW} Run ${GRAY}mo update${NC} from a terminal, or cache credentials first: ${GRAY}sudo -v && mo update${NC}"
             exit 1
         fi
@@ -1261,7 +1261,7 @@ update_mole() (
             if [[ -z "$new_version" ]]; then
                 new_version="$fallback_version"
             fi
-            printf '%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} Updated to ${success_label}, ${new_version:-unknown}"
+            printf '%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} 已更新到 ${success_label}，${new_version:-unknown}"
         else
             printf '\n'
         fi
@@ -1307,7 +1307,7 @@ update_mole() (
             if ! _update_self_heal_reinstall "$installer_assume_sudo_auth" "main" "$install_dir" "$config_dir" "$mole_path" "$final_success_label" "$latest_commit"; then
                 rm -f "$tmp_installer"
                 _update_cleanup
-                log_error "Nightly update failed"
+                log_error "Nightly 更新失败"
                 _print_failed_installer_output
                 _update_print_manual_reinstall "main" "$install_dir" "$config_dir"
                 exit 1
@@ -1321,7 +1321,7 @@ update_mole() (
             if ! _update_self_heal_reinstall "$installer_assume_sudo_auth" "$update_tag" "$install_dir" "$config_dir" "$mole_path" "$final_success_label"; then
                 rm -f "$tmp_installer"
                 _update_cleanup
-                log_error "Update failed"
+                log_error "更新失败"
                 _print_failed_installer_output
                 _update_print_manual_reinstall "$update_tag" "$install_dir" "$config_dir"
                 exit 1
@@ -1338,7 +1338,7 @@ update_mole() (
                 if ! _update_self_heal_reinstall "$installer_assume_sudo_auth" "$update_tag" "$install_dir" "$config_dir" "$mole_path" "$final_success_label"; then
                     rm -f "$tmp_installer"
                     _update_cleanup
-                    log_error "Update failed"
+                    log_error "更新失败"
                     _print_failed_installer_output
                     _update_print_manual_reinstall "$update_tag" "$install_dir" "$config_dir"
                     exit 1

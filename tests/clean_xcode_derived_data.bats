@@ -55,7 +55,7 @@ printf 'COUNTERS:%s:%s:%s\n' "$files_cleaned" "$total_size_cleaned" "$total_item
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"3 projects"* ]] || return 1
+    [[ "$output" == *"3 个项目"* ]] || return 1
     [[ "$output" == *"Xcode DerivedData"* ]] || return 1
     [[ "$output" == *"COUNTERS:3:"*":1"* ]]
 }
@@ -129,7 +129,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ "$output" == *"DEFER:Xcode"* ]] || return 1
-    [[ "$output" != *"Xcode DerivedData · skipped"* ]]
+    [[ "$output" != *"Xcode DerivedData · 已跳过"* ]]
 }
 
 @test "clean_xcode_derived_data keeps build output when pgrep fails" {
@@ -152,7 +152,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"skipped (process state unknown)"* ]] || return 1
+    [[ "$output" == *"已跳过（进程状态未知）"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_REMOVE"* ]]
 }
 
@@ -175,7 +175,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"skipped (process state unknown)"* ]]
+    [[ "$output" == *"已跳过（进程状态未知）"* ]]
 }
 
 @test "clean_xcode_derived_data reports completed removals before a tooling race stops it" {
@@ -225,8 +225,8 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode DerivedData · 1 project"* ]] || return 1
-    [[ "$output" != *"Xcode DerivedData · stopped"* ]]
+    [[ "$output" == *"Xcode DerivedData · 1 个项目"* ]] || return 1
+    [[ "$output" != *"Xcode DerivedData · 已停止"* ]]
 }
 
 @test "clean_xcode_derived_data rechecks tooling after the size probe" {
@@ -259,7 +259,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" != *"Xcode DerivedData · stopped"* ]] || return 1
+    [[ "$output" != *"Xcode DerivedData · 已停止"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_REMOVE"* ]]
 }
 
@@ -325,7 +325,7 @@ clean_xcode_derived_data
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" != *"projects"* ]]
+    [[ "$output" != *"个项目"* ]]
     [[ "$output" != *"UNEXPECTED_DEFER"* ]]
 }
 
@@ -371,7 +371,7 @@ clean_xcode_derived_data
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"1 project"* ]]
+    [[ "$output" == *"1 个项目"* ]]
 }
 
 @test "clean_xcode_derived_data dry run sizes only eligible projects" {
@@ -403,7 +403,7 @@ EOF
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Xcode DerivedData · 1 project, 7168 bytes"* ]] || return 1
+    [[ "$output" == *"Xcode DerivedData · 1 个项目，7168 bytes"* ]] || return 1
     [[ "$output" != *"928768 bytes"* ]]
 }
 
@@ -472,5 +472,5 @@ EOF
     }
     [[ "$output" == *"DEFER:Xcode"* ]] || return 1
     [[ "$output" != *"UNEXPECTED_REGISTER"* ]] || return 1
-    [[ "$output" != *"Xcode DerivedData · 1 project"* ]]
+    [[ "$output" != *"Xcode DerivedData · 1 个项目"* ]]
 }

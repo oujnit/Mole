@@ -359,7 +359,7 @@ log_system_info() {
     # Reset debug log file for this new session
     ensure_user_file "$DEBUG_LOG_FILE"
     if ! : > "$DEBUG_LOG_FILE" 2> /dev/null; then
-        echo -e "${YELLOW}${ICON_WARNING}${NC} Debug log not writable: $DEBUG_LOG_FILE" >&2
+        echo -e "${YELLOW}${ICON_WARNING}${NC} 调试日志不可写：$DEBUG_LOG_FILE" >&2
     fi
 
     # Start block in debug log file
@@ -388,7 +388,7 @@ log_system_info() {
     } >> "$DEBUG_LOG_FILE" 2> /dev/null || true
 
     # Notification to stderr
-    echo -e "${GRAY}[DEBUG] Debug logging enabled. Session log: $DEBUG_LOG_FILE${NC}" >&2
+    echo -e "${GRAY}[DEBUG] 调试日志已启用。会话日志：$DEBUG_LOG_FILE${NC}" >&2
 }
 
 # ============================================================================
@@ -434,7 +434,7 @@ print_summary_block() {
 
     # If debug mode is on, remind user about the log file location
     if [[ "${MO_DEBUG:-}" == "1" ]]; then
-        echo -e "${GRAY}Debug session log saved to:${NC} ${DEBUG_LOG_FILE}"
+        echo -e "${GRAY}调试会话日志已保存到：${NC} ${DEBUG_LOG_FILE}"
     fi
 }
 

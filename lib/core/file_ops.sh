@@ -88,20 +88,20 @@ format_duration_human() {
     local days=$((seconds / 86400))
 
     if [[ $days -eq 0 ]]; then
-        echo "today"
+        echo "今天"
     elif [[ $days -eq 1 ]]; then
-        echo "1 day"
+        echo "1 天"
     elif [[ $days -lt 7 ]]; then
-        echo "${days} days"
+        echo "${days} 天"
     elif [[ $days -lt 30 ]]; then
         local weeks=$((days / 7))
-        [[ $weeks -eq 1 ]] && echo "1 week" || echo "${weeks} weeks"
+        [[ $weeks -eq 1 ]] && echo "1 周" || echo "${weeks} 周"
     elif [[ $days -lt 365 ]]; then
         local months=$((days / 30))
-        [[ $months -eq 1 ]] && echo "1 month" || echo "${months} months"
+        [[ $months -eq 1 ]] && echo "1 个月" || echo "${months} 个月"
     else
         local years=$((days / 365))
-        [[ $years -eq 1 ]] && echo "1 year" || echo "${years} years"
+        [[ $years -eq 1 ]] && echo "1 年" || echo "${years} 年"
     fi
 }
 
@@ -988,13 +988,13 @@ validate_path_for_deletion() {
 
     # Check path is not empty
     if [[ -z "$path" ]]; then
-        log_error "Path validation failed: empty path"
+        log_error "路径校验失败：路径为空"
         return 1
     fi
 
     # Check path is absolute
     if [[ "$path" != /* ]]; then
-        log_error "Path validation failed: path must be absolute: $path"
+        log_error "路径校验失败：路径必须是绝对路径：$path"
         return 1
     fi
 
@@ -1002,13 +1002,13 @@ validate_path_for_deletion() {
     # Only reject .. when it appears as a complete path component (/../ or /.. or ../)
     # This allows legitimate directory names containing .. (e.g., Firefox's "name..files")
     if [[ "$path" =~ (^|/)\.\.(\/|$) ]]; then
-        log_error "Path validation failed: path traversal not allowed: $path"
+        log_error "路径校验失败：不允许路径穿越：$path"
         return 1
     fi
 
     # Check path doesn't contain dangerous characters
     if [[ "$path" =~ [[:cntrl:]] ]] || [[ "$path" =~ $'\n' ]]; then
-        log_error "Path validation failed: contains control characters: $path"
+        log_error "路径校验失败：路径包含控制字符：$path"
         return 1
     fi
 
@@ -1019,7 +1019,7 @@ validate_path_for_deletion() {
     if [[ -L "$path" ]]; then
         local link_target
         link_target=$(readlink "$path" 2> /dev/null) || {
-            log_error "Cannot read symlink: $path"
+            log_error "无法读取符号链接：$path"
             return 1
         }
 
@@ -1082,7 +1082,7 @@ validate_path_for_deletion() {
             fi
             if declare -f should_protect_path > /dev/null 2>&1 && should_protect_path "$resolved_path"; then
                 if [[ "${MO_DEBUG:-0}" == "1" ]]; then
-                    log_warning "Path validation: resolves into a protected path: $path -> $resolved_path"
+                    log_warning "路径校验：解析到受保护路径：$path -> $resolved_path"
                 fi
                 return 1
             fi
@@ -1155,7 +1155,7 @@ validate_path_for_deletion() {
     # not only the cleanup sweeps that pre-check the predicate.
     if declare -f is_endpoint_security_cache_path > /dev/null 2>&1 && is_endpoint_security_cache_path "$policy_path"; then
         if [[ "${MO_DEBUG:-0}" == "1" ]]; then
-            log_warning "Path validation: endpoint-security agent cache skipped: $policy_path"
+            log_warning "路径校验：已跳过端点安全代理缓存：$policy_path"
         fi
         return 1
     fi
@@ -1187,7 +1187,7 @@ validate_path_for_deletion() {
             :
         elif should_protect_path "$policy_path"; then
             if [[ "${MO_DEBUG:-0}" == "1" ]]; then
-                log_warning "Path validation: protected path skipped: $policy_path"
+                log_warning "路径校验：已跳过受保护路径：$policy_path"
             fi
             return 1
         fi
@@ -1358,8 +1358,8 @@ safe_remove() {
         fi
         [[ $dry_record_rc -eq 0 ]] || return "$dry_record_rc"
         if [[ "${MO_DEBUG:-}" == "1" ]]; then
-            local file_type="file"
-            [[ -d "$path" ]] && file_type="directory"
+            local file_type="文件"
+            [[ -d "$path" ]] && file_type="目录"
             [[ -L "$path" ]] && file_type="symlink"
 
             local file_size=""
@@ -1800,7 +1800,7 @@ safe_sudo_remove() {
             debug_log "Skipped sudo remove for protected path: $path"
             return "$MOLE_ERR_PROTECTED_PATH"
         else
-            log_error "Path validation failed for sudo remove: $path"
+            log_error "sudo 删除的路径校验失败：$path"
         fi
         return 1
     fi
@@ -1851,7 +1851,7 @@ safe_sudo_remove() {
 
     if [[ "${MOLE_TEST_MODE:-0}" == "1" || "${MOLE_TEST_NO_AUTH:-0}" == "1" ]]; then
         if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-            log_info "[DRY-RUN] Would sudo remove: $path"
+            log_info "[预览] 将执行 sudo 删除：$path"
             return 0
         fi
         log_operation "${MOLE_CURRENT_COMMAND:-clean}" "FAILED" "$path" "sudo blocked in test mode"
@@ -1860,8 +1860,8 @@ safe_sudo_remove() {
 
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
         if [[ "${MO_DEBUG:-}" == "1" ]]; then
-            local file_type="file"
-            [[ -d "$path" ]] && file_type="directory"
+            local file_type="文件"
+            [[ -d "$path" ]] && file_type="目录"
 
             local file_size=""
             local file_age=""
@@ -1928,11 +1928,11 @@ safe_sudo_remove() {
                 fi
             fi
 
-            log_info "[DRY-RUN] Would sudo remove: $file_type $path"
-            [[ -n "$file_size" ]] && log_info "  Size: $file_size"
-            [[ -n "$file_age" ]] && log_info "  Age: $file_age"
+            log_info "[预览] 将执行 sudo 删除：$file_type $path"
+            [[ -n "$file_size" ]] && log_info "  大小：$file_size"
+            [[ -n "$file_age" ]] && log_info "  时长：$file_age"
         else
-            log_info "[DRY-RUN] Would sudo remove: $path"
+            log_info "[预览] 将执行 sudo 删除：$path"
         fi
         return 0
     fi
@@ -2054,7 +2054,7 @@ safe_sudo_remove() {
             return "$MOLE_ERR_AUTH_FAILED"
             ;;
         *)
-            log_error "Failed to remove, sudo: $path"
+            log_error "sudo 删除失败：$path"
             log_operation "${MOLE_CURRENT_COMMAND:-clean}" "FAILED" "$path" "sudo error"
             return 1
             ;;
@@ -2099,7 +2099,7 @@ mole_delete() {
             if [[ -z "${_MOLE_INVALID_MODE_WARNED:-}" ]]; then
                 _MOLE_INVALID_MODE_WARNED=1
                 export _MOLE_INVALID_MODE_WARNED
-                printf 'Error: invalid MOLE_DELETE_MODE: %s (expected "permanent" or "trash")\n' "$mode" >&2
+                printf '错误：无效的 MOLE_DELETE_MODE：%s（应为 "permanent" 或 "trash"）\n' "$mode" >&2
             fi
             return 1
             ;;
@@ -2237,7 +2237,7 @@ mole_delete() {
             if [[ -z "${_MOLE_PRIVACY_DENIED_WARNED:-}" ]]; then
                 _MOLE_PRIVACY_DENIED_WARNED=1
                 export _MOLE_PRIVACY_DENIED_WARNED
-                printf 'Error: macOS could not authorize Trash access. Review App Management, App Data, or Full Disk Access for your terminal in System Settings, then retry.\n' >&2
+                printf '错误：macOS 无法授权访问废纸篓。请在系统设置中为终端授予“App 管理”“App 数据”或“完全磁盘访问”权限，然后重试。\n' >&2
             fi
             debug_log "macOS privacy permission denied while moving to Trash: $path"
             return "$MOLE_ERR_PRIVACY_DENIED"
@@ -2259,7 +2259,7 @@ mole_delete() {
         if [[ -z "${_MOLE_TRASH_UNAVAILABLE_WARNED:-}" ]]; then
             _MOLE_TRASH_UNAVAILABLE_WARNED=1
             export _MOLE_TRASH_UNAVAILABLE_WARNED
-            printf 'Error: Trash unavailable; refusing permanent delete. Use --permanent to delete immediately.\n' >&2
+            printf '错误：废纸篓不可用，已拒绝永久删除。请使用 --permanent 立即删除。\n' >&2
         fi
         debug_log "Trash move failed, refusing permanent delete: $path"
         return 1
@@ -2960,7 +2960,7 @@ _mole_delete_log() {
     # log dir is unwritable (root-owned from prior sudo, ENOSPC, read-only
     # volume) defeats the design.
     if ! mkdir -p "$log_dir" 2> /dev/null; then
-        _mole_warn_log_broken "create directory: $log_dir"
+        _mole_warn_log_broken "创建目录失败：$log_dir"
         return 0
     fi
 
@@ -2970,7 +2970,7 @@ _mole_delete_log() {
     if ! printf '%s\t%s\t%s\t%s\t%s\n' \
         "$ts" "$mode" "$size_kb" "$status" "$target" \
         >> "$log_file" 2> /dev/null; then
-        _mole_warn_log_broken "write to: $log_file"
+        _mole_warn_log_broken "写入失败：$log_file"
     fi
 }
 
@@ -2978,7 +2978,7 @@ _mole_warn_log_broken() {
     [[ -n "${_MOLE_DELETE_LOG_WARNED:-}" ]] && return 0
     _MOLE_DELETE_LOG_WARNED=1
     export _MOLE_DELETE_LOG_WARNED
-    printf 'Warning: deletions audit log unavailable (%s). Forensic trail incomplete this session.\n' "$1" >&2
+    printf '警告：删除审计日志不可用（%s），本次会话的审计记录不完整。\n' "$1" >&2
 }
 
 # ============================================================================
@@ -2994,12 +2994,12 @@ safe_find_delete() {
 
     # Validate base directory exists and is not a symlink
     if [[ ! -d "$base_dir" ]]; then
-        log_error "Directory does not exist: $base_dir"
+        log_error "目录不存在：$base_dir"
         return 1
     fi
 
     if [[ -L "$base_dir" ]]; then
-        log_error "Refusing to search symlinked directory: $base_dir"
+        log_error "拒绝搜索符号链接目录：$base_dir"
         return 1
     fi
 
@@ -3126,15 +3126,15 @@ safe_sudo_find_delete() {
         return 1
     fi
     if [[ ! "$age_days" =~ ^[0-9]+$ ]]; then
-        log_error "Invalid age: $age_days, must be a non-negative integer"
+        log_error "无效的天数：${age_days}，必须是非负整数"
         return 1
     fi
     if [[ ! "$max_depth" =~ ^[1-5]$ ]]; then
-        log_error "Invalid max depth: $max_depth, must be between 1 and 5"
+        log_error "无效的最大深度：${max_depth}，必须在 1 到 5 之间"
         return 1
     fi
     if [[ -n "$deadline_seconds" && ! "$deadline_seconds" =~ ^[0-9]+$ ]]; then
-        log_error "Invalid cleanup deadline: $deadline_seconds"
+        log_error "无效的清理截止时间：$deadline_seconds"
         return 1
     fi
 
@@ -3212,7 +3212,7 @@ safe_sudo_find_delete() {
     _mole_bounded_sudo_until "$deadline_seconds" "$MOLE_TIMEOUT_QUICK_DETECT_SEC" \
         -n test -L "$base_dir" < /dev/null 2> /dev/null || link_rc=$?
     if [[ $link_rc -eq 0 ]]; then
-        log_error "Refusing to search symlinked directory: $base_dir"
+        log_error "拒绝搜索符号链接目录：$base_dir"
         [[ $restore_errexit -eq 1 ]] && set -e
         return 1
     fi
@@ -3662,44 +3662,44 @@ calculate_total_size() {
 
 diagnose_removal_failure() {
     local exit_code="$1"
-    local app_name="${2:-application}"
+    local app_name="${2:-应用}"
 
     local reason=""
     local suggestion=""
 
     case "$exit_code" in
         "$MOLE_ERR_SIP_PROTECTED")
-            reason="protected by macOS (SIP/MDM)"
+            reason="受 macOS（SIP/MDM）保护"
             ;;
         "$MOLE_ERR_AUTH_FAILED")
-            reason="authentication failed"
+            reason="身份验证失败"
             if declare -F check_touchid_support > /dev/null 2>&1 && check_touchid_support > /dev/null 2>&1; then
-                suggestion="Check your credentials or restart Terminal"
+                suggestion="请检查凭据或重新启动终端"
             else
-                suggestion="Try 'mole touchid' to enable fingerprint auth"
+                suggestion="请尝试运行 'mole touchid' 启用指纹验证"
             fi
             ;;
         "$MOLE_ERR_READONLY_FS")
-            reason="filesystem is read-only"
-            suggestion="Check if disk needs repair"
+            reason="文件系统为只读"
+            suggestion="请检查磁盘是否需要修复"
             ;;
         "$MOLE_ERR_PROTECTED_PATH")
-            reason="protected by Mole safety rules"
+            reason="受 Mole 安全规则保护"
             ;;
         "$MOLE_ERR_PRIVACY_DENIED")
-            reason="macOS could not authorize Trash access"
-            suggestion="Review App Management, App Data, or Full Disk Access for your terminal in System Settings"
+            reason="macOS 无法授权访问废纸篓"
+            suggestion="请在系统设置中检查终端的【App 管理】【App 数据】或【完全磁盘访问】权限"
             ;;
         "$MOLE_ERR_MUTABLE_PARENT")
-            reason="Mole cannot safely use elevated deletion below a user-writable parent"
-            suggestion="Move the app to Trash in Finder; Mole will leave protected containers and app data untouched"
+            reason="Mole 无法在用户可写父目录下安全使用提权删除"
+            suggestion="请在 Finder 中将应用移到废纸篓；Mole 会保留受保护的容器与应用数据"
             ;;
         *)
-            reason="permission denied"
+            reason="权限被拒绝"
             if declare -F check_touchid_support > /dev/null 2>&1 && check_touchid_support > /dev/null 2>&1; then
-                suggestion="Try running again or check file ownership"
+                suggestion="请重试或检查文件所有权"
             else
-                suggestion="Try 'mole touchid' or check with 'ls -l'"
+                suggestion="请尝试运行 'mole touchid'，或使用 'ls -l' 检查"
             fi
             ;;
     esac

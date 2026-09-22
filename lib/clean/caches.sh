@@ -25,13 +25,13 @@ check_tcc_permissions() {
     fi
     if [[ "$needs_permission_check" == "true" ]]; then
         echo ""
-        echo -e "${BLUE}First-time setup${NC}"
-        echo -e "${GRAY}macOS will request permissions to access Library folders.${NC}"
-        echo -e "${GRAY}You may see ${GREEN}${#tcc_dirs[@]} permission dialogs${NC}${GRAY}, please approve them all.${NC}"
+        echo -e "${BLUE}首次设置${NC}"
+        echo -e "${GRAY}macOS 将请求访问资源库文件夹的权限。${NC}"
+        echo -e "${GRAY}您可能会看到 ${GREEN}${#tcc_dirs[@]} 个权限弹窗${NC}${GRAY}，请全部允许。${NC}"
         echo ""
-        echo -ne "${PURPLE}${ICON_ARROW}${NC} Press ${GREEN}Enter${NC} to continue: "
+        echo -ne "${PURPLE}${ICON_ARROW}${NC} 按 ${GREEN}回车${NC} 继续："
         read -r
-        MOLE_SPINNER_PREFIX="" start_inline_spinner "Requesting permissions..."
+        MOLE_SPINNER_PREFIX="" start_inline_spinner "正在请求权限..."
         # Touch each directory to trigger prompts without deep scanning.
         for dir in "${tcc_dirs[@]}"; do
             [[ -d "$dir" ]] && command find "$dir" -maxdepth 1 -type d > /dev/null 2>&1
@@ -187,16 +187,16 @@ clean_service_worker_cache() {
         line_color=$(cleanup_result_color_kb "$cleaned_size")
         if [[ "$DRY_RUN" != "true" ]]; then
             if [[ $protected_count -gt 0 ]]; then
-                echo -e "  ${line_color}${ICON_SUCCESS}${NC} $browser_name Service Worker${NC} · ${line_color}${cleaned_human}${NC}, ${protected_count} protected"
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} $browser_name Service Worker${NC} · ${line_color}${cleaned_human}${NC}，${protected_count} 个受保护"
             else
                 echo -e "  ${line_color}${ICON_SUCCESS}${NC} $browser_name Service Worker${NC} · ${line_color}${cleaned_human}${NC}"
             fi
         else
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $browser_name Service Worker, would clean $(colorize_human_size "$cleaned_human"), ${protected_count} protected"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $browser_name Service Worker，将清理 $(colorize_human_size "$cleaned_human")，${protected_count} 个受保护"
         fi
         note_activity
         if [[ "$spinner_was_running" == "true" ]]; then
-            MOLE_SPINNER_PREFIX="  " start_inline_spinner "Scanning browser Service Worker caches..."
+            MOLE_SPINNER_PREFIX="  " start_inline_spinner "正在扫描浏览器 Service Worker 缓存..."
         fi
     fi
     [[ "$guard_stopped" == "true" ]] && return 75
@@ -495,7 +495,7 @@ process_project_cache_matches() {
                 current_python_root=""
                 current_python_dirs=()
                 if [[ -d "$cache_dir/cache" ]]; then
-                    clean_project_cache_target "$cache_dir/cache"/* "Next.js build cache" || return $?
+                    clean_project_cache_target "$cache_dir/cache"/* "Next.js 构建缓存" || return $?
                 fi
                 ;;
             "__pycache__")
@@ -511,10 +511,10 @@ process_project_cache_matches() {
                 current_python_root=""
                 current_python_dirs=()
                 if [[ -d "$cache_dir" ]]; then
-                    clean_project_cache_target "$cache_dir" "Flutter build cache (.dart_tool)" || return $?
+                    clean_project_cache_target "$cache_dir" "Flutter 构建缓存（.dart_tool）" || return $?
                     local build_dir="$(dirname "$cache_dir")/build"
                     if [[ -d "$build_dir" ]]; then
-                        clean_project_cache_target "$build_dir" "Flutter build cache (build/)" || return $?
+                        clean_project_cache_target "$build_dir" "Flutter 构建缓存（build/）" || return $?
                     fi
                 fi
                 ;;
@@ -603,17 +603,17 @@ clean_python_bytecode_cache_group() {
         fi
 
         if [[ $skipped_count -gt 0 ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python bytecode cache · ${display_root}${NC} · ${YELLOW}${removed_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry, ${skipped_count} skipped${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python 字节码缓存 · ${display_root}${NC} · ${YELLOW}${removed_count} 个目录，$(colorize_human_size "$size_human") ${YELLOW}预览，${skipped_count} 个已跳过${NC}"
         else
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python bytecode cache · ${display_root}${NC} · ${YELLOW}${removed_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python 字节码缓存 · ${display_root}${NC} · ${YELLOW}${removed_count} 个目录，$(colorize_human_size "$size_human") ${YELLOW}预览${NC}"
         fi
     else
         local line_color
         line_color=$(cleanup_result_color_kb "$total_size_kb")
         if [[ $skipped_count -gt 0 ]]; then
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python bytecode cache · ${display_root}${NC} · ${line_color}${removed_count} dirs, ${size_human}${NC}, ${skipped_count} skipped"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python 字节码缓存 · ${display_root}${NC} · ${line_color}${removed_count} 个目录，${size_human}${NC}，${skipped_count} 个已跳过"
         else
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python bytecode cache · ${display_root}${NC} · ${line_color}${removed_count} dirs, ${size_human}${NC}"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python 字节码缓存 · ${display_root}${NC} · ${line_color}${removed_count} 个目录，${size_human}${NC}"
         fi
     fi
 
@@ -631,7 +631,7 @@ clean_project_caches() {
 
     if [[ -t 1 ]]; then
         MOLE_SPINNER_PREFIX="  "
-        start_inline_spinner "Searching project caches..."
+        start_inline_spinner "正在搜索项目缓存..."
     fi
 
     local -a scan_roots=()
@@ -791,11 +791,11 @@ clean_project_caches() {
     done
 
     if [[ $failed_scan_count -gt 0 ]]; then
-        local scan_noun="root scans"
+        local scan_noun="项根目录扫描"
         if [[ $failed_scan_count -eq 1 ]]; then
-            scan_noun="root scan"
+            scan_noun="项根目录扫描"
         fi
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Project caches · skipped ${failed_scan_count} slow/incomplete ${scan_noun}"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 项目缓存 · 已跳过 ${failed_scan_count} 个缓慢/未完成的${scan_noun}"
         if declare -f note_activity > /dev/null 2>&1; then
             note_activity
         fi

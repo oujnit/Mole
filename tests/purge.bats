@@ -661,8 +661,8 @@ fi
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Select Artifacts to Purge"* ]] || return 1
-	[[ "$output" == *"X Skip"* ]] || return 1
+	[[ "$output" == *"选择要清理的构建产物"* ]] || return 1
+	[[ "$output" == *"X 跳过"* ]] || return 1
 	[[ "$output" != *"Select Categories to Clean"* ]] || return 1
 }
 
@@ -689,8 +689,8 @@ EOF
 	[[ "$output" == *"┌ ~/work/obelisk"* ]] || return 1
 	[[ "$output" == *"└ ~/work/obelisk"* ]] || return 1
 	[[ "$output" == *"─ ~/work/atlas"* ]] || return 1
-	[[ "$output" == *"~/work/obelisk · 154KB · 2/2 selected"* ]] || return 1
-	[[ "$output" == *"~/work/atlas · 26KB · 1/1 selected"* ]] || return 1
+	[[ "$output" == *"~/work/obelisk · 154KB · 已选择 2/2"* ]] || return 1
+	[[ "$output" == *"~/work/atlas · 26KB · 已选择 1/1"* ]] || return 1
 	[[ "$output" == *"RESULT=2"* ]] || return 1
 }
 
@@ -790,7 +790,7 @@ confirm_purge_cleanup 2 1024 0 0 "~/www/app/node_modules" "~/www/app/dist" <<< '
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Selected paths:"* ]] || return 1
+	[[ "$output" == *"已选择的路径："* ]] || return 1
 	[[ "$output" == *"~/www/app/node_modules"* ]] || return 1
 	[[ "$output" == *"~/www/app/dist"* ]]
 }
@@ -804,14 +804,14 @@ confirm_purge_cleanup 2 1024 0 1 "[cloud] ~/Library/CloudStorage/Provider/app/ta
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Cloud-synced artifacts may also be removed from other devices."* ]] || return 1
+	[[ "$output" == *"云同步的构建产物可能也会从其他设备上被移除。"* ]] || return 1
 	[[ "$output" == *"mo purge --paths"* ]] || return 1
 	local warning_count
-	warning_count=$(printf '%s\n' "$output" | grep -cF "Cloud-synced artifacts may also be removed from other devices.")
+	warning_count=$(printf '%s\n' "$output" | grep -cF "云同步的构建产物可能也会从其他设备上被移除。")
 	[ "$warning_count" -eq 1 ] || return 1
 	local warning_line prompt_line
-	warning_line=$(printf '%s\n' "$output" | grep -nF "Cloud-synced artifacts may also be removed from other devices." | cut -d: -f1)
-	prompt_line=$(printf '%s\n' "$output" | grep -nF "Remove 2 artifacts" | cut -d: -f1)
+	warning_line=$(printf '%s\n' "$output" | grep -nF "云同步的构建产物可能也会从其他设备上被移除。" | cut -d: -f1)
+	prompt_line=$(printf '%s\n' "$output" | grep -nF "移除 2 个构建产物" | cut -d: -f1)
 	[ "$warning_line" -lt "$prompt_line" ] || return 1
 }
 
@@ -1834,9 +1834,9 @@ clean_project_artifacts </dev/null
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Skipped 1 project scan root because scanning did not complete"* ]] || return 1
+	[[ "$output" == *"已跳过 1 个项目扫描根目录，因为扫描未完成"* ]] || return 1
 	[[ "$output" == *"~/dev"* ]] || return 1
-	[[ "$output" == *"(status 7)"* ]] || return 1
+	[[ "$output" == *"（状态 7）"* ]] || return 1
 	[[ "$output" == *"REMOVE:$HOME/www/good-project/node_modules"* ]] || return 1
 	[[ "$output" != *"REMOVE:$HOME/dev/failed-project/node_modules"* ]] || return 1
 }
@@ -1874,7 +1874,7 @@ EOF
 	[[ "$output" == *"REVIEW:$HOME/slow/project/node_modules"* ]] || return 1
 	[[ "$output" == *"REVIEW:$HOME/fast/project/node_modules"* ]] || return 1
 	[[ "$output" != *"REVIEW:$HOME/failed/project/node_modules"* ]] || return 1
-	[[ "$output" == *"~/failed"* && "$output" == *"(status 7)"* ]] || return 1
+	[[ "$output" == *"~/failed"* && "$output" == *"（状态 7）"* ]] || return 1
 }
 
 @test "clean_project_artifacts stops launching roots after an interrupted scan" {
@@ -2034,7 +2034,7 @@ EOF
 
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" != *"OVERLAPPING_SCAN"* ]] || return 1
-	[[ "$output" != *"Skipped 1 project scan root"* ]] || return 1
+	[[ "$output" != *"已跳过 1 个项目扫描根目录"* ]] || return 1
 }
 
 @test "clean_project_artifacts: refuses when every configured root scan fails" {
@@ -2064,9 +2064,9 @@ printf 'PURGE_OUTCOME=%s\n' "$PURGE_RUN_OUTCOME"
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Skipped 1 project scan root because scanning did not complete"* ]] || return 1
+	[[ "$output" == *"已跳过 1 个项目扫描根目录，因为扫描未完成"* ]] || return 1
 	[[ "$output" == *"~/www"* ]] || return 1
-	[[ "$output" == *"(status 7)"* ]] || return 1
+	[[ "$output" == *"（状态 7）"* ]] || return 1
 	[[ "$output" == *"PURGE_OUTCOME=scan_failed"* ]] || return 1
 	[[ "$output" != *"Great! No old project artifacts to clean"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_REMOVE:"* ]] || return 1
@@ -2121,8 +2121,8 @@ clean_project_artifacts() {
 perform_purge </dev/null
 EOF
 	[ "$status" -eq 1 ] || return 1
-	[[ "$output" == *"Purge incomplete"* ]] || return 1
-	[[ "$output" == *"Some artifacts were skipped or could not be processed"* ]] || return 1
+	[[ "$output" == *"清理未完成"* ]] || return 1
+	[[ "$output" == *"部分构建产物已跳过或无法处理"* ]] || return 1
 	[[ "$output" != *"No old project artifacts"* ]] || return 1
 }
 
@@ -2139,8 +2139,8 @@ clean_project_artifacts() {
 perform_purge </dev/null
 EOF
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"1 unmeasured"* ]] || return 1
-	[[ "$output" == *"Items: 1"* ]] || return 1
+	[[ "$output" == *"1 项未测量"* ]] || return 1
+	[[ "$output" == *"项目数：1"* ]] || return 1
 	[[ "$output" != *"No artifacts were removed"* ]] || return 1
 }
 
@@ -2160,7 +2160,7 @@ clean_project_artifacts </dev/null
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"No artifacts found to purge"* ]]
+	[[ "$output" == *"未找到要清理的构建产物"* ]]
 }
 
 @test "clean_project_artifacts: include-empty exposes zero-size artifacts (#869)" {
@@ -2212,9 +2212,9 @@ printf 'OUTCOME=%s\n' "$PURGE_RUN_OUTCOME"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Could not measure ~/www/test-project/node_modules; skipped"* ]] || return 1
+	[[ "$output" == *"无法测量 ~/www/test-project/node_modules；已跳过"* ]] || return 1
 	[[ "$output" == *"OUTCOME=incomplete"* ]] || return 1
-	[[ "$output" != *"No artifacts found to purge"* ]] || return 1
+	[[ "$output" != *"未找到可清理的构建产物"* ]] || return 1
 }
 
 @test "clean_project_artifacts: preparation does not exhaust the activity evidence budget" {
@@ -2387,7 +2387,7 @@ echo "SIZE=$(cat "$stats_dir/purge_stats" 2> /dev/null || echo missing)"
 EOF
 
 	[ "$status" -eq 0 ]
-	[[ "$output" == *"Skipped ~/www/test-project/node_modules (final removal check failed; re-run mo purge to review it again)"* ]] || return 1
+	[[ "$output" == *"已跳过 ~/www/test-project/node_modules（最终移除检查失败；请重新运行 mo purge 再次检查）"* ]] || return 1
 	[[ "$output" == *"COUNT=0"* ]] || return 1
 	[[ "$output" == *"SIZE=0"* ]]
 }
@@ -2501,7 +2501,7 @@ mv "$physical_root" "$configured_root"
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Skipped 1 project scan root because scanning did not complete"* ]] || return 1
+	[[ "$output" == *"已跳过 1 个项目扫描根目录，因为扫描未完成"* ]] || return 1
 	[[ "$output" != *"UNEXPECTED_REMOVE:"* ]] || return 1
 }
 
@@ -2668,7 +2668,7 @@ clean_project_artifacts </dev/null
 EOF
 
 	[ "$status" -eq 0 ] || return 1
-	[[ "$output" == *"Skipped 1 cloud-synced artifact in non-interactive mode"* ]] || return 1
+	[[ "$output" == *"已跳过 1 个云同步"* ]] || return 1
 	[[ "$output" == *"REMOVE:$HOME/www/LocalProject/node_modules"* ]] || return 1
 	[[ "$output" != *"REMOVE:$HOME/Library/CloudStorage/TestProvider/CloudProject/target"* ]] || return 1
 }
@@ -2693,8 +2693,8 @@ EOF
 
 	[ "$status" -eq 0 ] || return 1
 	[[ "$output" == *"Purge Project Artifacts"* ]] || return 1
-	[[ "$output" == *"No items selected"* ]] ||
-		[[ "$output" == *"Purge complete"* ]] ||
+	[[ "$output" == *"未选择任何项目"* ]] ||
+		[[ "$output" == *"清理完成"* ]] ||
 		[[ "$output" == *"No old"* ]] ||
 		[[ "$output" == *"Great"* ]] || return 1
 }
@@ -2714,7 +2714,7 @@ EOF
 	run env HOME="$HOME" "$PROJECT_ROOT/mole" purge --help
 	[ "$status" -eq 0 ]
 	[[ "$output" == *"--include-empty"* ]] || return 1
-	[[ "$output" == *"Show zero-size project artifact directories"* ]]
+	[[ "$output" == *"显示空的项目构建产物目录"* ]]
 }
 
 @test "mo purge: accepts --debug flag" {
@@ -2745,7 +2745,7 @@ EOF
         $timeout_cmd 10 '$PROJECT_ROOT/mole' purge --dry-run < /dev/null 2>&1 || true
     "
 
-	[[ "$output" == *"DRY RUN MODE"* ]] || [[ "$output" == *"Dry run complete"* ]]
+	[[ "$output" == *"预览模式"* ]] || [[ "$output" == *"预览完成，未做任何更改"* ]]
 }
 
 @test "mo purge: accepts --include-empty flag" {
@@ -3286,7 +3286,7 @@ unset MOLE_PURGE_YES MOLE_DRY_RUN
 clean_project_artifacts
 EOF
     [ "$status" -ne 0 ]
-    [[ "$output" == *"Purge requires confirmation"* ]] || return 1
+    [[ "$output" == *"清理需要确认"* ]] || return 1
 }
 
 @test "purge inspection never executes repository fsmonitor hooks" {
@@ -3371,6 +3371,6 @@ EOF_INNER
         echo "$output"
         return 1
     }
-    [[ "$output" == *"Could not inspect ~/www/test-project/node_modules; kept"* ]] || return 1
+    [[ "$output" == *"无法检查 ~/www/test-project/node_modules；已保留"* ]] || return 1
     [[ "$output" == *"OUTCOME=incomplete"* ]] || return 1
 }

@@ -50,7 +50,7 @@ echo "RC=$?"
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Mail Downloads · skipped (sizing unavailable)"* ]] || return 1
+    [[ "$output" == *"邮件下载 · 已跳过（无法计算大小）"* ]] || return 1
     [[ "$output" == *"RC=0"* ]] || return 1
 }
 
@@ -85,7 +85,7 @@ EOF
 
     [ "$status" -eq 0 ] || return 1
     [[ "$output" == *"REMOVE:$HOME/Library/Mail Downloads/old.bin"* ]] || return 1
-    [[ "$output" == *"Mail Downloads · skipped (sizing unavailable)"* ]] || return 1
+    [[ "$output" == *"邮件下载 · 已跳过（无法计算大小）"* ]] || return 1
     [[ "$output" == *"RC=0"* ]] || return 1
 }
 
@@ -138,7 +138,7 @@ echo "RC=$?"
 EOF
 
     [ "$status" -eq 130 ] || return 1
-    [[ "$output" != *"skipped (sizing unavailable)"* ]] || return 1
+    [[ "$output" != *"已跳过（无法计算大小）"* ]] || return 1
 }
 
 @test "mo clean completes when the Mail Downloads du stalls (#1344)" {
@@ -183,8 +183,8 @@ EOF
     rm -rf "$SHIM_DIR"
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Cleanup complete"* ]] || return 1
-    [[ "$output" == *"Mail Downloads · skipped (sizing unavailable)"* ]] || return 1
+    [[ "$output" == *"清理完成"* ]] || return 1
+    [[ "$output" == *"邮件下载 · 已跳过（无法计算大小）"* ]] || return 1
 }
 
 @test "mail dir sizing hard failure (1) skips the target and keeps the run going (#1366)" {
@@ -207,6 +207,6 @@ echo "RC=$?"
 EOF
 
     [ "$status" -eq 0 ] || return 1
-    [[ "$output" == *"Mail Downloads · skipped (sizing unavailable)"* ]] || return 1
+    [[ "$output" == *"邮件下载 · 已跳过（无法计算大小）"* ]] || return 1
     [[ "$output" == *"RC=0"* ]] || return 1
 }

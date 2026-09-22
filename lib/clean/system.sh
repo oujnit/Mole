@@ -97,7 +97,7 @@ show_large_active_powerlog_notice() {
 
     local size_human
     size_human=$(bytes_to_human "$size_bytes")
-    echo -e "  ${YELLOW}${ICON_WARNING}${NC} Power telemetry database · ${GREEN}${size_human}${NC} · ${GRAY}active, kept · $(format_path_link "$MOLE_ACTIVE_POWERLOG_DB_PATH")${NC}"
+    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 电源遥测数据库 · ${GREEN}${size_human}${NC} · ${GRAY}活动中，已保留 · $(format_path_link "$MOLE_ACTIVE_POWERLOG_DB_PATH")${NC}"
 }
 
 report_system_cleanup_incomplete() {
@@ -105,7 +105,7 @@ report_system_cleanup_incomplete() {
     local status="${2:-1}"
 
     if [[ "$status" -eq 124 ]]; then
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} ${label} · ${GRAY}timed out, cleanup may be partial${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} ${label} · ${GRAY}超时，清理可能不完整${NC}"
         if declare -F note_activity > /dev/null 2>&1; then
             note_activity
         fi
@@ -120,7 +120,7 @@ system_cleanup_budget_reached() {
 }
 
 report_system_cleanup_budget_reached() {
-    echo -e "  ${YELLOW}${ICON_WARNING}${NC} System cleanup · ${GRAY}time limit reached, skipped remaining slow scans${NC}"
+    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 系统清理 · ${GRAY}已达到时间限制，已跳过剩余较慢的扫描${NC}"
     if declare -F note_activity > /dev/null 2>&1; then
         note_activity
     fi
@@ -229,7 +229,7 @@ clean_deep_system() {
     local system_cleanup_deadline=$((SECONDS + 120))
     local cache_cleaned=0
     local cache_status=0
-    start_section_spinner "Cleaning system caches..."
+    start_section_spinner "正在清理系统缓存…"
     local -a cache_extra_patterns=("*.tmp")
     if [[ "$MOLE_LOG_AGE_DAYS" -eq "$MOLE_TEMP_FILE_AGE_DAYS" ]]; then
         cache_extra_patterns+=("*.log")
@@ -264,10 +264,10 @@ clean_deep_system() {
     fi
     stop_section_spinner
     if [[ $cache_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "System caches" "$cache_status"
+        report_system_cleanup_incomplete "系统缓存" "$cache_status"
     fi
     if [[ $cache_cleaned -eq 1 ]]; then
-        log_success "System caches"
+        log_success "系统缓存"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
@@ -276,7 +276,7 @@ clean_deep_system() {
     # Do not sweep generic /private/tmp or /private/var/tmp contents here.
     # Age and a bounded scan do not prove third-party runtime state is
     # disposable, and large shared temp roots made this section look hung.
-    start_section_spinner "Cleaning system crash reports..."
+    start_section_spinner "正在清理系统崩溃报告…"
     local crash_rc=0
     safe_sudo_find_delete "/Library/Logs/DiagnosticReports" "*" \
         "$MOLE_CRASH_REPORT_AGE_DAYS" "f" "1" "$system_cleanup_deadline" || crash_rc=$?
@@ -287,16 +287,16 @@ clean_deep_system() {
     local crash_cleaned=${MOLE_SAFE_SUDO_FIND_DELETE_COUNT:-0}
     stop_section_spinner
     if [[ $crash_rc -ne 0 ]]; then
-        report_system_cleanup_incomplete "System crash reports" "$crash_rc"
+        report_system_cleanup_incomplete "系统崩溃报告" "$crash_rc"
     fi
     if [[ $crash_rc -eq 0 && $crash_cleaned -gt 0 ]]; then
-        log_success "System crash reports"
+        log_success "系统崩溃报告"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
-    start_section_spinner "Cleaning system logs..."
+    start_section_spinner "正在清理系统日志…"
     local system_logs_cleaned=0
     local system_logs_status=0
     local system_log_rc=0
@@ -313,16 +313,16 @@ clean_deep_system() {
     fi
     stop_section_spinner
     if [[ $system_logs_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "System logs" "$system_logs_status"
+        report_system_cleanup_incomplete "系统日志" "$system_logs_status"
     fi
     if [[ $system_logs_cleaned -eq 1 ]]; then
-        log_success "System logs"
+        log_success "系统日志"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
-    start_section_spinner "Cleaning third-party system logs..."
+    start_section_spinner "正在清理第三方系统日志…"
     local -a third_party_log_dirs=(
         "/Library/Logs/Adobe"
         "/Library/Logs/CreativeCloud"
@@ -369,10 +369,10 @@ clean_deep_system() {
     fi
     stop_section_spinner
     if [[ $third_party_logs_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "Third-party system logs" "$third_party_logs_status"
+        report_system_cleanup_incomplete "第三方系统日志" "$third_party_logs_status"
     fi
     if [[ $third_party_logs_cleaned -eq 1 ]]; then
-        log_success "Third-party system logs"
+        log_success "第三方系统日志"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
@@ -388,7 +388,7 @@ clean_deep_system() {
         debug_log "Keeping macOS Install Data: managed by Software Update"
     fi
 
-    start_section_spinner "Scanning macOS installer files..."
+    start_section_spinner "正在扫描 macOS 安装包文件…"
     # Clean macOS installer apps (e.g., "Install macOS Sequoia.app")
     # Only remove installers older than 14 days, not currently running,
     # and not matching the currently installed macOS version (recovery safety).
@@ -509,13 +509,13 @@ clean_deep_system() {
         debug_log "Cleaned $installer_cleaned macOS installer(s)"
     fi
     if [[ $installer_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "macOS installer files" "$installer_status"
+        report_system_cleanup_incomplete "macOS 安装包文件" "$installer_status"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
-    start_section_spinner "Scanning browser code signature caches..."
+    start_section_spinner "正在扫描浏览器代码签名缓存…"
     local code_sign_cleaned=0
     local code_sign_scan_file=""
     local code_sign_scan_rc=0
@@ -563,17 +563,17 @@ clean_deep_system() {
         if [[ $code_sign_scan_rc -ge 128 ]]; then
             return "$code_sign_scan_rc"
         fi
-        report_system_cleanup_incomplete "Browser code signature caches" "$code_sign_scan_rc"
+        report_system_cleanup_incomplete "浏览器代码签名缓存" "$code_sign_scan_rc"
     fi
     if [[ $code_sign_cleaned -gt 0 ]]; then
-        log_success "Browser code signature caches, $code_sign_cleaned items"
+        log_success "浏览器代码签名缓存，$code_sign_cleaned 项"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
 
-    start_section_spinner "Cleaning rebuildable system service caches..."
+    start_section_spinner "正在清理可重建的系统服务缓存…"
     local rebuildable_cache_cleaned=0
     local rebuildable_cache_status=0
     local -a rebuildable_cache_dirs=(
@@ -617,21 +617,21 @@ clean_deep_system() {
     done
     stop_section_spinner
     if [[ $rebuildable_cache_cleaned -gt 0 ]]; then
-        local rebuildable_cache_label="items"
+        local rebuildable_cache_label="项"
         if [[ $rebuildable_cache_cleaned -eq 1 ]]; then
-            rebuildable_cache_label="item"
+            rebuildable_cache_label="项"
         fi
-        log_success "Rebuildable system caches, $rebuildable_cache_cleaned $rebuildable_cache_label"
+        log_success "可重建的系统缓存，$rebuildable_cache_cleaned $rebuildable_cache_label"
     fi
     if [[ $rebuildable_cache_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "Rebuildable system caches" "$rebuildable_cache_status"
+        report_system_cleanup_incomplete "可重建的系统缓存" "$rebuildable_cache_status"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
 
-    start_section_spinner "Scanning accessible rebuildable GPU caches..."
+    start_section_spinner "正在扫描可访问的可重建 GPU 缓存…"
     local gpu_cache_cleaned=0
     local gpu_cache_dir=""
     local gpu_scan_file=""
@@ -695,14 +695,14 @@ clean_deep_system() {
         if [[ $gpu_scan_rc -ge 128 ]]; then
             return "$gpu_scan_rc"
         fi
-        report_system_cleanup_incomplete "Accessible rebuildable GPU caches" "$gpu_scan_rc"
+        report_system_cleanup_incomplete "可访问的可重建 GPU 缓存" "$gpu_scan_rc"
     fi
     if [[ $gpu_cache_cleaned -gt 0 ]]; then
-        local gpu_cache_label="items"
+        local gpu_cache_label="项"
         if [[ $gpu_cache_cleaned -eq 1 ]]; then
-            gpu_cache_label="item"
+            gpu_cache_label="项"
         fi
-        log_success "Accessible rebuildable GPU caches, $gpu_cache_cleaned $gpu_cache_label"
+        log_success "可访问的可重建 GPU 缓存，$gpu_cache_cleaned $gpu_cache_label"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
@@ -720,7 +720,7 @@ clean_deep_system() {
     # re-fetches assets on demand, so the removal is non-destructive. The locator
     # needs sudo because the whole tree is root-owned; safe_sudo_find_delete then
     # re-applies the shared protection and whitelist gates per file.
-    start_section_spinner "Scanning stale wallpaper downloads..."
+    start_section_spinner "正在扫描过期的壁纸下载…"
     local idle_tmp_cleaned=0
     local idle_tmp_status=0
     local idle_tmp_dir=""
@@ -762,10 +762,10 @@ clean_deep_system() {
         return "$idle_tmp_status"
     fi
     if [[ $idle_tmp_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "Stale wallpaper downloads" "$idle_tmp_status"
+        report_system_cleanup_incomplete "过期的壁纸下载" "$idle_tmp_status"
     fi
     if [[ $idle_tmp_cleaned -gt 0 ]]; then
-        log_success "Stale wallpaper downloads"
+        log_success "过期的壁纸下载"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
@@ -773,7 +773,7 @@ clean_deep_system() {
     fi
 
     local diag_base="/private/var/db/diagnostics"
-    start_section_spinner "Cleaning system diagnostic logs..."
+    start_section_spinner "正在清理系统诊断日志…"
     local diag_cleaned=0
     local diag_status=0
     local diag_rc=0
@@ -808,17 +808,17 @@ clean_deep_system() {
     fi
     stop_section_spinner
     if [[ $diag_status -ne 0 ]]; then
-        report_system_cleanup_incomplete "System diagnostic logs" "$diag_status"
+        report_system_cleanup_incomplete "系统诊断日志" "$diag_status"
     fi
     if [[ $diag_cleaned -eq 1 ]]; then
-        log_success "System diagnostic logs"
+        log_success "系统诊断日志"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
         return 0
     fi
 
-    start_section_spinner "Cleaning power logs..."
+    start_section_spinner "正在清理电源日志…"
     local power_rc=0
     safe_sudo_find_delete "/private/var/db/powerlog" "*" "$MOLE_LOG_AGE_DAYS" "f" "5" \
         "$system_cleanup_deadline" || power_rc=$?
@@ -829,10 +829,10 @@ clean_deep_system() {
     local power_cleaned=${MOLE_SAFE_SUDO_FIND_DELETE_COUNT:-0}
     stop_section_spinner
     if [[ $power_rc -ne 0 ]]; then
-        report_system_cleanup_incomplete "Power logs" "$power_rc"
+        report_system_cleanup_incomplete "电源日志" "$power_rc"
     fi
     if [[ $power_rc -eq 0 && $power_cleaned -gt 0 ]]; then
-        log_success "Power logs"
+        log_success "电源日志"
     fi
     if system_cleanup_budget_reached "$system_cleanup_deadline"; then
         report_system_cleanup_budget_reached
@@ -843,7 +843,7 @@ clean_deep_system() {
     if [[ $power_notice_rc -ge 128 ]]; then
         return "$power_notice_rc"
     fi
-    start_section_spinner "Cleaning memory exception reports..."
+    start_section_spinner "正在清理内存异常报告…"
     local mem_reports_dir="/private/var/db/reportmemoryexception/MemoryLimitViolations"
     local mem_cleaned=0
     # Count and size old files before deletion. The sizing result is advisory;
@@ -896,21 +896,21 @@ clean_deep_system() {
                 oplog_enabled && [[ "$total_size_kb" -gt 0 ]]; then
                 local size_human
                 size_human=$(bytes_to_human "$((total_size_kb * 1024))")
-                log_operation "clean" "REMOVED" "$mem_reports_dir" "$mem_removed_count files, $size_human"
+                log_operation "clean" "REMOVED" "$mem_reports_dir" "$mem_removed_count 个文件，$size_human"
             fi
         elif [[ $stats_rc -eq 0 && $file_count -eq $mem_removed_count ]]; then
-            log_info "[DRY-RUN] Would remove $mem_removed_count old memory exception reports ($total_size_kb KB)"
+            log_info "[预览] 将移除 $mem_removed_count 个旧内存异常报告（$total_size_kb KB）"
         else
-            log_info "[DRY-RUN] Would remove $mem_removed_count old memory exception reports"
+            log_info "[预览] 将移除 $mem_removed_count 个旧内存异常报告"
         fi
     elif [[ $mem_rc -ne 0 ]]; then
-        report_system_cleanup_incomplete "Memory exception reports" "$mem_rc"
+        report_system_cleanup_incomplete "内存异常报告" "$mem_rc"
     elif [[ $stats_rc -eq 124 ]]; then
-        report_system_cleanup_incomplete "Memory exception report sizing" "$stats_rc"
+        report_system_cleanup_incomplete "内存异常报告大小计算" "$stats_rc"
     fi
     stop_section_spinner
     if [[ $mem_cleaned -eq 1 ]]; then
-        log_success "Memory exception reports"
+        log_success "内存异常报告"
     fi
     return 0
 }
@@ -981,7 +981,7 @@ clean_time_machine_failed_backups() {
         debug_log "Time Machine: no incomplete backups found"
         return 0
     fi
-    start_section_spinner "Checking Time Machine configuration..."
+    start_section_spinner "正在检查 Time Machine 配置…"
     local spinner_active=true
     local tm_info=""
     local tm_info_rc=0
@@ -992,7 +992,7 @@ clean_time_machine_failed_backups() {
     fi
     if [[ $tm_info_rc -eq 124 ]]; then
         stop_section_spinner
-        echo -e "  ${YELLOW}!${NC} Time Machine cleanup · skipped (configuration check timed out)"
+        echo -e "  ${YELLOW}!${NC} Time Machine 清理 · 已跳过（配置检查超时）"
         note_activity
         return 0
     fi
@@ -1026,16 +1026,16 @@ clean_time_machine_failed_backups() {
             stop_section_spinner
         fi
         if [[ $rc_tm_running -eq 2 || $rc_tm_running -eq 124 ]]; then
-            echo -e "  ${YELLOW}!${NC} Time Machine cleanup · skipped (status unknown)"
+            echo -e "  ${YELLOW}!${NC} Time Machine 清理 · 已跳过（状态未知）"
             note_activity
         else
-            echo -e "  ${YELLOW}!${NC} Time Machine cleanup · skipped (backup in progress)"
+            echo -e "  ${YELLOW}!${NC} Time Machine 清理 · 已跳过（备份进行中）"
             note_activity
         fi
         return 0
     fi
     if [[ "$spinner_active" == "true" ]]; then
-        start_section_spinner "Checking backup volumes..."
+        start_section_spinner "正在检查备份卷…"
     fi
     # Fast pre-scan for backup volumes to avoid slow tmutil checks.
     local -a backup_volumes=()
@@ -1055,12 +1055,12 @@ clean_time_machine_failed_backups() {
         return 0
     fi
     if [[ "$spinner_active" == "true" ]]; then
-        start_section_spinner "Scanning backup volumes..."
+        start_section_spinner "正在扫描备份卷…"
     fi
     local tm_scan_file=""
     if ! tm_scan_file=$(create_temp_file 2> /dev/null); then
         stop_section_spinner
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Time Machine backups · ${GRAY}scan unavailable, skipped cleanup${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Time Machine 备份 · ${GRAY}扫描不可用，已跳过清理${NC}"
         note_activity
         return 0
     fi
@@ -1169,13 +1169,13 @@ clean_time_machine_failed_backups() {
                     if declare -f record_dry_run_cleanup_target > /dev/null 2>&1; then
                         record_dry_run_cleanup_target "$inprogress_file" "$size_kb" 1 true || continue
                     fi
-                    echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Incomplete backup: $backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+                    echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} 未完成的备份：$backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}预览${NC}"
                     tm_cleaned=$((tm_cleaned + 1))
                     note_activity
                     continue
                 fi
                 if ! command -v tmutil > /dev/null 2>&1; then
-                    echo -e "  ${YELLOW}!${NC} Incomplete backup: $backup_name · skipped (tmutil unavailable)"
+                    echo -e "  ${YELLOW}!${NC} 未完成的备份：$backup_name · 已跳过（tmutil 不可用）"
                     note_activity
                     continue
                 fi
@@ -1202,14 +1202,14 @@ clean_time_machine_failed_backups() {
                 if [[ $tm_delete_rc -eq 0 ]]; then
                     local line_color
                     line_color=$(cleanup_result_color_kb "$size_kb")
-                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} Incomplete backup: $backup_name${NC} · ${line_color}$size_human${NC}"
+                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} 未完成的备份：$backup_name${NC} · ${line_color}$size_human${NC}"
                     tm_cleaned=$((tm_cleaned + 1))
                     files_cleaned=$((files_cleaned + 1))
                     total_size_cleaned=$((total_size_cleaned + size_kb))
                     total_items=$((total_items + 1))
                     note_activity
                 else
-                    echo -e "  ${YELLOW}!${NC} Could not delete: $backup_name · try manually with sudo"
+                    echo -e "  ${YELLOW}!${NC} 无法删除：$backup_name · 请尝试手动使用 sudo 删除"
                     # Mark activity so the idle-section erase in end_section
                     # never wipes this failure warning off the terminal.
                     note_activity
@@ -1325,7 +1325,7 @@ clean_time_machine_failed_backups() {
                         if declare -f record_dry_run_cleanup_target > /dev/null 2>&1; then
                             record_dry_run_cleanup_target "$inprogress_file" "$size_kb" 1 true || continue
                         fi
-                        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Incomplete APFS backup in $bundle_name: $backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+                        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} 未完成的 APFS 备份（位于 ${bundle_name}）：$backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}预览${NC}"
                         tm_cleaned=$((tm_cleaned + 1))
                         note_activity
                         continue
@@ -1356,14 +1356,14 @@ clean_time_machine_failed_backups() {
                     if [[ $tm_delete_rc -eq 0 ]]; then
                         local line_color
                         line_color=$(cleanup_result_color_kb "$size_kb")
-                        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Incomplete APFS backup in $bundle_name: $backup_name${NC} · ${line_color}$size_human${NC}"
+                        echo -e "  ${line_color}${ICON_SUCCESS}${NC} 未完成的 APFS 备份（位于 ${bundle_name}）：$backup_name${NC} · ${line_color}$size_human${NC}"
                         tm_cleaned=$((tm_cleaned + 1))
                         files_cleaned=$((files_cleaned + 1))
                         total_size_cleaned=$((total_size_cleaned + size_kb))
                         total_items=$((total_items + 1))
                         note_activity
                     else
-                        echo -e "  ${YELLOW}!${NC} Could not delete from bundle: $backup_name"
+                        echo -e "  ${YELLOW}!${NC} 无法从备份包中删除：$backup_name"
                         # Keep the warning visible past the idle-section erase.
                         note_activity
                         if [[ $tm_delete_rc -ge 128 ]]; then
@@ -1395,7 +1395,7 @@ clean_time_machine_failed_backups() {
         return "$tm_interrupt_rc"
     fi
     if [[ "$tm_scan_timed_out" == "true" || "$tm_scan_incomplete" == "true" ]]; then
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Time Machine backups · ${GRAY}scan incomplete, skipped remaining cleanup${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Time Machine 备份 · ${GRAY}扫描不完整，已跳过剩余清理${NC}"
         note_activity
     fi
 }
@@ -1436,7 +1436,7 @@ clean_local_snapshots() {
         return 0
     fi
 
-    start_section_spinner "Checking Time Machine status..."
+    start_section_spinner "正在检查 Time Machine 状态…"
     local rc_running=0
     tm_is_running || rc_running=$?
 
@@ -1447,19 +1447,19 @@ clean_local_snapshots() {
 
     if [[ $rc_running -eq 2 ]]; then
         stop_section_spinner
-        echo -e "  ${YELLOW}!${NC} Snapshot check · skipped (Time Machine status unknown)"
+        echo -e "  ${YELLOW}!${NC} 快照检查 · 已跳过（Time Machine 状态未知）"
         note_activity
         return 0
     fi
 
     if [[ $rc_running -eq 0 ]]; then
         stop_section_spinner
-        echo -e "  ${YELLOW}!${NC} Snapshot check · skipped (backup in progress)"
+        echo -e "  ${YELLOW}!${NC} 快照检查 · 已跳过（备份进行中）"
         note_activity
         return 0
     fi
 
-    start_section_spinner "Checking local snapshots..."
+    start_section_spinner "正在检查本地快照…"
     local snapshot_list=""
     local snapshot_rc=0
     snapshot_list=$(run_with_timeout "$MOLE_TIMEOUT_SHORT_QUERY_SEC" \
@@ -1472,7 +1472,7 @@ clean_local_snapshots() {
     local snapshot_count
     snapshot_count=$(echo "$snapshot_list" | { grep -Eo 'com\.apple\.TimeMachine\.[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}' || true; } | wc -l | awk '{print $1}')
     if [[ "$snapshot_count" =~ ^[0-9]+$ && "$snapshot_count" -gt 0 ]]; then
-        echo -e "  ${YELLOW}${ICON_REVIEW}${NC} Time Machine local snapshots · ${GREEN}${snapshot_count}${NC} ${GRAY}(review: tmutil listlocalsnapshots /)${NC}"
+        echo -e "  ${YELLOW}${ICON_REVIEW}${NC} Time Machine 本地快照 · ${GREEN}${snapshot_count}${NC} ${GRAY}（查看：tmutil listlocalsnapshots /）${NC}"
         note_activity
     fi
 }

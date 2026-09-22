@@ -8,7 +8,7 @@ set -euo pipefail
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -70,11 +70,11 @@ show_optimization_summary() {
     failed=$(optimize_outcome_count "$MOLE_OPTIMIZE_OUTCOME_FAILED")
 
     local -a outcome_parts=()
-    [[ $unchanged -gt 0 ]] && outcome_parts+=("$unchanged unchanged")
-    [[ $skipped -gt 0 ]] && outcome_parts+=("$skipped skipped")
-    [[ $unavailable -gt 0 ]] && outcome_parts+=("$unavailable unavailable")
-    [[ $attention -gt 0 ]] && outcome_parts+=("$attention need attention")
-    [[ $failed -gt 0 ]] && outcome_parts+=("$failed failed")
+    [[ $unchanged -gt 0 ]] && outcome_parts+=("$unchanged 项未更改")
+    [[ $skipped -gt 0 ]] && outcome_parts+=("$skipped 项已跳过")
+    [[ $unavailable -gt 0 ]] && outcome_parts+=("$unavailable 项不可用")
+    [[ $attention -gt 0 ]] && outcome_parts+=("$attention 项需关注")
+    [[ $failed -gt 0 ]] && outcome_parts+=("$failed 项失败")
 
     local outcome_line=""
     if [[ ${#outcome_parts[@]} -gt 0 ]]; then
@@ -86,12 +86,12 @@ show_optimization_summary() {
     fi
 
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        summary_title="Dry Run Complete, No Changes Made"
-        summary_details+=("Would apply ${YELLOW}${applied}${NC} optimizations")
+        summary_title="预览完成，未做任何更改"
+        summary_details+=("将应用 ${YELLOW}${applied}${NC} 项优化")
         [[ -n "$outcome_line" ]] && summary_details+=("$outcome_line")
-        summary_details+=("Run without ${YELLOW}--dry-run${NC} to apply these changes")
+        summary_details+=("不带 ${YELLOW}--dry-run${NC} 运行即可应用这些更改")
     else
-        summary_title="Optimization Complete"
+        summary_title="优化完成"
 
         local cache_kb="${OPTIMIZE_CACHE_CLEANED_KB:-0}"
         local db_count="${OPTIMIZE_DATABASES_COUNT:-0}"
@@ -101,24 +101,24 @@ show_optimization_summary() {
         if [[ "$cache_kb" =~ ^[0-9]+$ ]] && [[ "$cache_kb" -gt 0 ]]; then
             local cache_human
             cache_human=$(bytes_to_human "$((cache_kb * 1024))")
-            key_stat="${cache_human} cache cleaned"
+            key_stat="${cache_human} 缓存已清理"
         elif [[ "$db_count" =~ ^[0-9]+$ ]] && [[ "$db_count" -gt 0 ]]; then
-            key_stat="${db_count} databases optimized"
+            key_stat="${db_count} 个数据库已优化"
         elif [[ "$config_count" =~ ^[0-9]+$ ]] && [[ "$config_count" -gt 0 ]]; then
-            key_stat="${config_count} configs repaired"
+            key_stat="${config_count} 个配置已修复"
         fi
 
         if [[ -n "$key_stat" ]]; then
-            summary_details+=("Applied ${GREEN}${applied}${NC} optimizations, ${key_stat}")
+            summary_details+=("已应用 ${GREEN}${applied}${NC} 项优化，${key_stat}")
         else
-            summary_details+=("Applied ${GREEN}${applied}${NC} optimizations")
+            summary_details+=("已应用 ${GREEN}${applied}${NC} 项优化")
         fi
 
         [[ -n "$outcome_line" ]] && summary_details+=("$outcome_line")
         if [[ $attention -gt 0 || $failed -gt 0 ]]; then
-            summary_details+=("Review the warnings above")
+            summary_details+=("请查看上方的警告")
         else
-            summary_details+=("Optimization pass complete")
+            summary_details+=("本轮优化已完成")
         fi
     fi
 
@@ -150,7 +150,7 @@ show_system_health() {
         'BEGIN { printf "%.0f %.0f %.0f %.0f %.0f", mu, mt, du, dt, ut }' 2> /dev/null || echo "0 0 0 0 0")
     read -r mem_used mem_total disk_used disk_total uptime <<< "$rounded"
 
-    printf "${ICON_ADMIN} System  %s/%s GB RAM | %s/%s GB Disk | Uptime %sd\n" \
+    printf "${ICON_ADMIN} 系统  内存 %s/%s GB | 磁盘 %s/%s GB | 运行时间 %sd\n" \
         "$mem_used" "$mem_total" "$disk_used" "$disk_total" "$uptime"
 }
 
@@ -218,8 +218,8 @@ main() {
                 exit 0
                 ;;
             *)
-                echo "Unknown optimize option: $arg" >&2
-                echo "Use 'mo optimize --help' for supported options." >&2
+                echo "未知的 optimize 选项：$arg" >&2
+                echo "使用 'mo optimize --help' 查看支持的选项。" >&2
                 exit 1
                 ;;
         esac
@@ -237,17 +237,17 @@ main() {
 
     # Dry-run indicator.
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, No files will be modified\n"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会修改任何文件\n"
     fi
 
     if ! command -v bc > /dev/null 2>&1; then
-        echo -e "${YELLOW}${ICON_ERROR}${NC} Missing dependency: bc"
-        echo -e "${GRAY}Install with: ${GREEN}brew install bc${NC}"
+        echo -e "${YELLOW}${ICON_ERROR}${NC} 缺少依赖：bc"
+        echo -e "${GRAY}安装方式：${GREEN}brew install bc${NC}"
         exit 1
     fi
 
     if [[ -t 1 ]]; then
-        start_inline_spinner "Collecting system info..."
+        start_inline_spinner "正在收集系统信息…"
     fi
 
     if ! health_json=$(generate_health_json 2> /dev/null); then
@@ -255,7 +255,7 @@ main() {
             stop_inline_spinner
         fi
         echo ""
-        log_error "Failed to collect system health data"
+        log_error "无法收集系统状态数据"
         exit 1
     fi
 
@@ -264,8 +264,8 @@ main() {
             stop_inline_spinner
         fi
         echo ""
-        log_error "Invalid system health data format"
-        echo -e "${GRAY}${ICON_REVIEW}${NC} Check if awk, sysctl, and df commands are available"
+        log_error "系统状态数据格式无效"
+        echo -e "${GRAY}${ICON_REVIEW}${NC} 请检查 awk、sysctl 和 df 命令是否可用"
         exit 1
     fi
 
@@ -281,7 +281,7 @@ main() {
                 IFS=', '
                 echo "${CURRENT_WHITELIST_PATTERNS[*]}"
             )
-            echo -e "${ICON_ADMIN} Active Whitelist: ${patterns_list}"
+            echo -e "${ICON_ADMIN} 当前白名单：${patterns_list}"
         fi
     fi
 
@@ -297,10 +297,10 @@ main() {
     export MOLE_OPTIMIZE_SUDO_AVAILABLE="false"
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
         MOLE_OPTIMIZE_SUDO_AVAILABLE="true"
-    elif ensure_sudo_session "System optimization requires admin access"; then
+    elif ensure_sudo_session "系统优化需要管理员权限"; then
         MOLE_OPTIMIZE_SUDO_AVAILABLE="true"
     else
-        opt_msg "Skipping sudo-required optimizations: admin access not granted"
+        opt_msg "跳过需要 sudo 的优化：未授予管理员权限"
     fi
 
     export FIRST_ACTION=true
@@ -314,7 +314,7 @@ main() {
     done
 
     if [[ "$(optimize_outcome_total)" -ne ${#MOLE_OPTIMIZE_ACTIONS[@]} ]]; then
-        log_error "Optimize task outcomes are incomplete"
+        log_error "优化任务结果不完整"
         return 1
     fi
 

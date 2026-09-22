@@ -58,7 +58,7 @@ paginated_multi_select() {
 
     # Validation
     if [[ ${#items[@]} -eq 0 ]]; then
-        echo "No items provided" >&2
+        echo "未提供任何项目" >&2
         return 1
     fi
 
@@ -180,12 +180,12 @@ paginated_multi_select() {
         done
 
         # Header
-        printf "${clear_line}${PURPLE_BOLD}%s${NC}  ${GRAY}%d/%d selected${NC}\n" "${title}" "$selected_count" "$total_items" >&2
+        printf "${clear_line}${PURPLE_BOLD}%s${NC}  ${GRAY}%d/%d 已选择${NC}\n" "${title}" "$selected_count" "$total_items" >&2
 
         if [[ $total_items -eq 0 ]]; then
-            printf "${clear_line}${GRAY}No items available${NC}\n" >&2
+            printf "${clear_line}${GRAY}无可用项目${NC}\n" >&2
             printf "${clear_line}\n" >&2
-            printf "${clear_line}${GRAY}Q${NC} Quit\n" >&2
+            printf "${clear_line}${GRAY}Q${NC} 退出\n" >&2
             printf "${clear_line}" >&2
             return
         fi
@@ -229,7 +229,7 @@ paginated_multi_select() {
 
         # Clear any remaining lines at bottom
         printf "${clear_line}\n" >&2
-        printf "${clear_line}${GRAY}${ICON_NAV_UP}${ICON_NAV_DOWN} | Space | Enter Save | Q Cancel${NC}\n" >&2
+        printf "${clear_line}${GRAY}${ICON_NAV_UP}${ICON_NAV_DOWN} | 空格 | 回车 保存 | Q 取消${NC}\n" >&2
 
         # Clear one more line to ensure no artifacts
         printf "${clear_line}" >&2
@@ -337,6 +337,6 @@ paginated_multi_select() {
 
 # Export function for external use
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    echo "This is a library file. Source it from other scripts." >&2
+    echo "这是一个库文件，请在其他脚本中 source 引用。" >&2
     exit 1
 fi

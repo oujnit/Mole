@@ -72,7 +72,7 @@ DEVICES='{
 @test "reports a runtime no device uses and names the owner command" {
     run_check "$RUNTIMES" "$DEVICES"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Orphaned simulator runtime"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"残留的模拟器运行时"* ]] || { echo "$output"; return 1; }
     [[ "$output" == *"iOS 18.4 (22E238)"* ]] || { echo "$output"; return 1; }
     [[ "$output" == *"8.80GB"* ]] || { echo "$output"; return 1; }
     [[ "$output" == *"xcrun simctl runtime delete 70DF9A83-C8CF-458E-B463-356D557B8D2D"* ]] || { echo "$output"; return 1; }
@@ -108,7 +108,7 @@ DEVICES='{
 }'
     run_check "$runtimes" "$devices"
     [ "$status" -eq 0 ]
-    [[ "$output" != *"Orphaned"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"残留的模拟器运行时"* ]] || { echo "$output"; return 1; }
 }
 
 @test "a runtime whose device group is empty is still an orphan" {
@@ -243,7 +243,7 @@ EOF
     run_check_with_probe_status 124
     [ "$status" -eq 0 ] || { echo "status=$status $output"; return 1; }
     [[ "$output" == *"DEBUG:Orphaned runtime review skipped"* ]] || { echo "$output"; return 1; }
-    [[ "$output" != *"Orphaned simulator runtime"* ]] || { echo "$output"; return 1; }
+    [[ "$output" != *"残留的模拟器运行时"* ]] || { echo "$output"; return 1; }
 }
 
 @test "an interrupted probe still propagates the signal status" {
@@ -288,6 +288,6 @@ safe_remove() { echo "UNEXPECTED_DELETE $*"; }
 check_orphaned_simulator_runtimes
 EOF
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Orphaned"* ]] || { echo "$output"; return 1; }
+    [[ "$output" == *"残留的模拟器运行时"* ]] || { echo "$output"; return 1; }
     [[ "$output" != *"UNEXPECTED_DELETE"* ]] || { echo "$output"; return 1; }
 }

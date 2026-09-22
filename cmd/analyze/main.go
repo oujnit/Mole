@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	jsonMode = flag.Bool("json", false, "output analysis as JSON instead of TUI")
+	jsonMode = flag.Bool("json", false, "以 JSON 格式输出分析结果（替代 TUI 界面）")
 )
 
 // usageText is the help every other Mole subcommand prints by hand. The Go flag
@@ -57,7 +57,7 @@ func parseArgs(args []string, stdout, stderr io.Writer) (int, bool) {
 		return 0, false
 	case err != nil:
 		_, _ = fmt.Fprintln(stderr, err)
-		_, _ = fmt.Fprintln(stderr, "Use 'mo analyze --help' for usage information")
+		_, _ = fmt.Fprintln(stderr, "使用 'mo analyze --help' 查看用法信息")
 		return 1, false
 	}
 	return 0, true
@@ -100,7 +100,7 @@ func resolveScanTarget(envPath string, args []string) (string, bool, error) {
 
 	abs, err := filepath.Abs(target)
 	if err != nil {
-		return "", false, fmt.Errorf("cannot resolve %q: %v", target, err)
+		return "", false, fmt.Errorf("无法解析 %q：%v", target, err)
 	}
 	return abs, false, nil
 }
@@ -117,7 +117,7 @@ func runTUIMode(path string, isOverview bool) {
 
 	p := tea.NewProgram(newModel(path, isOverview), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "analyzer error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "分析器错误：%v\n", err)
 		os.Exit(1)
 	}
 }
@@ -135,7 +135,7 @@ func newModel(path string, isOverview bool) model {
 	m := model{
 		path:                path,
 		selected:            0,
-		status:              "Preparing scan...",
+		status:              "正在准备扫描…",
 		diskFree:            diskFreeBytes,
 		scanning:            !isOverview,
 		filesScanned:        &filesScanned,
@@ -160,9 +160,9 @@ func newModel(path string, isOverview bool) model {
 		m.offset = 0
 		if nextPendingOverviewIndex(m.entries) >= 0 {
 			m.overviewScanning = true
-			m.status = "Checking system folders..."
+			m.status = "正在检查系统文件夹…"
 		} else {
-			m.status = "Ready"
+			m.status = "就绪"
 		}
 	}
 
@@ -186,14 +186,14 @@ func createOverviewEntriesWithInsights(insightEntries []dirEntry) []dirEntry {
 
 	// Separate Home and ~/Library to avoid double counting.
 	if home != "" {
-		entries = append(entries, dirEntry{Name: "Home", Path: home, IsDir: true, Size: -1})
+		entries = append(entries, dirEntry{Name: "个人目录", Path: home, IsDir: true, Size: -1})
 
 		userLibrary := filepath.Join(home, "Library")
 		if _, err := os.Stat(userLibrary); err == nil {
 			// Renamed from "App Library" to "User Library" so it parallels
 			// "System Library" (`/Library`) and is not confused with
 			// `/Applications`. Path unchanged.
-			entries = append(entries, dirEntry{Name: "User Library", Path: userLibrary, IsDir: true, Size: -1})
+			entries = append(entries, dirEntry{Name: "用户资源库", Path: userLibrary, IsDir: true, Size: -1})
 		}
 	}
 
@@ -207,8 +207,8 @@ func createOverviewEntriesWithInsights(insightEntries []dirEntry) []dirEntry {
 
 func systemOverviewRoots() []dirEntry {
 	return []dirEntry{
-		{Name: "Applications", Path: "/Applications", IsDir: true, Size: -1},
-		{Name: "System Library", Path: "/Library", IsDir: true, Size: -1},
+		{Name: "应用程序", Path: "/Applications", IsDir: true, Size: -1},
+		{Name: "系统资源库", Path: "/Library", IsDir: true, Size: -1},
 	}
 }
 

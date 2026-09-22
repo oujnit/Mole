@@ -26,7 +26,7 @@ var noiseInterfacePrefixes = [...]string{"lo", "awdl", "utun", "llw", "bridge", 
 func collectIOCountersSafely() (stats []net.IOCountersStat, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("panic collecting network counters: %v", r)
+			err = fmt.Errorf("采集网络计数器时 panic：%v", r)
 		}
 	}()
 	return ioCountersFunc(true)

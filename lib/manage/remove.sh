@@ -38,9 +38,9 @@ remove_mole() {
     fi
 
     if [[ -t 1 ]]; then
-        start_inline_spinner "Detecting Mole installations..."
+        start_inline_spinner "正在检测 Mole 安装…"
     else
-        echo "Detecting installations..."
+        echo "正在检测安装…"
     fi
 
     local is_homebrew=false
@@ -140,57 +140,57 @@ remove_mole() {
     local manual_count=${#manual_installs[@]}
     local alias_count=${#alias_installs[@]}
     if [[ "$is_homebrew" == "false" && ${manual_count:-0} -eq 0 && ${alias_count:-0} -eq 0 ]]; then
-        printf '%s\n\n' "${YELLOW}No Mole installation detected${NC}"
+        printf '%s\n\n' "${YELLOW}未检测到 Mole 安装${NC}"
         exit 0
     fi
 
     # Dry-run mode: show preview and exit without confirmation
     if [[ "$dry_run_mode" == "true" ]]; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, no files will be removed"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会删除任何文件"
         echo ""
-        echo -e "${YELLOW}Remove Mole${NC}, would delete the following:"
+        echo -e "${YELLOW}移除 Mole${NC}，将删除以下内容："
         if [[ "$is_homebrew" == "true" ]]; then
-            echo -e "  ${GRAY}${ICON_LIST} Would run: brew uninstall --force mole${NC}"
+            echo -e "  ${GRAY}${ICON_LIST} 将执行：brew uninstall --force mole${NC}"
         fi
         if [[ ${manual_count:-0} -gt 0 ]]; then
             for install in "${manual_installs[@]}"; do
-                [[ -f "$install" ]] && echo -e "  ${GRAY}${ICON_LIST} Would remove: ${install}${NC}"
+                [[ -f "$install" ]] && echo -e "  ${GRAY}${ICON_LIST} 将删除：${install}${NC}"
             done
         fi
         if [[ ${alias_count:-0} -gt 0 ]]; then
             for alias in "${alias_installs[@]}"; do
-                [[ -f "$alias" ]] && echo -e "  ${GRAY}${ICON_LIST} Would remove: ${alias}${NC}"
+                [[ -f "$alias" ]] && echo -e "  ${GRAY}${ICON_LIST} 将删除：${alias}${NC}"
             done
         fi
-        [[ -d "$HOME/.cache/mole" ]] && echo -e "  ${GRAY}${ICON_LIST} Would remove: $HOME/.cache/mole${NC}"
+        [[ -d "$HOME/.cache/mole" ]] && echo -e "  ${GRAY}${ICON_LIST} 将删除：$HOME/.cache/mole${NC}"
         if [[ -d "$remove_config_dir" ]]; then
             if [[ "$remove_config_dir" == "${HOME%/}/.config/mole" ]]; then
-                echo -e "  ${GRAY}${ICON_LIST} Would move to Trash: $remove_config_dir${NC}"
+                echo -e "  ${GRAY}${ICON_LIST} 将移到废纸篓：$remove_config_dir${NC}"
             else
-                echo "  ${ICON_LIST} $remove_config_dir (kept for manual review)"
+                echo "  ${ICON_LIST} ${remove_config_dir}（保留供手动检查）"
             fi
         fi
-        [[ -d "$HOME/Library/Logs/mole" ]] && echo -e "  ${GRAY}${ICON_LIST} Would remove: $HOME/Library/Logs/mole${NC}"
+        [[ -d "$HOME/Library/Logs/mole" ]] && echo -e "  ${GRAY}${ICON_LIST} 将删除：$HOME/Library/Logs/mole${NC}"
 
-        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} Dry run complete, no changes made"
+        printf '\n%s\n\n' "${GREEN}${ICON_SUCCESS}${NC} 预览完成，未做任何更改"
         exit 0
     fi
 
-    echo -e "${YELLOW}Remove Mole${NC}, will delete the following:"
+    echo -e "${YELLOW}移除 Mole${NC}，将删除以下内容："
     if [[ "$is_homebrew" == "true" ]]; then
-        echo "  ${ICON_LIST} Mole via Homebrew"
+        echo "  ${ICON_LIST} 通过 Homebrew 安装的 Mole"
     fi
     for install in ${manual_installs[@]+"${manual_installs[@]}"} ${alias_installs[@]+"${alias_installs[@]}"}; do
         echo "  ${ICON_LIST} $install"
     done
     if [[ "$remove_config_dir" == "${HOME%/}/.config/mole" ]]; then
-        echo "  ${ICON_LIST} ~/.config/mole (to Trash)"
+        echo "  ${ICON_LIST} ~/.config/mole（移至废纸篓）"
     elif [[ -d "$remove_config_dir" ]]; then
-        echo "  ${ICON_LIST} $remove_config_dir (kept for manual review)"
+        echo "  ${ICON_LIST} ${remove_config_dir}（保留供手动检查）"
     fi
     echo "  ${ICON_LIST} ~/.cache/mole"
     echo "  ${ICON_LIST} ~/Library/Logs/mole"
-    echo -ne "${PURPLE}${ICON_ARROW}${NC} Press ${GREEN}Enter${NC} to confirm, ${GRAY}ESC${NC} to cancel: "
+    echo -ne "${PURPLE}${ICON_ARROW}${NC} 按 ${GREEN}回车${NC} 确认，${GRAY}ESC${NC} 取消: "
 
     IFS= read -r -s -n1 key || key=""
     drain_pending_input # Clean up any escape sequence remnants
@@ -209,21 +209,21 @@ remove_mole() {
     local has_error=false
     if [[ "$is_homebrew" == "true" ]]; then
         if [[ -z "$brew_cmd" ]]; then
-            log_error "Homebrew command not found. Please ensure Homebrew is installed and in your PATH."
-            log_warning "Manual step: brew uninstall --force mole"
+            log_error "未找到 Homebrew 命令。请确保已安装 Homebrew 且位于 PATH 中。"
+            log_warning "手动步骤：brew uninstall --force mole"
             exit 1
         fi
 
-        log_info "Attempting to uninstall Mole via Homebrew..."
+        log_info "正在尝试通过 Homebrew 卸载 Mole…"
         local brew_uninstall_output
         if ! brew_uninstall_output=$("$brew_cmd" uninstall --force mole 2>&1); then
             has_error=true
-            log_error "Homebrew uninstallation failed:"
+            log_error "通过 Homebrew 卸载失败："
             printf "%s\n" "$brew_uninstall_output" | sed "s/^/${RED}  | ${NC}/" >&2
-            log_warning "Manual step: ${YELLOW}brew uninstall --force mole${NC}"
+            log_warning "手动步骤：${YELLOW}brew uninstall --force mole${NC}"
             echo "" # Add a blank line for readability
         else
-            log_success "Mole uninstalled via Homebrew."
+            log_success "已通过 Homebrew 卸载 Mole。"
         fi
     fi
     if [[ ${manual_count:-0} -gt 0 ]]; then
@@ -277,7 +277,7 @@ remove_mole() {
         if ! mkdir -p "$HOME/.Trash" 2> /dev/null ||
             ! mv -f "$remove_config_dir" "$config_trash" 2> /dev/null; then
             has_error=true
-            log_warning "Could not move $remove_config_dir to Trash; left in place"
+            log_warning "无法将 $remove_config_dir 移到废纸篓；已保留原处"
         fi
     fi
     if [[ -d "$HOME/Library/Logs/mole" ]]; then
@@ -286,9 +286,9 @@ remove_mole() {
 
     local final_message
     if [[ "$has_error" == "true" ]]; then
-        final_message="${YELLOW}${ICON_ERROR} Mole uninstalled with some errors, thank you for using Mole!${NC}"
+        final_message="${YELLOW}${ICON_ERROR} Mole 卸载过程中出现一些错误，感谢使用 Mole！${NC}"
     else
-        final_message="${GREEN}${ICON_SUCCESS} Mole uninstalled successfully, thank you for using Mole!${NC}"
+        final_message="${GREEN}${ICON_SUCCESS} Mole 已成功卸载，感谢使用 Mole！${NC}"
     fi
     printf '\n%s\n\n' "$final_message"
 

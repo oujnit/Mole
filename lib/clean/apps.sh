@@ -15,7 +15,7 @@ clean_ds_store_tree() {
     local spinner_active="false"
     if [[ -t 1 ]]; then
         MOLE_SPINNER_PREFIX="  "
-        start_inline_spinner "Cleaning Finder metadata..."
+        start_inline_spinner "正在清理 Finder 元数据..."
         spinner_active="true"
     fi
     local -a exclude_paths=(
@@ -95,11 +95,11 @@ clean_ds_store_tree() {
         size_human=$(bytes_to_human "$total_bytes")
         local size_kb=$(((total_bytes + 1023) / 1024))
         if [[ "$DRY_RUN" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $label${NC} · ${YELLOW}$file_count files, $size_human dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $label${NC} · ${YELLOW}$file_count 个文件，$size_human 预览${NC}"
         else
             local line_color
             line_color=$(cleanup_result_color_kb "$size_kb")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $label${NC} · ${line_color}$file_count files, $size_human${NC}"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $label${NC} · ${line_color}$file_count 个文件，$size_human${NC}"
         fi
         files_cleaned=$((files_cleaned + file_count))
         total_size_cleaned=$((total_size_cleaned + size_kb))
@@ -643,11 +643,11 @@ orphan_cleanup_candidate_still_eligible() {
 clean_orphaned_app_data() {
     if ! ls "$HOME/Library/Caches" > /dev/null 2>&1; then
         stop_section_spinner
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Skipped: No permission to access Library folders"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 已跳过：无法访问资源库文件夹的权限"
         note_activity
         return 0
     fi
-    start_section_spinner "Scanning installed apps..."
+    start_section_spinner "正在扫描已安装的应用..."
     local installed_bundles=""
     local scan_status=0
     # Explicit if-not capture keeps the graceful skip below reachable even for
@@ -665,10 +665,10 @@ clean_orphaned_app_data() {
         stop_section_spinner
         local scan_detail="${MOLE_APP_SCAN_FAILURE_DETAIL:-}"
         if [[ -n "$scan_detail" ]]; then
-            printf '  %b Skipped: Unable to scan installed applications (%s)\n' \
+            printf '  %b 已跳过：无法扫描已安装的应用（%s）\n' \
                 "${GRAY}${ICON_WARNING}${NC}" "$scan_detail"
         else
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Skipped: Unable to scan installed applications"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} 已跳过：无法扫描已安装的应用"
         fi
         note_activity
         return 0
@@ -678,7 +678,7 @@ clean_orphaned_app_data() {
     debug_log "Found $app_count active/installed apps"
     local orphaned_count=0
     local total_orphaned_kb=0
-    start_section_spinner "Scanning orphaned app resources..."
+    start_section_spinner "正在扫描残留的应用资源..."
 
     # Dynamically discover Claude VM bundles (path may vary across versions).
     local claude_support_dir="$HOME/Library/Application Support/Claude"
@@ -745,7 +745,7 @@ clean_orphaned_app_data() {
                         local claude_clean_rc=0
                         safe_clean_guarded orphan_cleanup_candidate_still_eligible \
                             "$claude_vm_bundle" \
-                            "Orphaned Claude workspace VM" || claude_clean_rc=$?
+                            "残留的 Claude 工作区 VM" || claude_clean_rc=$?
                         if [[ $claude_clean_rc -eq 124 || $claude_clean_rc -ge 128 ]]; then
                             claude_result_rc=$claude_clean_rc
                             break
@@ -769,9 +769,9 @@ clean_orphaned_app_data() {
     # CRITICAL: NEVER add Application Scripts/ (could break Shortcuts/Automator workflows).
     # CRITICAL: NEVER add Group Containers/ (TeamID.BundleID names cause false-positive orphan checks).
     local -a resource_types=(
-        "$HOME/Library/Caches|Caches|com.*:org.*:net.*:io.*"
-        "$HOME/Library/Logs|Logs|com.*:org.*:net.*:io.*"
-        "$HOME/Library/Saved Application State|States|*.savedState"
+        "$HOME/Library/Caches|缓存|com.*:org.*:net.*:io.*"
+        "$HOME/Library/Logs|日志|com.*:org.*:net.*:io.*"
+        "$HOME/Library/Saved Application State|状态|*.savedState"
     )
     for resource_type in "${resource_types[@]}"; do
         IFS='|' read -r base_path label patterns <<< "$resource_type"
@@ -856,7 +856,7 @@ clean_orphaned_app_data() {
                         local _ORPHAN_CLEANUP_KIND="bundle"
                         local clean_rc=0
                         safe_clean_guarded orphan_cleanup_candidate_still_eligible \
-                            "$match" "Orphaned $label: $bundle_id" || clean_rc=$?
+                            "$match" "残留的 ${label}：$bundle_id" || clean_rc=$?
                         if [[ $clean_rc -eq 124 || $clean_rc -ge 128 ]]; then
                             rm -f -- "$installed_bundles" 2> /dev/null || true # SAFE: exact tracked temp file created above
                             return "$clean_rc"
@@ -875,9 +875,9 @@ clean_orphaned_app_data() {
     if [[ $orphaned_count -gt 0 ]]; then
         local orphaned_mb=$(echo "$total_orphaned_kb" | awk '{printf "%.1f", $1/1024}')
         if [[ "${DRY_RUN:-false}" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Would clean $orphaned_count items, about ${orphaned_mb}MB"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} 将清理 $orphaned_count 个项目，约 ${orphaned_mb}MB"
         else
-            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Cleaned $orphaned_count items, about ${orphaned_mb}MB"
+            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} 已清理 $orphaned_count 个项目，约 ${orphaned_mb}MB"
         fi
         note_activity
     fi
@@ -938,7 +938,7 @@ clean_orphaned_system_services() {
             -n true < /dev/null 2> /dev/null || service_auth_rc=$?
     fi
     if [[ $service_auth_rc -eq 124 ]]; then
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}authorization check timed out, skipped cleanup${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}授权检查超时，已跳过清理${NC}"
         note_activity
         return 0
     elif [[ $service_auth_rc -ge 128 ]]; then
@@ -946,7 +946,7 @@ clean_orphaned_system_services() {
     fi
     [[ $service_auth_rc -eq 0 ]] || return 0
 
-    start_section_spinner "Scanning orphaned system services..."
+    start_section_spinner "正在扫描残留的系统服务..."
 
     local orphaned_count=0
     local -a orphaned_files=()
@@ -1676,7 +1676,7 @@ clean_orphaned_system_services() {
         if [[ $service_scan_status -ge 128 ]]; then
             return "$service_scan_status"
         fi
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}scan incomplete, skipped cleanup${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}扫描不完整，已跳过清理${NC}"
         note_activity
         return 0
     fi
@@ -1740,7 +1740,7 @@ clean_orphaned_system_services() {
             local eligibility_rc=0
             _orphan_service_candidate_still_eligible "$orphan_file" "$expected_identity" || eligibility_rc=$?
             if [[ $eligibility_rc -eq 124 ]]; then
-                echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}time limit reached, stopped cleanup${NC}"
+                echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}达到时间限制，已停止清理${NC}"
                 debug_log "Orphaned services stopped by deadline at stage: eligibility recheck"
                 note_activity
                 return 0
@@ -1772,7 +1772,7 @@ clean_orphaned_system_services() {
                         -n du -skP "$orphan_file" < /dev/null 2> /dev/null | awk '{print $1}') || orphan_size_rc=$?
                 fi
                 if [[ $orphan_size_rc -eq 124 ]]; then
-                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}time limit reached, stopped cleanup${NC}"
+                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}达到时间限制，已停止清理${NC}"
                     debug_log "Orphaned services stopped by deadline at stage: dry-run sizing"
                     note_activity
                     return 0
@@ -1798,7 +1798,7 @@ clean_orphaned_system_services() {
                         -n du -skP "$orphan_file" < /dev/null 2> /dev/null | awk '{print $1}') || file_size_rc=$?
                 fi
                 if [[ $file_size_rc -eq 124 ]]; then
-                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}time limit reached, stopped cleanup${NC}"
+                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}达到时间限制，已停止清理${NC}"
                     debug_log "Orphaned services stopped by deadline at stage: plist removal"
                     note_activity
                     return 0
@@ -1818,7 +1818,7 @@ clean_orphaned_system_services() {
                 _orphan_service_candidate_still_eligible "$orphan_file" \
                     "$expected_identity" || final_eligibility_rc=$?
                 if [[ $final_eligibility_rc -eq 124 ]]; then
-                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}time limit reached, stopped cleanup${NC}"
+                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}达到时间限制，已停止清理${NC}"
                     debug_log "Orphaned services stopped by deadline at stage: helper binary removal"
                     note_activity
                     return 0
@@ -1839,7 +1839,7 @@ clean_orphaned_system_services() {
                     debug_log "Skipping protected orphaned service: $orphan_file"
                     skipped_protected_count=$((skipped_protected_count + 1))
                 elif [[ $remove_rc -eq 124 ]]; then
-                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} Orphaned system services · ${GRAY}removal timed out, stopped cleanup${NC}"
+                    echo -e "  ${YELLOW}${ICON_WARNING}${NC} 残留的系统服务 · ${GRAY}移除超时，已停止清理${NC}"
                     note_activity
                     return 0
                 elif [[ $remove_rc -ge 128 ]]; then
@@ -1852,12 +1852,12 @@ clean_orphaned_system_services() {
         done
 
         if [[ "${DRY_RUN:-false}" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Orphaned services · ${YELLOW}${orphaned_count} found dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} 残留的服务 · ${YELLOW}发现 ${orphaned_count} 个（预览）${NC}"
             note_activity
         elif [[ $removed_count -gt 0 ]]; then
             local orphaned_kb_display
             orphaned_kb_display=$(bytes_to_human "$((removed_kb * 1024))")
-            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Orphaned services · cleaned ${removed_count}, ${orphaned_kb_display}"
+            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} 残留的服务 · 已清理 ${removed_count} 个，${orphaned_kb_display}"
             note_activity
         fi
         # Surface protected/failed counts in BOTH dry-run and real-clean so the
@@ -1868,12 +1868,12 @@ clean_orphaned_system_services() {
         if [[ $skipped_protected_count -gt 0 || $failed_count -gt 0 ]]; then
             local issue_note=""
             if [[ $skipped_protected_count -gt 0 ]]; then
-                issue_note="skipped ${skipped_protected_count} protected"
+                issue_note="已跳过 ${skipped_protected_count} 个受保护"
             fi
             if [[ $failed_count -gt 0 ]]; then
-                issue_note+="${issue_note:+, }${failed_count} failed"
+                issue_note+="${issue_note:+，}${failed_count} 个失败"
             fi
-            echo -e "  ${GRAY}${ICON_WARNING}${NC} Orphaned services · ${issue_note}"
+            echo -e "  ${GRAY}${ICON_WARNING}${NC} 残留的服务 · ${issue_note}"
             note_activity
         fi
     fi
@@ -1969,7 +1969,7 @@ clean_orphaned_container_stubs() {
     # Keep the section spinner alive: the mdfind probes below can take
     # seconds, and without a spinner the section looks hung after the
     # previous step's output (per-step loading feedback).
-    start_section_spinner "Scanning orphaned containers..."
+    start_section_spinner "正在扫描残留的容器..."
 
     # Format: "bundle_id_glob:app_path_to_check"
     # The app_path_to_check is the canonical .app location; the stub is removed
@@ -2085,16 +2085,16 @@ clean_orphaned_container_stubs() {
     stop_section_spinner
     if [[ $removed_count -gt 0 ]]; then
         if [[ "$DRY_RUN" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Orphaned app container stubs, ${YELLOW}${removed_count} stubs dry${NC}"
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} 残留的应用容器占位，${YELLOW}${removed_count} 个占位（预览）${NC}"
         else
-            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Orphaned app container stubs, ${GREEN}${removed_count} removed${NC}"
+            echo -e "  ${GREEN}${ICON_SUCCESS}${NC} 残留的应用容器占位，${GREEN}已移除 ${removed_count} 个${NC}"
             note_activity
         fi
         files_cleaned=$((files_cleaned + removed_count))
         total_items=$((total_items + 1))
     fi
     if [[ $failed_count -gt 0 ]]; then
-        echo -e "  ${GRAY}${ICON_WARNING}${NC} Orphaned container stubs: $failed_count could not be removed"
+        echo -e "  ${GRAY}${ICON_WARNING}${NC} 残留的容器占位：$failed_count 个无法移除"
         # Keep the warning visible past the idle-section erase.
         note_activity
     fi

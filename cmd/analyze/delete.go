@@ -135,7 +135,7 @@ func moveToTrash(path string) error {
 
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		return fmt.Errorf("failed to resolve path: %w", err)
+		return fmt.Errorf("无法解析路径：%w", err)
 	}
 
 	// Validate resolved path as well (defense-in-depth).
@@ -167,9 +167,9 @@ func moveToTrashViaBinary(absPath string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			return fmt.Errorf("timeout moving to Trash")
+			return fmt.Errorf("移入废纸篓超时")
 		}
-		return fmt.Errorf("failed to move to Trash: %s", strings.TrimSpace(string(output)))
+		return fmt.Errorf("移入废纸篓失败：%s", strings.TrimSpace(string(output)))
 	}
 
 	return nil
@@ -186,7 +186,7 @@ func moveToTrashViaFilesystem(absPath string) error {
 
 	base := filepath.Base(absPath)
 	if base == "." || base == string(filepath.Separator) || base == "" {
-		return fmt.Errorf("invalid Trash item name")
+		return fmt.Errorf("无效的废纸篓项目名称")
 	}
 
 	stamp := time.Now().UnixNano()
@@ -201,25 +201,25 @@ func moveToTrashViaFilesystem(absPath string) error {
 			return nil
 		}
 		if err != syscall.EEXIST {
-			return fmt.Errorf("failed to move to Trash: %w", err)
+			return fmt.Errorf("移入废纸篓失败：%w", err)
 		}
 	}
 
-	return fmt.Errorf("failed to choose unique Trash destination for %s", absPath)
+	return fmt.Errorf("无法为 %s 选择唯一的废纸篓目标", absPath)
 }
 
 func trashDirectoryForPath(absPath string) (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("failed to resolve home directory: %w", err)
+		return "", fmt.Errorf("无法解析主目录：%w", err)
 	}
 
 	var pathFS, homeFS unix.Statfs_t
 	if err := unix.Statfs(absPath, &pathFS); err != nil {
-		return "", fmt.Errorf("failed to inspect target volume: %w", err)
+		return "", fmt.Errorf("无法检查目标卷：%w", err)
 	}
 	if err := unix.Statfs(home, &homeFS); err != nil {
-		return "", fmt.Errorf("failed to inspect home volume: %w", err)
+		return "", fmt.Errorf("无法检查主目录所在卷：%w", err)
 	}
 
 	if pathFS.Fsid == homeFS.Fsid {
@@ -232,15 +232,15 @@ func trashDirectoryForPath(absPath string) (string, error) {
 
 	mountPoint := strings.TrimRight(string(pathFS.Mntonname[:]), "\x00")
 	if mountPoint == "" {
-		return "", fmt.Errorf("target volume has no mount point")
+		return "", fmt.Errorf("目标卷没有挂载点")
 	}
 	trashRoot := filepath.Join(mountPoint, ".Trashes")
 	rootInfo, err := os.Lstat(trashRoot)
 	if err != nil {
-		return "", fmt.Errorf("volume Trash is unavailable: %w", err)
+		return "", fmt.Errorf("卷废纸篓不可用：%w", err)
 	}
 	if rootInfo.Mode()&os.ModeSymlink != 0 || !rootInfo.IsDir() {
-		return "", fmt.Errorf("volume Trash is not a normal directory")
+		return "", fmt.Errorf("卷废纸篓不是普通目录")
 	}
 
 	trashDir := filepath.Join(trashRoot, fmt.Sprintf("%d", os.Getuid()))
@@ -254,23 +254,23 @@ func ensureOwnedTrashDirectory(path string, create bool) error {
 	info, err := os.Lstat(path)
 	if os.IsNotExist(err) && create {
 		if err := os.Mkdir(path, 0o700); err != nil {
-			return fmt.Errorf("failed to create Trash directory: %w", err)
+			return fmt.Errorf("无法创建废纸篓目录：%w", err)
 		}
 		info, err = os.Lstat(path)
 	}
 	if err != nil {
-		return fmt.Errorf("failed to inspect Trash directory: %w", err)
+		return fmt.Errorf("无法检查废纸篓目录：%w", err)
 	}
 	if info.Mode()&os.ModeSymlink != 0 || !info.IsDir() {
-		return fmt.Errorf("trash path is not a normal directory")
+		return fmt.Errorf("废纸篓路径不是普通目录")
 	}
 
 	stat, ok := info.Sys().(*syscall.Stat_t)
 	if !ok || stat.Uid != uint32(os.Getuid()) {
-		return fmt.Errorf("trash directory is not owned by the current user")
+		return fmt.Errorf("废纸篓目录不属于当前用户")
 	}
 	if info.Mode().Perm()&0o022 != 0 {
-		return fmt.Errorf("trash directory is writable by another user")
+		return fmt.Errorf("废纸篓目录可被其他用户写入")
 	}
 	return nil
 }
@@ -290,9 +290,9 @@ func moveToTrashViaFinder(absPath string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if ctx.Err() == context.DeadlineExceeded {
-			return fmt.Errorf("timeout moving to Trash")
+			return fmt.Errorf("移入废纸篓超时")
 		}
-		return fmt.Errorf("failed to move to Trash: %s", strings.TrimSpace(string(output)))
+		return fmt.Errorf("移入废纸篓失败：%s", strings.TrimSpace(string(output)))
 	}
 
 	return nil
@@ -551,13 +551,13 @@ func isEndpointSecurityCachePath(path string) bool {
 // Returns error if path is empty, relative, contains null bytes, or has traversal.
 func validatePath(path string) error {
 	if path == "" {
-		return fmt.Errorf("path is empty")
+		return fmt.Errorf("路径为空")
 	}
 	if !filepath.IsAbs(path) {
-		return fmt.Errorf("path must be absolute: %s", path)
+		return fmt.Errorf("路径必须是绝对路径：%s", path)
 	}
 	if strings.Contains(path, "\x00") {
-		return fmt.Errorf("path contains null bytes")
+		return fmt.Errorf("路径包含空字节")
 	}
 	// Check for path traversal attempts (.. components).
 	if slices.Contains(strings.Split(path, string(filepath.Separator)), "..") {

@@ -249,7 +249,7 @@ probe_project_artifact_hints() {
         [[ -d "$root" ]] || continue
         # In-place spinner text swap per root: a multi-second walk with a
         # static label reads as a hang, a moving path reads as progress.
-        start_section_spinner "Scanning projects · ${root/#$HOME/~}"
+        start_section_spinner "正在扫描项目 · ${root/#$HOME/~}"
         local root_projects_scanned=0
 
         if is_quick_purge_project_root "$root"; then
@@ -399,14 +399,14 @@ show_project_artifact_hint_notice() {
     # The probe walks up to 200 project roots and du-samples candidates under
     # a 15s budget; without a loading state the section title just sits there
     # and the result row pops out of nowhere.
-    start_section_spinner "Scanning project artifacts..."
+    start_section_spinner "正在扫描项目构建产物…"
     probe_project_artifact_hints
     stop_section_spinner
 
     if [[ "$PROJECT_ARTIFACT_HINT_DETECTED" != "true" ]]; then
         if [[ "${PROJECT_ARTIFACT_HINT_SCAN_SKIPPED:-false}" == "true" ]]; then
             note_activity
-            echo -e "  ${YELLOW}${ICON_WARNING}${NC} Build artifacts · scan skipped · ${GRAY}mo purge${NC}"
+            echo -e "  ${YELLOW}${ICON_WARNING}${NC} 构建产物 · 扫描已跳过 · ${GRAY}mo purge${NC}"
         fi
         return 0
     fi
@@ -440,7 +440,7 @@ show_project_artifact_hint_notice() {
     fi
 
     # One compact row: "Build artifacts · 15+ dirs, 985.6MB+ · mo purge".
-    local detail="${hint_count_label} dirs"
+    local detail="${hint_count_label} 个目录"
     if [[ $PROJECT_ARTIFACT_HINT_ESTIMATE_SAMPLES -gt 0 ]]; then
         local estimate_human
         estimate_human=$(bytes_to_human "$((PROJECT_ARTIFACT_HINT_ESTIMATED_KB * 1024))")
@@ -459,11 +459,11 @@ show_project_artifact_hint_notice() {
 
     local partial_note=""
     if [[ "${PROJECT_ARTIFACT_HINT_SCAN_SKIPPED:-false}" == "true" ]]; then
-        partial_note=" ${GRAY}(partial scan)${NC}"
+        partial_note=" ${GRAY}（部分扫描）${NC}"
     fi
 
     note_activity
-    echo -e "  ${YELLOW}${ICON_REVIEW}${NC} Build artifacts · ${GREEN}${detail}${NC} · ${GRAY}${review_command}${NC}${partial_note}"
+    echo -e "  ${YELLOW}${ICON_REVIEW}${NC} 构建产物 · ${GREEN}${detail}${NC} · ${GRAY}${review_command}${NC}${partial_note}"
 }
 
 # shellcheck disable=SC2329
@@ -478,7 +478,7 @@ show_user_launch_agent_hint_notice() {
     local plist
 
     # Per-plist target probes add up; keep loading feedback on screen.
-    start_section_spinner "Checking login items..."
+    start_section_spinner "正在检查登录项…"
 
     while IFS= read -r -d '' plist; do
         local filename
@@ -501,16 +501,16 @@ show_user_launch_agent_hint_notice() {
             continue
         elif [[ -n "$program" ]] && hint_is_app_scoped_launch_target "$program"; then
             if [[ ! -e "$program" ]]; then
-                reason="Missing app/helper target"
+                reason="应用/助手目标缺失"
                 target="${program/#$HOME/~}"
             elif [[ ! -f "$program" || ! -x "$program" ]]; then
-                reason="Program target is not executable"
+                reason="程序目标不可执行"
                 target="${program/#$HOME/~}"
             fi
         else
             associated=$(hint_extract_launch_agent_associated_bundle "$plist")
             if [[ -n "$associated" ]] && ! hint_launch_agent_bundle_exists "$associated"; then
-                reason="Associated app not found"
+                reason="关联应用未找到"
                 target="$associated"
             fi
         fi
@@ -532,6 +532,6 @@ show_user_launch_agent_hint_notice() {
 
     local i
     for i in "${!sources[@]}"; do
-        echo -e "  ${YELLOW}${ICON_WARNING}${NC} Stale login item · ${sources[$i]} · ${GRAY}${reasons[$i]}: ${targets[$i]} · review before removing${NC}"
+        echo -e "  ${YELLOW}${ICON_WARNING}${NC} 过期的登录项 · ${sources[$i]} · ${GRAY}${reasons[$i]}: ${targets[$i]} · 移除前请复核${NC}"
     done
 }

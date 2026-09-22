@@ -410,13 +410,13 @@ func TestRenderProcessAlertBar(t *testing.T) {
 	}
 
 	bar := renderProcessAlertBar(alerts, &stale, nil, 120)
-	if !strings.Contains(bar, "ALERT") {
+	if !strings.Contains(bar, "告警") {
 		t.Fatalf("missing alert prefix: %q", bar)
 	}
 	if !strings.Contains(bar, "node (10)") {
 		t.Fatalf("missing lead process label: %q", bar)
 	}
-	if !strings.Contains(bar, "+1 more") {
+	if !strings.Contains(bar, "+1 更多") {
 		t.Fatalf("missing additional alert count: %q", bar)
 	}
 	if strings.Contains(bar, "terminate") || strings.Contains(bar, "ignore") {
@@ -432,25 +432,25 @@ func TestRenderProcessAlertBarMarksStaleSamplesBeforeTruncation(t *testing.T) {
 	}}
 
 	narrowBar := stripANSI(renderProcessAlertBar(alerts, &stale, &collectedAt, 10))
-	if !strings.HasPrefix(strings.TrimSpace(narrowBar), "OLD") {
+	if !strings.HasPrefix(strings.TrimSpace(narrowBar), "上次告警") {
 		t.Fatalf("historical alert marker should survive narrow rendering, got %q", narrowBar)
 	}
 	if strings.Contains(narrowBar, "2026") {
 		t.Fatalf("narrow rendering should not show a partial timestamp, got %q", narrowBar)
 	}
 	wideBar := stripANSI(renderProcessAlertBar(alerts, &stale, &collectedAt, 120))
-	if !strings.HasPrefix(strings.TrimSpace(wideBar), "LAST ALERT · STALE 2026-08-30T09:07:00+08:00") {
+	if !strings.HasPrefix(strings.TrimSpace(wideBar), "上次告警 · 已过期 2026-08-30T09:07:00+08:00") {
 		t.Fatalf("stale process alert should include unambiguous age and historical semantics, got %q", wideBar)
 	}
-	if strings.Contains(wideBar, "· ALERT ") {
+	if strings.Contains(wideBar, "· 告警 ") {
 		t.Fatalf("stale process alert should not present itself as current, got %q", wideBar)
 	}
 	unboundedBar := stripANSI(renderProcessAlertBar(alerts, &stale, &collectedAt, 0))
-	if !strings.HasPrefix(strings.TrimSpace(unboundedBar), "LAST ALERT · STALE 2026-08-30T09:07:00+08:00") {
+	if !strings.HasPrefix(strings.TrimSpace(unboundedBar), "上次告警 · 已过期 2026-08-30T09:07:00+08:00") {
 		t.Fatalf("unbounded rendering should preserve the full historical marker, got %q", unboundedBar)
 	}
 	boundaryBar := stripANSI(renderProcessAlertBar(alerts, &stale, &collectedAt, 28))
-	if !strings.HasPrefix(strings.TrimSpace(boundaryBar), "LAST ALERT · STALE") || strings.Contains(boundaryBar, "2026") {
+	if !strings.HasPrefix(strings.TrimSpace(boundaryBar), "上次告警 · 已过期") || strings.Contains(boundaryBar, "2026") {
 		t.Fatalf("partial RFC3339 timestamp should collapse atomically, got %q", boundaryBar)
 	}
 }
@@ -461,7 +461,7 @@ func TestRenderProcessAlertBarMarksUnknownFreshnessAsLastKnown(t *testing.T) {
 	}}
 
 	bar := stripANSI(renderProcessAlertBar(alerts, nil, nil, 80))
-	if !strings.HasPrefix(strings.TrimSpace(bar), "LAST ALERT · UNKNOWN") {
+	if !strings.HasPrefix(strings.TrimSpace(bar), "上次告警 · 未知") {
 		t.Fatalf("unknown-freshness process alert should be last-known, got %q", bar)
 	}
 }

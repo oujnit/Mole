@@ -670,7 +670,7 @@ EOF
 
     [ "$status" -eq 0 ]
     [[ -d "$victim" ]] || return 1
-    [[ "$output" == *"App Management, App Data, or Full Disk Access"* ]] || return 1
+    [[ "$output" == *"完全磁盘访问"* ]] || return 1
     [[ "$output" != *"Touch ID"* ]] || return 1
     [[ "$output" == *"RC=14"* ]] || return 1
     [[ ! -s "$trace" ]] || return 1
@@ -743,7 +743,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ -d "$victim" ]] || return 1
     [[ ! -s "$trace" ]] || return 1
-    [[ "$output" == *"refusing permanent delete"* ]]
+    [[ "$output" == *"已拒绝永久删除"* ]]
 }
 
 @test "privacy denial diagnosis recommends terminal privacy access, not Touch ID" {
@@ -753,8 +753,8 @@ diagnose_removal_failure "\$MOLE_ERR_PRIVACY_DENIED" "Microsoft Word"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"macOS could not authorize Trash access"* ]] || return 1
-    [[ "$output" == *"App Management, App Data, or Full Disk Access"* ]] || return 1
+    [[ "$output" == *"macOS 无法授权访问废纸篓"* ]] || return 1
+    [[ "$output" == *"完全磁盘访问"* ]] || return 1
     [[ "$output" != *"touchid"* ]] || return 1
     [[ "$output" != *"Touch ID"* ]]
 }
@@ -766,9 +766,9 @@ diagnose_removal_failure "\$MOLE_ERR_MUTABLE_PARENT" "Microsoft Word"
 EOF
 
     [ "$status" -eq 0 ] || { echo "$output"; return 1; }
-    [[ "$output" == *"cannot safely use elevated deletion"* ]] || return 1
-    [[ "$output" == *"Move the app to Trash in Finder"* ]] || return 1
-    [[ "$output" == *"protected containers and app data untouched"* ]] || return 1
+    [[ "$output" == *"无法在用户可写父目录下安全使用提权删除"* ]] || return 1
+    [[ "$output" == *"请在 Finder 中将应用移到废纸篓"* ]] || return 1
+    [[ "$output" == *"保留受保护的容器与应用数据"* ]] || return 1
     [[ "$output" != *"mo clean"* ]] || return 1
 }
 
@@ -808,8 +808,8 @@ printf 'checks=%s\n' "\$touchid_checks"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"authentication failed|Check your credentials or restart Terminal"* ]] || return 1
-    [[ "$output" == *"permission denied|Try running again or check file ownership"* ]] || return 1
+    [[ "$output" == *"身份验证失败|请检查凭据或重新启动终端"* ]] || return 1
+    [[ "$output" == *"权限被拒绝|请重试或检查文件所有权"* ]] || return 1
     [[ "$output" == *"checks=2"* ]] || return 1
     [[ "$output" != *"detector noise"* ]] || return 1
     [[ "$output" != *"mole touchid"* ]]
@@ -820,9 +820,9 @@ EOF
 $(prelude)
 [[ "\$(type -t check_touchid_support)" == "function" ]] || exit 1
 if check_touchid_support; then
-    expected="authentication failed|Check your credentials or restart Terminal"
+    expected="身份验证失败|请检查凭据或重新启动终端"
 else
-    expected="authentication failed|Try 'mole touchid' to enable fingerprint auth"
+    expected="身份验证失败|请尝试运行 'mole touchid' 启用指纹验证"
 fi
 actual=\$(diagnose_removal_failure "\$MOLE_ERR_AUTH_FAILED" "Microsoft Word")
 [[ "\$actual" == "\$expected" ]] || exit 1
@@ -844,8 +844,8 @@ diagnose_removal_failure "1" "Microsoft Word"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"authentication failed|Try 'mole touchid' to enable fingerprint auth"* ]] || return 1
-    [[ "$output" == *"permission denied|Try 'mole touchid' or check with 'ls -l'"* ]]
+    [[ "$output" == *"身份验证失败|请尝试运行 'mole touchid' 启用指纹验证"* ]] || return 1
+    [[ "$output" == *"权限被拒绝|请尝试运行 'mole touchid'，或使用 'ls -l' 检查"* ]]
 }
 
 @test "removal diagnosis ignores a same-named executable when the detector is missing" {
@@ -868,7 +868,7 @@ diagnose_removal_failure "\$MOLE_ERR_AUTH_FAILED" "Microsoft Word"
 EOF
 
     [ "$status" -eq 0 ]
-    [[ "$output" == *"authentication failed|Try 'mole touchid' to enable fingerprint auth"* ]] || return 1
+    [[ "$output" == *"身份验证失败|请尝试运行 'mole touchid' 启用指纹验证"* ]] || return 1
     [[ ! -e "$trace" ]]
 }
 
@@ -975,7 +975,7 @@ EOF
     status_col=$(awk -F'\t' 'END { print $4 }' "$MOLE_DELETE_LOG")
     [ "$mode_col" = "surprise" ]
     [ "$status_col" = "invalid-mode" ]
-    [[ "$output" == *'expected "permanent" or "trash"'* ]]
+    [[ "$output" == *'应为 "permanent" 或 "trash"'* ]]
 }
 
 @test "mole_delete warns once for repeated invalid delete mode" {
@@ -999,7 +999,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ -e "$first" ]] || return 1
     [[ -e "$second" ]] || return 1
-    [[ "$(grep -c 'invalid MOLE_DELETE_MODE' <<< "$output")" -eq 1 ]]
+    [[ "$(grep -c '无效的 MOLE_DELETE_MODE' <<< "$output")" -eq 1 ]]
 }
 
 @test "mole_delete trash failure leaves target in place" {
@@ -1027,7 +1027,7 @@ EOF
     local status_col
     status_col=$(awk -F'\t' 'END { print $4 }' "$MOLE_DELETE_LOG")
     [ "$status_col" = "trash-failed" ]
-    [[ "$output" == *"refusing permanent delete"* ]]
+    [[ "$output" == *"已拒绝永久删除"* ]]
 }
 
 @test "mole_delete warns once for repeated Trash failures" {
@@ -1058,7 +1058,7 @@ EOF
     [ "$status" -eq 0 ]
     [[ -e "$first" ]] || return 1
     [[ -e "$second" ]] || return 1
-    [[ "$(grep -c "Trash unavailable" <<< "$output")" -eq 1 ]]
+    [[ "$(grep -c "废纸篓不可用" <<< "$output")" -eq 1 ]]
 }
 
 @test "mole_delete records 'unknown' (not 0) when size measurement fails" {
@@ -1346,7 +1346,7 @@ EOF
     [ "$status" -eq 0 ]
     # Warning visible exactly once.
     local warn_count
-    warn_count=$(printf '%s\n' "$output" | grep -c "deletions audit log unavailable" || true)
+    warn_count=$(printf '%s\n' "$output" | grep -c "删除审计日志不可用" || true)
     [ "$warn_count" = "1" ]
 }
 

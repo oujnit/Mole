@@ -2,7 +2,7 @@
 # User state and installed tools must never run with inherited root privileges.
 # Individual maintenance operations request administrator access themselves.
 if [[ "$EUID" -eq 0 ]]; then
-    printf '%s\n' 'Run Mole without sudo; it requests administrator access when needed.' >&2
+    printf '%s\n' '请不要使用 sudo 运行 Mole；需要管理员权限时程序会自行请求。' >&2
     exit 1
 fi
 
@@ -37,27 +37,27 @@ emit_fish_completions() {
     done
 
     printf '\n'
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l dry-run -s n -d "Preview cleanup without making changes"\n' "$cmd"
-    printf 'complete -c %s -n "__fish_seen_subcommand_from clean" -l external -r -a "(__fish_complete_directories)" -d "Clean OS metadata from an external volume"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l whitelist -d "Manage protected paths"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l debug -d "Show detailed logs"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l help -s h -d "Show help"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from analyze analyse" -l json -d "Output analysis as JSON"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from analyze analyse" -l help -s h -d "Show help"\n' "$cmd"
-    printf 'complete -c %s -n "__fish_seen_subcommand_from analyze analyse; and not __fish_seen_argument -l json -l help -s h" -a "(__fish_complete_directories)" -d "Path to analyze"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l json -d "Output history as JSON"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l limit -r -d "Limit recent entries"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l help -s h -d "Show help"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l paths -d "Edit custom scan directories"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l dry-run -s n -d "Preview purge actions without making changes"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l include-empty -d "Show zero-size project artifact directories"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l yes -d "Confirm unattended cleanup of eligible artifacts"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l debug -d "Show detailed logs"\n' "$cmd"
-    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l help -s h -d "Show help"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l dry-run -s n -d "预览清理操作而不做任何更改"\n' "$cmd"
+    printf 'complete -c %s -n "__fish_seen_subcommand_from clean" -l external -r -a "(__fish_complete_directories)" -d "清理外置硬盘上的系统元数据"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l whitelist -d "管理受保护路径"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l debug -d "显示详细日志"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from clean" -l help -s h -d "显示帮助"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from analyze analyse" -l json -d "以 JSON 输出分析结果"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from analyze analyse" -l help -s h -d "显示帮助"\n' "$cmd"
+    printf 'complete -c %s -n "__fish_seen_subcommand_from analyze analyse; and not __fish_seen_argument -l json -l help -s h" -a "(__fish_complete_directories)" -d "要分析的路径"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l json -d "以 JSON 输出历史记录"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l limit -r -d "限制最近条目数"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from history" -l help -s h -d "显示帮助"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l paths -d "编辑自定义扫描目录"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l dry-run -s n -d "预览清理操作而不做任何更改"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l include-empty -d "显示零大小的项目产物目录"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l yes -d "确认无人值守清理符合条件的构建产物"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l debug -d "显示详细日志"\n' "$cmd"
+    printf 'complete -f -c %s -n "__fish_seen_subcommand_from purge" -l help -s h -d "显示帮助"\n' "$cmd"
     printf '\n'
-    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a bash -d "generate bash completion" -n "__fish_see_subcommand_path completion"\n' "$cmd"
-    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a zsh -d "generate zsh completion" -n "__fish_see_subcommand_path completion"\n' "$cmd"
-    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a fish -d "generate fish completion" -n "__fish_see_subcommand_path completion"\n' "$cmd"
+    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a bash -d "生成 bash 补全" -n "__fish_see_subcommand_path completion"\n' "$cmd"
+    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a zsh -d "生成 zsh 补全" -n "__fish_see_subcommand_path completion"\n' "$cmd"
+    printf 'complete -f -c %s -n "not __fish_mole_no_subcommand" -a fish -d "生成 fish 补全" -n "__fish_see_subcommand_path completion"\n' "$cmd"
 }
 
 remove_stale_completion_entries() {
@@ -101,7 +101,7 @@ fi
 # Auto-install mode when run without arguments
 if [[ $# -eq 0 ]]; then
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${YELLOW}${ICON_DRY_RUN} DRY RUN MODE${NC}, shell config files will not be modified"
+        echo -e "${YELLOW}${ICON_DRY_RUN} 预览模式${NC}，不会修改 shell 配置文件"
         echo ""
     fi
 
@@ -129,46 +129,46 @@ if [[ $# -eq 0 ]]; then
         if [[ -z "$completion_name" ]]; then
             # Clean up any stale config.fish entries even when mole is not in PATH
             if [[ "${MOLE_DRY_RUN:-0}" != "1" ]]; then
-                remove_stale_completion_entries "$config_fish" "Removed stale completion entries from config.fish" || true
+                remove_stale_completion_entries "$config_fish" "已移除 config.fish 中的过期补全条目" || true
             fi
-            log_error "mole not found in PATH, install Mole before enabling completion"
+            log_error "PATH 中未找到 mole，请先安装 Mole 再启用补全"
             exit 1
         fi
 
         if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-            echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] Would write Fish completions to:${NC}"
+            echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] 将写入 Fish 补全到：${NC}"
             echo "  $mole_file"
             echo "  $mo_file"
             echo ""
-            echo -e "${GREEN}${ICON_SUCCESS}${NC} Dry run complete, no changes made"
+            echo -e "${GREEN}${ICON_SUCCESS}${NC} 预览完成，未做任何更改"
             exit 0
         fi
 
         # Remove stale config.fish source-based entries (previous install method)
-        if remove_stale_completion_entries "$config_fish" "Removed stale source-based entries from config.fish"; then
+        if remove_stale_completion_entries "$config_fish" "已移除 config.fish 中过期的 source 条目"; then
             echo ""
         fi
 
         # Prompt only on first install; silently update if files exist
         if [[ ! -f "$mole_file" ]]; then
             echo ""
-            echo -e "${GRAY}Will write Fish completions to:${NC}"
+            echo -e "${GRAY}将写入 Fish 补全到：${NC}"
             echo "  $mole_file"
             echo "  $mo_file"
             echo ""
-            echo -ne "${PURPLE}${ICON_ARROW}${NC} Enable completion for ${GREEN}fish${NC}? ${GRAY}Enter confirm / Q cancel${NC}: "
+            echo -ne "${PURPLE}${ICON_ARROW}${NC} 为 ${GREEN}fish${NC} 启用补全？${GRAY}回车确认 / Q 取消${NC}： "
             IFS= read -r -s -n1 key || key=""
             drain_pending_input
             echo ""
 
             case "$key" in
                 $'\e' | [Qq] | [Nn])
-                    echo -e "${YELLOW}Cancelled${NC}"
+                    echo -e "${YELLOW}已取消${NC}"
                     exit 0
                     ;;
                 "" | $'\n' | $'\r' | [Yy]) ;;
                 *)
-                    log_error "Invalid key"
+                    log_error "无效按键"
                     exit 1
                     ;;
             esac
@@ -181,7 +181,7 @@ if [[ $# -eq 0 ]]; then
         printf 'source %s\n' "$mole_file" >> "$mo_file"
 
         if [[ -f "$mole_file" ]]; then
-            echo -e "${GREEN}${ICON_SUCCESS}${NC} Fish completions written to $fish_dir"
+            echo -e "${GREEN}${ICON_SUCCESS}${NC} Fish 补全已写入 $fish_dir"
         fi
         echo ""
         exit 0
@@ -200,7 +200,7 @@ if [[ $# -eq 0 ]]; then
             completion_line='if output="$('"$completion_name"' completion zsh 2>/dev/null)"; then eval "$output"; fi'
             ;;
         *)
-            log_error "Unsupported shell: $current_shell"
+            log_error "不支持的 shell：$current_shell"
             echo "  mole completion <bash|zsh|fish>"
             exit 1
             ;;
@@ -209,7 +209,7 @@ if [[ $# -eq 0 ]]; then
     if [[ -z "$completion_name" ]]; then
         if [[ -f "$config_file" ]] && grep -Eq "(^# Mole shell completion$|(mole|mo)[[:space:]]+completion)" "$config_file" 2> /dev/null; then
             if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-                echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] Would remove stale completion entries from $config_file${NC}"
+                echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] 将从 $config_file 移除过期补全条目${NC}"
                 echo ""
             else
                 original_mode=""
@@ -220,18 +220,18 @@ if [[ $# -eq 0 ]]; then
                 if [[ -n "$original_mode" ]]; then
                     chmod "$original_mode" "$config_file" 2> /dev/null || true
                 fi
-                echo -e "${GREEN}${ICON_SUCCESS}${NC} Removed stale completion entries from $config_file"
+                echo -e "${GREEN}${ICON_SUCCESS}${NC} 已从 $config_file 移除过期补全条目"
                 echo ""
             fi
         fi
-        log_error "mole not found in PATH, install Mole before enabling completion"
+        log_error "PATH 中未找到 mole，请先安装 Mole 再启用补全"
         exit 1
     fi
 
     # Check if already installed and normalize to latest line
     if [[ -f "$config_file" ]] && grep -Eq "(mole|mo)[[:space:]]+completion" "$config_file" 2> /dev/null; then
         if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-            echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] Would normalize completion entry in $config_file${NC}"
+            echo -e "${GRAY}${ICON_REVIEW} [DRY RUN] 将规范化 $config_file 中的补全条目${NC}"
             echo ""
             exit 0
         fi
@@ -250,34 +250,34 @@ if [[ $# -eq 0 ]]; then
             echo "$completion_line"
         } >> "$config_file"
         echo ""
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Shell completion updated in $config_file"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} Shell 补全已更新到 $config_file"
         echo ""
         exit 0
     fi
 
     # Prompt user for installation
     echo ""
-    echo -e "${GRAY}Will add to ${config_file}:${NC}"
+    echo -e "${GRAY}将添加到 ${config_file}：${NC}"
     echo "  $completion_line"
     echo ""
     if [[ "${MOLE_DRY_RUN:-0}" == "1" ]]; then
-        echo -e "${GREEN}${ICON_SUCCESS}${NC} Dry run complete, no changes made"
+        echo -e "${GREEN}${ICON_SUCCESS}${NC} 预览完成，未做任何更改"
         exit 0
     fi
 
-    echo -ne "${PURPLE}${ICON_ARROW}${NC} Enable completion for ${GREEN}${current_shell}${NC}? ${GRAY}Enter confirm / Q cancel${NC}: "
+    echo -ne "${PURPLE}${ICON_ARROW}${NC} 为 ${GREEN}${current_shell}${NC} 启用补全？${GRAY}回车确认 / Q 取消${NC}： "
     IFS= read -r -s -n1 key || key=""
     drain_pending_input
     echo ""
 
     case "$key" in
         $'\e' | [Qq] | [Nn])
-            echo -e "${YELLOW}Cancelled${NC}"
+            echo -e "${YELLOW}已取消${NC}"
             exit 0
             ;;
         "" | $'\n' | $'\r' | [Yy]) ;;
         *)
-            log_error "Invalid key"
+            log_error "无效按键"
             exit 1
             ;;
     esac
@@ -307,10 +307,10 @@ if [[ $# -eq 0 ]]; then
         echo "$completion_line"
     } >> "$config_file"
 
-    echo -e "${GREEN}${ICON_SUCCESS}${NC} Completion added to $config_file"
+    echo -e "${GREEN}${ICON_SUCCESS}${NC} 补全已添加到 $config_file"
     echo ""
     echo ""
-    echo -e "${GRAY}To activate now:${NC}"
+    echo -e "${GRAY}立即生效请执行：${NC}"
     echo -e "  ${GREEN}source $config_file${NC}"
     exit 0
 fi
@@ -379,34 +379,34 @@ EOF
         printf "    case \"\$words[2]\" in\n"
         printf '        clean)\n'
         printf '            _arguments \\\n'
-        printf "                '--dry-run[Preview cleanup without making changes]' \\\\\n"
-        printf "                '-n[Preview cleanup without making changes]' \\\\\n"
-        printf "                '--external[Clean OS metadata from an external volume]:path:_files -/' \\\\\n"
-        printf "                '--whitelist[Manage protected paths]' \\\\\n"
-        printf "                '--debug[Show detailed logs]' \\\\\n"
-        printf "                '(-h --help)'{-h,--help}'[Show help]'\n"
+        printf "                '--dry-run[预览清理操作而不做任何更改]' \\\\\n"
+        printf "                '-n[预览清理操作而不做任何更改]' \\\\\n"
+        printf "                '--external[清理外置硬盘上的系统元数据]:path:_files -/' \\\\\n"
+        printf "                '--whitelist[管理受保护路径]' \\\\\n"
+        printf "                '--debug[显示详细日志]' \\\\\n"
+        printf "                '(-h --help)'{-h,--help}'[显示帮助]'\n"
         printf '            ;;\n'
         printf '        analyze|analyse)\n'
         printf '            _arguments \\\n'
-        printf "                '--json[Output analysis as JSON]' \\\\\n"
-        printf "                '(-h --help)'{-h,--help}'[Show help]' \\\\\n"
+        printf "                '--json[以 JSON 输出分析结果]' \\\\\n"
+        printf "                '(-h --help)'{-h,--help}'[显示帮助]' \\\\\n"
         printf "                '*:path:_files'\n"
         printf '            ;;\n'
         printf '        history)\n'
         printf '            _arguments \\\n'
-        printf "                '--json[Output history as JSON]' \\\\\n"
-        printf "                '--limit[Limit recent entries]:limit:' \\\\\n"
-        printf "                '(-h --help)'{-h,--help}'[Show help]'\n"
+        printf "                '--json[以 JSON 输出历史记录]' \\\\\n"
+        printf "                '--limit[限制最近条目数]:limit:' \\\\\n"
+        printf "                '(-h --help)'{-h,--help}'[显示帮助]'\n"
         printf '            ;;\n'
         printf '        purge)\n'
         printf '            _arguments \\\n'
-        printf "                '--paths[Edit custom scan directories]' \\\\\n"
-        printf "                '--dry-run[Preview purge actions without making changes]' \\\\\n"
-        printf "                '-n[Preview purge actions without making changes]' \\\\\n"
-        printf "                '--include-empty[Show zero-size project artifact directories]' \\\\\n"
-        printf "                '--yes[Confirm unattended cleanup of eligible artifacts]' \\\\\n"
-        printf "                '--debug[Show detailed logs]' \\\\\n"
-        printf "                '(-h --help)'{-h,--help}'[Show help]'\n"
+        printf "                '--paths[编辑自定义扫描目录]' \\\\\n"
+        printf "                '--dry-run[预览清理操作而不做任何更改]' \\\\\n"
+        printf "                '-n[预览清理操作而不做任何更改]' \\\\\n"
+        printf "                '--include-empty[显示零大小的项目产物目录]' \\\\\n"
+        printf "                '--yes[确认无人值守清理符合条件的构建产物]' \\\\\n"
+        printf "                '--debug[显示详细日志]' \\\\\n"
+        printf "                '(-h --help)'{-h,--help}'[显示帮助]'\n"
         printf '            ;;\n'
         printf '        completion)\n'
         printf "            _arguments '1:shell:(bash zsh fish)'\n"
@@ -438,30 +438,30 @@ EOF
         ;;
     *)
         cat << 'EOF'
-Usage: mole completion [bash|zsh|fish]
+用法: mole completion [bash|zsh|fish]
 
-Setup shell tab completion for mole and mo commands.
+为 mole 和 mo 命令设置 Shell 命令补全。
 
-Auto-install:
-  mole completion              # Auto-detect shell and install
-  mole completion --dry-run    # Preview config changes without writing files
+自动安装：
+  mole completion              # 自动检测 shell 并安装
+  mole completion --dry-run    # 预览配置更改但不写入文件
 
-Manual install:
-  mole completion bash         # Generate bash completion script
-  mole completion zsh          # Generate zsh completion script
-  mole completion fish         # Generate fish completion script
+手动安装：
+  mole completion bash         # 生成 bash 补全脚本
+  mole completion zsh          # 生成 zsh 补全脚本
+  mole completion fish         # 生成 fish 补全脚本
 
-Examples:
-  # Auto-install (recommended)
+示例：
+  # 自动安装（推荐）
   mole completion
 
-  # Manual install - Bash
+  # 手动安装 - Bash
   eval "$(mole completion bash)"
 
-  # Manual install - Zsh
+  # 手动安装 - Zsh
   eval "$(mole completion zsh)"
 
-  # Manual install - Fish
+  # 手动安装 - Fish
   mole completion fish | source
 EOF
         exit 1

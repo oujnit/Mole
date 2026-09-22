@@ -250,7 +250,7 @@ func TestOverviewViewExplainsLocalSnapshotOnlySpace(t *testing.T) {
 	}
 
 	view := m.View()
-	for _, want := range []string{"2 Time Machine local snapshots", "snapshot-only space is not listed below"} {
+	for _, want := range []string{"2 个 Time Machine 本地快照", "仅快照占用的空间未在下方列出"} {
 		if !strings.Contains(view, want) {
 			t.Fatalf("expected overview snapshot notice %q, got:\n%s", want, view)
 		}
@@ -267,7 +267,7 @@ func TestOverviewViewUsesSingularSnapshotLabel(t *testing.T) {
 	}
 
 	view := m.View()
-	if !strings.Contains(view, "1 Time Machine local snapshot") || strings.Contains(view, "1 Time Machine local snapshots") {
+	if !strings.Contains(view, "1 个 Time Machine 本地快照") {
 		t.Fatalf("expected singular snapshot notice, got:\n%s", view)
 	}
 }
@@ -281,7 +281,7 @@ func TestOverviewViewMarksSnapshotCountStaleAfterProbeFailure(t *testing.T) {
 		entries:            []dirEntry{{Name: "Home", Path: "/tmp/home", Size: 1, IsDir: true}},
 	}
 
-	if view := m.View(); !strings.Contains(view, "last successful check") {
+	if view := m.View(); !strings.Contains(view, "上次成功检查") {
 		t.Fatalf("expected stale snapshot notice, got:\n%s", view)
 	}
 }
@@ -293,7 +293,7 @@ func TestOverviewViewOmitsSnapshotNoticeWhenNoneDetected(t *testing.T) {
 		entries:    []dirEntry{{Name: "Home", Path: "/tmp/home", Size: 1, IsDir: true}},
 	}
 
-	if view := m.View(); strings.Contains(view, "Time Machine local snapshot") {
+	if view := m.View(); strings.Contains(view, "Time Machine 本地快照") {
 		t.Fatalf("expected no snapshot notice, got:\n%s", view)
 	}
 }
