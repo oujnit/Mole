@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Mole</h1>
-  <p><em>Deep clean and optimize your Mac.</em></p>
+  <p><em>深度清理并优化你的 Mac。</em></p>
 </div>
 
 <p align="center">
@@ -13,213 +13,214 @@
 </p>
 
 <p align="center">
-  <img src="https://cdn.tw93.fun/img/mole.jpeg" alt="Mole - 95.50GB freed" width="1000" />
+  <img src="https://cdn.tw93.fun/img/mole.jpeg" alt="Mole - 已释放 95.50GB" width="1000" />
 </p>
 
-## Features
+> 本仓库是 [tw93/Mole](https://github.com/tw93/Mole) 的中文汉化 Fork。最新汉化代码位于 [`upgrade-origin-main`](https://github.com/oujnit/Mole/tree/upgrade-origin-main) 分支。
 
-- **All-in-one toolkit**: Combines CleanMyMac, AppCleaner, DaisyDisk, and iStat Menus in a **single binary**
-- **Deep cleaning**: Removes caches, logs, and browser leftovers to **reclaim gigabytes of space**
-- **Smart uninstaller**: Removes apps plus launch agents, preferences, and **hidden remnants**
-- **Disk insights**: Visualizes usage, finds large files, **rebuilds caches**, and refreshes system services
-- **Live monitoring**: Shows real-time CPU, GPU, memory, disk, and network stats
+## 功能亮点
 
-## Quick Start
+- **一体化工具箱**：将 CleanMyMac、AppCleaner、DaisyDisk 和 iStat Menus 的常用能力整合进**单个二进制文件**
+- **深度清理**：移除缓存、日志和浏览器残留，**释放数 GB 磁盘空间**
+- **智能卸载**：删除应用及其启动项、偏好设置和**隐藏残留**
+- **磁盘分析**：可视化空间占用、查找大文件、**重建缓存**并刷新系统服务
+- **实时监控**：展示 CPU、GPU、内存、磁盘和网络的实时状态
 
-**Install via Homebrew**
+## 快速开始
+
+**通过 Homebrew 安装官方版**
 
 ```bash
 brew install mole
 ```
 
-**Or via script**
+**通过脚本安装本 Fork 的中文汉化版**
 
 ```bash
-# Optional args: -s latest for main branch code, -s 1.17.0 for specific version
-curl -fsSL https://raw.githubusercontent.com/tw93/mole/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/oujnit/Mole/upgrade-origin-main/install.sh | bash
 ```
 
-> Note: Mole is built for macOS. An experimental Windows version is available in the [windows branch](https://github.com/tw93/Mole/tree/windows) for early adopters.
+> Mole 主要面向 macOS。官方仓库还提供实验性的 [Windows 分支](https://github.com/tw93/Mole/tree/windows)，供早期体验。
 
-**Run**
+**运行命令**
 
 ```bash
-mo                           # Interactive menu
-mo clean                     # Deep cleanup
-mo uninstall                 # Remove apps + leftovers
-mo optimize                  # Refresh caches & services
-mo analyze                   # Visual disk explorer
-mo status                    # Live system health dashboard
-mo purge                     # Clean project build artifacts
-mo installer                 # Find and remove installer files
+mo                           # 交互式菜单
+mo clean                     # 深度清理
+mo uninstall                 # 卸载应用及残留文件
+mo optimize                  # 刷新缓存与系统服务
+mo analyze                   # 可视化磁盘分析器
+mo status                    # 实时系统健康面板
+mo purge                     # 清理项目构建产物
+mo installer                 # 查找并删除安装包
 
-mo touchid                   # Configure Touch ID for sudo
-mo completion                # Set up shell tab completion
-mo update                    # Update Mole
-mo update --nightly          # Update to latest unreleased main build, script install only
-mo remove                    # Remove Mole from system
-mo --help                    # Show help
-mo --version                 # Show installed version
+mo touchid                   # 配置 Touch ID 以执行 sudo
+mo completion                # 配置 Shell 命令补全
+mo update                    # 更新 Mole
+mo update --nightly          # 更新到尚未发布的最新主分支版本，仅适用于脚本安装
+mo remove                    # 从系统中移除 Mole
+mo --help                    # 显示帮助
+mo --version                 # 显示已安装版本
 ```
 
-**Preview safely**
+**安全预览**
 
 ```bash
 mo clean --dry-run
 mo uninstall --dry-run
 mo purge --dry-run
 
-# Also works with: optimize, installer, remove, completion, touchid enable
-mo clean --dry-run --debug   # Preview + detailed logs
-mo optimize --whitelist      # Manage protected optimization rules
-mo clean --whitelist         # Manage protected caches
-mo purge --paths             # Configure project scan directories
-mo analyze /Volumes          # Analyze external drives only
+# 同样适用于：optimize、installer、remove、completion、touchid enable
+mo clean --dry-run --debug   # 预览并显示详细日志
+mo optimize --whitelist      # 管理受保护的优化规则
+mo clean --whitelist         # 管理受保护的缓存
+mo purge --paths             # 配置项目扫描目录
+mo analyze /Volumes          # 仅分析外置磁盘
 ```
 
-## Security & Safety Design
+## 安全设计
 
-Mole is a local system maintenance tool, and some commands can perform destructive local operations.
+Mole 是本地系统维护工具，部分命令会执行具有破坏性的本地文件操作。
 
-Mole uses safety-first defaults: path validation, protected-directory rules, conservative cleanup boundaries, and explicit confirmation for higher-risk actions. When risk or uncertainty is high, Mole skips, refuses, or requires stronger confirmation rather than broadening deletion scope.
+Mole 默认以安全为先：验证路径、保护关键目录、采用保守的清理边界，并对高风险操作要求明确确认。当风险较高或状态无法确认时，Mole 会跳过、拒绝操作或要求更严格的确认，而不会擅自扩大删除范围。
 
-`mo analyze` is safer for ad hoc cleanup because it moves files to Trash through Finder instead of deleting them directly.
+临时清理文件时，`mo analyze` 更为稳妥，因为它会通过 Finder 将文件移入废纸篓，而不是直接永久删除。
 
-Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for reporting guidance, safety boundaries, and current limitations.
+有关问题报告、安全边界和当前限制，请阅读 [SECURITY.md](SECURITY.md) 与 [SECURITY_AUDIT.md](SECURITY_AUDIT.md)。
 
-## Tips
+## 使用提示
 
-- Video tutorial: Watch the [Mole tutorial video](https://www.youtube.com/watch?v=UEe9-w4CcQ0), thanks to PAPAYA 電腦教室.
-- Safety and logs: `clean`, `uninstall`, `purge`, `installer`, and `remove` are destructive. Review with `--dry-run` first, and add `--debug` when needed. File operations are logged to `~/Library/Logs/mole/operations.log`. Disable with `MO_NO_OPLOG=1`. Review [SECURITY.md](SECURITY.md) and [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
-- Navigation: Mole supports arrow keys and Vim bindings `h/j/k/l`.
+- 视频教程：感谢 PAPAYA 電腦教室制作的 [Mole 教程视频](https://www.youtube.com/watch?v=UEe9-w4CcQ0)。
+- 安全与日志：`clean`、`uninstall`、`purge`、`installer` 和 `remove` 都可能删除文件。建议先使用 `--dry-run` 预览，需要排查问题时再加上 `--debug`。文件操作会记录在 `~/Library/Logs/mole/operations.log`，可通过 `MO_NO_OPLOG=1` 关闭。另请阅读 [SECURITY.md](SECURITY.md) 与 [SECURITY_AUDIT.md](SECURITY_AUDIT.md)。
+- 导航操作：Mole 支持方向键与 Vim 风格的 `h/j/k/l` 按键。
 
-## Features in Detail
+## 功能详解
 
-### Deep System Cleanup
+### 深度系统清理
 
 ```bash
 $ mo clean
 
-Scanning cache directories...
+正在扫描缓存目录...
 
-  ✓ User app cache                                           45.2GB
-  ✓ Browser cache (Chrome, Safari, Firefox)                  10.5GB
-  ✓ Developer tools (Xcode, Node.js, npm)                    23.3GB
-  ✓ System logs and temp files                                3.8GB
-  ✓ App-specific cache (Spotify, Dropbox, Slack)              8.4GB
-  ✓ Trash                                                    12.3GB
+  ✓ 用户应用缓存                                             45.2GB
+  ✓ 浏览器缓存（Chrome、Safari、Firefox）                    10.5GB
+  ✓ 开发工具（Xcode、Node.js、npm）                          23.3GB
+  ✓ 系统日志与临时文件                                        3.8GB
+  ✓ 应用专用缓存（Spotify、Dropbox、Slack）                   8.4GB
+  ✓ 废纸篓                                                   12.3GB
 
 ====================================================================
-Space freed: 95.5GB | Free space now: 223.5GB
+已释放空间：95.5GB | 当前可用空间：223.5GB
 ====================================================================
 ```
 
-Note: In `mo clean` -> Developer tools, Mole removes unused CoreSimulator `Volumes/Cryptex` entries and skips `IN_USE` items.
+说明：在 `mo clean` → 开发工具清理中，Mole 会移除未使用的 CoreSimulator `Volumes/Cryptex` 条目，并跳过标记为 `IN_USE` 的项目。
 
-### Smart App Uninstaller
+### 智能应用卸载
 
 ```bash
 $ mo uninstall
 
-Select Apps to Remove
+选择要移除的应用
 ═══════════════════════════
-▶ ☑ Photoshop 2024            (4.2G) | Old
-  ☐ IntelliJ IDEA             (2.8G) | Recent
-  ☐ Premiere Pro              (3.4G) | Recent
+▶ ☑ Photoshop 2024            (4.2G) | 旧应用
+  ☐ IntelliJ IDEA             (2.8G) | 最近使用
+  ☐ Premiere Pro              (3.4G) | 最近使用
 
-Uninstalling: Photoshop 2024
+正在卸载：Photoshop 2024
 
-  ✓ Removed application
-  ✓ Cleaned 52 related files across 12 locations
-    - Application Support, Caches, Preferences
-    - Logs, WebKit storage, Cookies
-    - Extensions, Plugins, Launch daemons
+  ✓ 已移除应用
+  ✓ 已清理 12 个位置中的 52 个相关文件
+    - 应用支持文件、缓存、偏好设置
+    - 日志、WebKit 存储、Cookie
+    - 扩展、插件、启动守护程序
 
 ====================================================================
-Space freed: 12.8GB
+已释放空间：12.8GB
 ====================================================================
 ```
 
-### System Optimization
+### 系统优化
 
 ```bash
 $ mo optimize
 
-System: 5/32 GB RAM | 333/460 GB Disk (72%) | Uptime 6d
+系统：内存 5/32 GB | 磁盘 333/460 GB（72%）| 已运行 6 天
 
-  ✓ Rebuild system databases and clear caches
-  ✓ Reset network services
-  ✓ Refresh Finder and Dock
-  ✓ Clean diagnostic and crash logs
-  ✓ Remove swap files and restart dynamic pager
-  ✓ Rebuild launch services and spotlight index
+  ✓ 重建系统数据库并清理缓存
+  ✓ 重置网络服务
+  ✓ 刷新 Finder 与程序坞
+  ✓ 清理诊断与崩溃日志
+  ✓ 移除交换文件并重启动态分页器
+  ✓ 重建启动服务与 Spotlight 索引
 
 ====================================================================
-System optimization completed
+系统优化完成
 ====================================================================
 
-Use `mo optimize --whitelist` to exclude specific optimizations.
+使用 `mo optimize --whitelist` 可排除指定的优化项目。
 ```
 
-### Disk Space Analyzer
+### 磁盘空间分析
 
-> Note: By default, Mole skips external drives under `/Volumes` for faster startup. To inspect them, run `mo analyze /Volumes` or a specific mount path.
+> 默认情况下，Mole 会跳过 `/Volumes` 下的外置磁盘以加快启动。若要分析外置磁盘，请运行 `mo analyze /Volumes` 或指定具体挂载路径。
 
 ```bash
 $ mo analyze
 
-Analyze Disk  ~/Documents  |  Total: 156.8GB
+磁盘分析  ~/Documents  |  总计：156.8GB
 
- ▶  1. ███████████████████  48.2%  |  📁 Library                     75.4GB  >6mo
+ ▶  1. ███████████████████  48.2%  |  📁 Library                     75.4GB  >6个月
     2. ██████████░░░░░░░░░  22.1%  |  📁 Downloads                   34.6GB
     3. ████░░░░░░░░░░░░░░░  14.3%  |  📁 Movies                      22.4GB
     4. ███░░░░░░░░░░░░░░░░  10.8%  |  📁 Documents                   16.9GB
     5. ██░░░░░░░░░░░░░░░░░   5.2%  |  📄 backup_2023.zip              8.2GB
 
-  ↑↓←→ Navigate  |  O Open  |  F Show  |  ⌫ Delete  |  L Large files  |  Q Quit
+  ↑↓←→ 导航  |  O 打开  |  F 显示  |  ⌫ 删除  |  L 大文件  |  Q 退出
 ```
 
-### Live System Status
+### 实时系统状态
 
-Real-time dashboard with health score, hardware info, and performance metrics.
+实时仪表盘会展示健康评分、硬件信息和性能指标。
 
 ```bash
 $ mo status
 
-Mole Status  Health ● 92  MacBook Pro · M4 Pro · 32GB · macOS 14.5
+Mole 状态  健康 ● 92  MacBook Pro · M4 Pro · 32GB · macOS 14.5
 
-⚙ CPU                                    ▦ Memory
-Total   ████████████░░░░░░░  45.2%       Used    ███████████░░░░░░░  58.4%
-Load    0.82 / 1.05 / 1.23 (8 cores)     Total   14.2 / 24.0 GB
-Core 1  ███████████████░░░░  78.3%       Free    ████████░░░░░░░░░░  41.6%
-Core 2  ████████████░░░░░░░  62.1%       Avail   9.8 GB
+⚙ CPU                                    ▦ 内存
+总计    ████████████░░░░░░░  45.2%       已用    ███████████░░░░░░░  58.4%
+负载    0.82 / 1.05 / 1.23（8 核）       总计    14.2 / 24.0 GB
+核心 1  ███████████████░░░░  78.3%       空闲    ████████░░░░░░░░░░  41.6%
+核心 2  ████████████░░░░░░░  62.1%       可用    9.8 GB
 
-▤ Disk                                   ⚡ Power
-Used    █████████████░░░░░░  67.2%       Level   ██████████████████  100%
-Free    156.3 GB                         Status  Charged
-Read    ▮▯▯▯▯  2.1 MB/s                  Health  Normal · 423 cycles
-Write   ▮▮▮▯▯  18.3 MB/s                 Temp    58°C · 1200 RPM
+▤ 磁盘                                   ⚡ 电源
+已用    █████████████░░░░░░  67.2%       电量    ██████████████████  100%
+空闲    156.3 GB                         状态    已充满
+读取    ▮▯▯▯▯  2.1 MB/s                  健康    正常 · 423 次循环
+写入    ▮▮▮▯▯  18.3 MB/s                 温度    58°C · 1200 RPM
 
-⇅ Network                                ▶ Processes
-Down    ▁▁█▂▁▁▁▁▁▁▁▁▇▆▅▂  0.54 MB/s      Code       ▮▮▮▮▯  42.1%
-Up      ▄▄▄▃▃▃▄▆▆▇█▁▁▁▁▁  0.02 MB/s      Chrome     ▮▮▮▯▯  28.3%
-Proxy   HTTP · 192.168.1.100             Terminal   ▮▯▯▯▯  12.5%
+⇅ 网络                                   ▶ 进程
+下载    ▁▁█▂▁▁▁▁▁▁▁▁▇▆▅▂  0.54 MB/s      Code       ▮▮▮▮▯  42.1%
+上传    ▄▄▄▃▃▃▄▆▆▇█▁▁▁▁▁  0.02 MB/s      Chrome     ▮▮▮▯▯  28.3%
+代理    HTTP · 192.168.1.100             Terminal   ▮▯▯▯▯  12.5%
 ```
 
-Health score is based on CPU, memory, disk, temperature, and I/O load, with color-coded ranges.
+健康评分根据 CPU、内存、磁盘、温度和 I/O 负载计算，并通过颜色区间直观呈现。
 
-Shortcuts: In `mo status`, press `k` to toggle the cat and save the preference, and `q` to quit.
+快捷键：在 `mo status` 中按 `k` 可显示或隐藏小猫并保存偏好，按 `q` 退出。
 
-When enabled, `mo status` shows a read-only alert banner for processes that stay above the configured CPU threshold for a sustained window. Use `--proc-cpu-threshold`, `--proc-cpu-window`, or `--proc-cpu-alerts=false` to tune or disable it.
+启用进程告警后，若某个进程持续超过设定的 CPU 阈值，`mo status` 会显示只读告警横幅。可通过 `--proc-cpu-threshold`、`--proc-cpu-window` 或 `--proc-cpu-alerts=false` 调整或关闭该功能。
 
-#### Machine-Readable Output
+#### 机器可读输出
 
-Both `mo analyze` and `mo status` support a `--json` flag for scripting and automation.
+`mo analyze` 和 `mo status` 都支持 `--json` 参数，可用于脚本和自动化。
 
-`mo status` also auto-detects when its output is piped (not a terminal) and switches to JSON automatically.
+当输出被管道接收而不是直接显示在终端时，`mo status` 也会自动切换为 JSON。
 
 ```bash
-# Disk analysis as JSON
+# 以 JSON 格式分析磁盘
 $ mo analyze --json ~/Documents
 {
   "path": "/Users/you/Documents",
@@ -231,7 +232,7 @@ $ mo analyze --json ~/Documents
   "total_files": 42187
 }
 
-# System status as JSON
+# 以 JSON 格式查看系统状态
 $ mo status --json
 {
   "host": "MacBook-Pro",
@@ -243,39 +244,39 @@ $ mo status --json
   ...
 }
 
-# Auto-detected JSON when piped
+# 通过管道输出时自动使用 JSON
 $ mo status | jq '.health_score'
 92
 ```
 
-### Project Artifact Purge
+### 清理项目构建产物
 
-Clean old build artifacts such as `node_modules`, `target`, `build`, and `dist` to free up disk space.
+清理 `node_modules`、`target`、`build` 和 `dist` 等旧构建产物，以释放磁盘空间。
 
 ```bash
 mo purge
 
-Select Categories to Clean - 18.5GB (8 selected)
+选择要清理的类别 - 18.5GB（已选择 8 项）
 
 ➤ ● my-react-app       3.2GB | node_modules
   ● old-project        2.8GB | node_modules
   ● rust-app           4.1GB | target
   ● next-blog          1.9GB | node_modules
-  ○ current-work       856MB | node_modules  | Recent
+  ○ current-work       856MB | node_modules  | 最近使用
   ● django-api         2.3GB | venv
   ● vue-dashboard      1.7GB | node_modules
   ● backend-service    2.5GB | node_modules
 ```
 
-> Note: We recommend installing `fd` on macOS.
+> 建议在 macOS 上安装 `fd`：
 > `brew install fd`
 
-> Safety: This permanently deletes selected artifacts. Review carefully before confirming. Projects newer than 7 days are marked and unselected by default.
+> 安全提示：此功能会永久删除选中的构建产物，请在确认前仔细检查。最近 7 天内更新的项目会被标记，并默认取消选择。
 
 <details>
-<summary><strong>Custom Scan Paths</strong></summary>
+<summary><strong>自定义扫描路径</strong></summary>
 
-Run `mo purge --paths` to configure scan directories, or edit `~/.config/mole/purge_paths` directly:
+运行 `mo purge --paths` 配置扫描目录，或直接编辑 `~/.config/mole/purge_paths`：
 
 ```shell
 ~/Documents/MyProjects
@@ -283,75 +284,75 @@ Run `mo purge --paths` to configure scan directories, or edit `~/.config/mole/pu
 ~/Work/ClientB
 ```
 
-When custom paths are configured, Mole scans only those directories. Otherwise, it uses defaults like `~/Projects`, `~/GitHub`, and `~/dev`.
+配置自定义路径后，Mole 只会扫描这些目录；否则将使用 `~/Projects`、`~/GitHub`、`~/dev` 等默认路径。
 
 </details>
 
-### Installer Cleanup
+### 清理安装包
 
-Find and remove large installer files across Downloads, Desktop, Homebrew caches, iCloud, and Mail. Each file is labeled by source.
+查找并删除“下载”、桌面、Homebrew 缓存、iCloud 和邮件中的大型安装包。每个文件都会标注来源。
 
 ```bash
 mo installer
 
-Select Installers to Remove - 3.8GB (5 selected)
+选择要移除的安装包 - 3.8GB（已选择 5 项）
 
-➤ ● Photoshop_2024.dmg     1.2GB | Downloads
-  ● IntelliJ_IDEA.dmg       850.6MB | Downloads
-  ● Illustrator_Setup.pkg   920.4MB | Downloads
+➤ ● Photoshop_2024.dmg     1.2GB | 下载
+  ● IntelliJ_IDEA.dmg       850.6MB | 下载
+  ● Illustrator_Setup.pkg   920.4MB | 下载
   ● PyCharm_Pro.dmg         640.5MB | Homebrew
-  ● Acrobat_Reader.dmg      220.4MB | Downloads
-  ○ AppCode_Legacy.zip      410.6MB | Downloads
+  ● Acrobat_Reader.dmg      220.4MB | 下载
+  ○ AppCode_Legacy.zip      410.6MB | 下载
 ```
 
-## Quick Launchers
+## 快速启动器
 
-Launch Mole commands from Raycast or Alfred:
+通过 Raycast 或 Alfred 启动 Mole 命令：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tw93/Mole/main/scripts/setup-quick-launchers.sh | bash
 ```
 
-Adds 5 commands: `Mole Clean`, `Mole Uninstall`, `Mole Optimize`, `Mole Analyze`, `Mole Status`.
+脚本会添加 5 个命令：`Mole Clean`、`Mole Uninstall`、`Mole Optimize`、`Mole Analyze`、`Mole Status`。
 
-### Raycast Setup
+### 配置 Raycast
 
-After running the script, complete these steps in Raycast:
+运行脚本后，在 Raycast 中完成以下设置：
 
-1. Open Raycast Settings (⌘ + ,)
-2. Go to **Extensions** → **Script Commands**
-3. Click **"Add Script Directory"** (or **"+"**)
-4. Add path: `~/Library/Application Support/Raycast/script-commands`
-5. Search in Raycast for: **"Reload Script Directories"** and run it
-6. Done! Search for `Mole Clean` or `clean`, `Mole Optimize`, or `Mole Status` to use the commands
+1. 打开 Raycast 设置（⌘ + ,）
+2. 进入 **Extensions** → **Script Commands**
+3. 点击 **Add Script Directory**（或 **+**）
+4. 添加路径：`~/Library/Application Support/Raycast/script-commands`
+5. 在 Raycast 中搜索并运行 **Reload Script Directories**
+6. 完成。搜索 `Mole Clean`、`clean`、`Mole Optimize` 或 `Mole Status` 即可使用
 
-> **Note**: The script creates the commands, but Raycast still requires a one-time manual script directory setup.
+> 脚本会创建命令，但 Raycast 仍需要进行一次手动的脚本目录设置。
 
-### Terminal Detection
+### 终端检测
 
-Mole auto-detects your terminal app. iTerm2 has known compatibility issues. We highly recommend [Kaku](https://github.com/tw93/Kaku). Other good options are Alacritty, kitty, WezTerm, Ghostty, and Warp. To override, set `MO_LAUNCHER_APP=<name>`.
+Mole 会自动检测终端应用。iTerm2 存在已知兼容性问题，因此强烈推荐使用 [Kaku](https://github.com/tw93/Kaku)。Alacritty、kitty、WezTerm、Ghostty 和 Warp 也是不错的选择。若要手动指定，请设置 `MO_LAUNCHER_APP=<名称>`。
 
-## Community Love
+## 社区支持
 
-Thanks to everyone who helped build Mole. Go follow them. ❤️
+感谢所有帮助构建 Mole 的贡献者，也欢迎关注他们。❤️
 
 <a href="https://github.com/tw93/Mole/graphs/contributors">
   <img src="./CONTRIBUTORS.svg?v=2" width="1000" />
 </a>
 
 <br/><br/>
-Real feedback from users who shared Mole on X.
+以下是用户在 X 上分享 Mole 时留下的真实反馈。
 
-<img src="https://cdn.tw93.fun/pic/lovemole.jpeg" alt="Community feedback on Mole" width="1000" />
+<img src="https://cdn.tw93.fun/pic/lovemole.jpeg" alt="Mole 社区反馈" width="1000" />
 
-## Support
+## 支持项目
 
-- If Mole helped you, star the repo or [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/Mole&text=Mole%20-%20Deep%20clean%20and%20optimize%20your%20Mac.) with friends.
-- Got ideas or bugs? Read the [Contributing Guide](CONTRIBUTING.md) and open an issue or PR.
-- Like Mole? <a href="https://miaoyan.app/cats.html?name=Mole" target="_blank">Buy Tw93 a Coke</a> to support the project. 🥤 Supporters are below.
+- 如果 Mole 对你有帮助，欢迎为仓库点亮 Star，或[分享给朋友](https://twitter.com/intent/tweet?url=https://github.com/tw93/Mole&text=Mole%20-%20Deep%20clean%20and%20optimize%20your%20Mac.)。
+- 有想法或遇到问题？请阅读[贡献指南](CONTRIBUTING.md)，并提交 Issue 或 PR。
+- 喜欢 Mole？可以<a href="https://miaoyan.app/cats.html?name=Mole" target="_blank">请 Tw93 喝可乐</a>来支持项目。🥤 支持者名单见下方。
 
 <a href="https://miaoyan.app/cats.html?name=Mole"><img src="https://miaoyan.app/assets/sponsors.svg" width="1000" loading="lazy" /></a>
 
-## License
+## 开源许可
 
-MIT License. Feel free to use Mole and contribute.
+Mole 采用 MIT 许可证。欢迎自由使用并参与贡献。
